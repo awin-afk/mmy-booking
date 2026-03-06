@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMY Logistics — n8n AI Recommend Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /*
+  ================================================================
+  n8n MULTI-STEP FORM — AI LOCATION RECOMMENDATION
+  Page 1 → [Google Sheets + AI Agent + Code node] → Page 2 → Completion
+
+  What each section maps to in n8n:
+  [n8n FIELD]       = native form field (text/dropdown/radio/checkbox)
+  [HTML element]    = static HTML block inside the form (no <script>/<style>)
+  [CUSTOM CSS]      = pasted into n8n "Custom Form Styling"
+  [n8n VARIABLE]    = {{ expression }} filled by n8n before rendering Page 2
+  [AI node output]  = formatted HTML string from Code node after AI Agent
+  ================================================================
+  */
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f0f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #1a1a1a;
+    padding: 24px 16px 60px;
+  }
+
+  .mm { font-family: 'Noto Sans Myanmar', sans-serif; }
+
+  .prog {
+    max-width: 480px; margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .prog-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; }
+  .dots { display: flex; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; transition: all 0.3s; }
+  .dot.active { background: #C9A84C; width: 22px; border-radius: 4px; }
+  .dot.done { background: #22c55e; }
+
+  .n8n-form {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 28px 24px 24px;
+  }
+
+  .form-title { font-size: 21px; font-weight: 600; color: #111; margin-bottom: 5px; }
+  .form-desc { font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+  hr { border: none; border-top: 1px solid #f3f4f6; margin: 0 0 18px; }
+
+  /* Fields */
+  .field { margin-bottom: 15px; }
+  .field label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 5px; }
+  .field label .mm-lbl { font-family: 'Noto Sans Myanmar', sans-serif; font-weight: 400; color: #9ca3af; font-size: 12px; }
+  .req { color: #e53e3e; }
+
+  input[type="text"], input[type="email"], input[type="number"], select, textarea {
+    width: 100%; border: 1px solid #d1d5db; border-radius: 6px;
+    padding: 10px 12px; font-size: 13px; font-family: 'Inter', sans-serif;
+    color: #111; background: #fff; outline: none; -webkit-appearance: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #C9A84C;
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+  input::placeholder, textarea::placeholder { color: #c0c0c0; font-size: 12px; }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+  }
+
+  .phone-row { display: flex; gap: 8px; }
+  .prefix {
+    background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px;
+    padding: 10px 12px; font-size: 12px; color: #555; white-space: nowrap;
+    display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+  }
+  .phone-row input { flex: 1; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .radio-group { display: flex; flex-direction: column; gap: 7px; }
+  .radio-opt {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border: 1px solid #e5e7eb;
+    border-radius: 6px; cursor: pointer;
+  }
+  .radio-opt:has(input:checked) { border-color: #C9A84C; background: #fffbf0; }
+  .radio-opt input[type="radio"] { width: 16px; height: 16px; accent-color: #C9A84C; flex-shrink: 0; border: none; padding: 0; }
+  .radio-opt .rl { flex: 1; font-size: 13px; line-height: 1.4; }
+  .radio-opt .rl .sub { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #888; display: block; margin-top: 1px; }
+  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .badge.green { color: #166534; background: #dcfce7; }
+  .badge.blue  { color: #1e40af; background: #dbeafe; }
+
+  .banner {
+    background: #fffbf0; border-left: 4px solid #C9A84C;
+    border-radius: 0 6px 6px 0; padding: 10px 14px;
+    margin: 18px 0 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .banner strong { font-size: 13px; font-weight: 600; color: #92400e; display: block; }
+  .banner .mm-sub { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #b45309; }
+
+  .info-note {
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;
+    padding: 8px 12px; font-size: 12px; color: #1d4ed8; margin-bottom: 14px; line-height: 1.5;
+  }
+
+  .btn-submit {
+    width: 100%; padding: 13px; background: #C9A84C; color: #fff;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    border: none; border-radius: 6px; cursor: pointer; margin-top: 20px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #b8943d; }
+  .btn-submit:disabled { opacity: 0.45; pointer-events: none; }
+
+  .btn-back {
+    padding: 13px 18px; background: #f9fafb; color: #374151;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; margin-top: 20px;
+  }
+  .btn-row { display: flex; gap: 9px; }
+  .btn-row .btn-submit { margin-top: 0; }
+
+  .page { display: none; animation: fadeUp 0.2s ease; }
+  .page.active { display: block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ================================================================
+     AI RECOMMENDATION BLOCK
+     [HTML element] in n8n — rendered from Code node output
+     Contains {{ $('Code').item.json.ai_recommendation_html }}
+     ================================================================ */
+
+  /* Typing animation shown while AI is "thinking" (demo only) */
+  .ai-loading {
+    display: flex; align-items: center; gap: 10px;
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 14px; margin-bottom: 14px;
+  }
+  .ai-loading .spinner {
+    width: 18px; height: 18px; border: 2px solid #e2e8f0;
+    border-top-color: #C9A84C; border-radius: 50%;
+    animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ai-loading span { font-size: 12px; color: #6b7280; }
+
+  /* AI result block — what n8n renders after AI node runs */
+  .ai-block {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    display: none; /* shown after "AI runs" in demo */
+  }
+
+  .ai-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .ai-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #ecfdf5; border: 1px solid #a7f3d0;
+    border-radius: 6px; padding: 4px 9px;
+    font-size: 11px; font-weight: 600; color: #065f46;
+  }
+  .ai-header .ai-addr {
+    font-size: 12px; color: #6b7280; margin-left: 2px;
+  }
+
+  /* Each recommended location row inside AI block */
+  .ai-loc-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; background: #fff;
+    border: 1px solid #f1f5f9; border-radius: 7px;
+    margin-bottom: 6px; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .ai-loc-row:last-child { margin-bottom: 0; }
+  .ai-loc-row:hover { border-color: #C9A84C; }
+
+  .ai-rank {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #f1f5f9; font-size: 11px; font-weight: 700;
+    color: #64748b; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .ai-rank.top { background: #fef3c7; color: #92400e; }
+
+  .ai-loc-info { flex: 1; min-width: 0; }
+  .ai-loc-info .ai-loc-name { font-size: 13px; font-weight: 600; color: #111; }
+  .ai-loc-info .ai-loc-sub  { font-size: 11px; color: #6b7280; margin-top: 1px; }
+
+  .ai-dist {
+    font-size: 11px; font-weight: 600; color: #374151;
+    background: #f1f5f9; padding: 2px 8px; border-radius: 8px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .ai-dist.near { background: #dcfce7; color: #166534; }
+
+  .ai-note {
+    font-size: 11px; color: #94a3b8; margin-top: 10px;
+    display: flex; align-items: center; gap: 5px; line-height: 1.5;
+  }
+
+  /* Summary table */
+  .sum-banner {
+    background: #fffbf0; border-left: 4px solid #C9A84C;
+    border-radius: 0 6px 6px 0; padding: 11px 14px; margin-bottom: 14px;
+  }
+  .sum-banner strong { font-size: 13px; font-weight: 600; color: #92400e; }
+  .sum-banner span   { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #b45309; display: block; margin-top: 2px; }
+
+  .sum-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 4px; }
+  .sum-table tr { border-bottom: 1px solid #f3f4f6; }
+  .sum-table tr:last-child { border-bottom: none; }
+  .sum-table td { padding: 8px 6px; vertical-align: top; }
+  .sum-table td:first-child { color: #9ca3af; width: 42%; font-size: 11px; line-height: 1.5; }
+  .sum-table td:last-child  { font-weight: 600; color: #111; }
+
+  .ref-chip {
+    background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .ref-chip .ref-icon  { font-size: 20px; }
+  .ref-chip .ref-label { font-size: 11px; color: #6b7280; }
+  .ref-chip .ref-val   { font-size: 15px; font-weight: 700; color: #166534; letter-spacing: 0.06em; }
+
+  .tnc-box {
+    background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 11px 13px; font-size: 12px; color: #6b7280; line-height: 1.8; margin-bottom: 12px;
+  }
+  .tnc-check {
+    display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px;
+    background: #fff; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;
+  }
+  .tnc-check.checked { border-color: #C9A84C; background: #fffbf0; }
+  .tnc-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: #C9A84C; flex-shrink: 0; margin-top: 1px; border: none; padding: 0; }
+  .tnc-check .tcl { font-size: 13px; font-weight: 500; color: #374151; }
+  .tnc-check .tcl .mm { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #9ca3af; display: block; margin-top: 2px; }
+
+  /* Completion page */
+  .loc-card { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin: 14px 0; }
+  .loc-img {
+    width: 100%; height: 150px; object-fit: cover;
+    background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px; position: relative;
+  }
+  .loc-img-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.65));
+    color: #fff; font-size: 15px; font-weight: 700; padding: 20px 14px 10px;
+  }
+  .loc-body { padding: 12px 14px; }
+  .loc-detail { font-size: 12px; color: #6b7280; line-height: 1.8; margin-bottom: 10px; }
+  .maps-link {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 11px; background: #fffbf0; border: 1px solid #fde68a;
+    border-radius: 7px; text-decoration: none; color: #92400e;
+    font-size: 13px; font-weight: 600;
+  }
+
+  .cash-block {
+    background: #fffbf0; border: 1px solid #fde68a; border-radius: 8px;
+    padding: 14px; margin: 12px 0;
+  }
+  .cash-block h3     { font-size: 13px; font-weight: 600; color: #92400e; margin-bottom: 6px; }
+  .cash-block .amount{ font-size: 24px; font-weight: 700; color: #b45309; margin-bottom: 6px; }
+  .cash-block .instr { font-size: 12px; color: #92400e; line-height: 1.6; }
+
+  .paynow-block {
+    background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;
+    padding: 14px; margin: 12px 0; text-align: center;
+  }
+  .paynow-block h3     { font-size: 13px; font-weight: 600; color: #166534; margin-bottom: 6px; }
+  .paynow-block .amount{ font-size: 24px; font-weight: 700; color: #15803d; margin-bottom: 10px; }
+  .qr-box {
+    width: 120px; height: 120px; background: #fff; border: 1px solid #bbf7d0;
+    border-radius: 8px; margin: 0 auto 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; color: #6b7280; text-align: center; padding: 8px;
+  }
+  .paynow-block .instr { font-size: 11px; color: #15803d; line-height: 1.6; }
+
+  .confirm-note {
+    background: #fffbf0; border: 1px solid #fde68a; border-radius: 8px;
+    padding: 12px 14px; font-size: 12px; color: #92400e; margin-top: 12px; line-height: 1.7;
+  }
+
+  /* ================================================================
+     n8n WORKFLOW DIAGRAM — shown between pages as annotation
+     ================================================================ */
+  .workflow-annotation {
+    max-width: 480px; margin: 0 auto 14px;
+    background: #1e1e2e; border-radius: 8px; padding: 14px 16px;
+    font-size: 11px; color: #cdd6f4; line-height: 1.8; font-family: monospace;
+    display: none;
+  }
+  .workflow-annotation.visible { display: block; }
+  .wf-title { font-size: 10px; font-weight: 700; color: #a6adc8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .wf-node { color: #89b4fa; }
+  .wf-arrow { color: #6c7086; }
+  .wf-note  { color: #a6e3a1; }
+  .wf-var   { color: #f9e2af; }
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="prog">
+  <span class="prog-label" id="page-title">Page 1 of 3 — Fill Details</span>
+  <div class="dots">
+    <div class="dot active" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+  </div>
+</div>
+
+<div class="n8n-form">
+
+  <!-- ================================================================
+       PAGE 1 — n8n Form Trigger node
+       All native fields. AI runs AFTER this page submits.
+       ================================================================ -->
+  <div class="page active" id="p1">
+    <div class="form-title">Parcel Delivery Form</div>
+    <div class="form-desc">
+      Singapore → Myanmar (Yangon) · 2 weeks<br>
+      <span class="mm" style="font-size:12px;">စင်ကာပူမှ မြန်မာနိုင်ငံသို့ · ၂ပတ်အတွင်း</span>
+    </div>
+    <hr>
+
+    <!-- [HTML element] Section banner -->
+    <div class="banner">
+      <span style="font-size:16px;">📦</span>
+      <div><strong>Recipient Details</strong><span class="mm-sub">လက်ခံမည့်သူ အချက်အလက်</span></div>
+    </div>
+
+    <!-- [n8n FIELD] text -->
+    <div class="field">
+      <label>Recipient Full Name <span class="mm-lbl">/ လက်ခံသူအမည်</span> <span class="req">*</span></label>
+      <input type="text" id="f_rname" value="Daw Aye Aye">
+    </div>
+
+    <!-- [n8n FIELD] text -->
+    <div class="field">
+      <label>Myanmar Phone +95 <span class="mm-lbl">/ မြန်မာဖုန်း</span> <span class="req">*</span></label>
+      <div class="phone-row">
+        <div class="prefix">🇲🇲 +95</div>
+        <input type="text" id="f_rphone" value="9765432100">
+      </div>
+    </div>
+
+    <!-- [n8n FIELD] textarea -->
+    <div class="field">
+      <label>Full Delivery Address <span class="mm-lbl">/ အသေးစိတ်လိပ်စာ</span> <span class="req">*</span></label>
+      <textarea id="f_addr" placeholder="e.g. No.12, Shwe Padauk St, Ward 6, Hlaing Township, Yangon">No.12, Shwe Padauk St, Ward 6, Hlaing, Yangon</textarea>
+    </div>
+
+    <!-- [HTML element] Section banner -->
+    <div class="banner">
+      <span style="font-size:16px;">🏷️</span>
+      <div><strong>Parcel Details</strong><span class="mm-sub">ပစ္စည်းအသေးစိတ်</span></div>
+    </div>
+
+    <!-- [n8n FIELD] radio -->
+    <div class="field">
+      <label>Type of Items <span class="mm-lbl">/ ပစ္စည်းအမျိုးအစား</span> <span class="req">*</span></label>
+      <div class="radio-group">
+        <label class="radio-opt">
+          <input type="radio" name="itype" value="Food/Clothes/Medicine/Cosmetics" checked>
+          <div class="rl">🛍️ Food / Clothes / Medicine / Cosmetics<span class="sub">အစားအသောက် / အဝတ်အစား / ဆေးဝါး</span></div>
+          <span class="badge green">$14/kg</span>
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="itype" value="Electronics/Phones/Laptops">
+          <div class="rl">📱 Electronics / Phones / Laptops<span class="sub">အီလက်ထရောနစ် / ဖုန်း / လက်တော့ပ်</span></div>
+          <span class="badge blue">$20/kg</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- [n8n FIELD] number x2 -->
+    <div class="two-col">
+      <div class="field">
+        <label>Weight (kg) <span class="req">*</span></label>
+        <input type="number" id="f_weight" value="2" min="0.1" step="0.1">
+      </div>
+      <div class="field">
+        <label>Declared Value (SGD) <span class="req">*</span></label>
+        <input type="number" id="f_value" value="50">
+      </div>
+    </div>
+
+    <!-- [HTML element] info note -->
+    <div class="info-note">
+      ℹ️ Declared value is for customs only — does not affect shipping cost.<br>
+      <span class="mm" style="font-size:11px;">တန်ဖိုးသည် အကောက်ခွန်အတွက်သာဖြစ်သည်။</span>
+    </div>
+
+    <!-- [n8n FIELD] textarea -->
+    <div class="field">
+      <label>Contents Description <span class="mm-lbl">/ ပစ္စည်းဖော်ပြချက်</span> <span class="req">*</span></label>
+      <textarea id="f_contents">2 shirts, vitamin C, face cream</textarea>
+    </div>
+
+    <!-- [HTML element] Section banner -->
+    <div class="banner">
+      <span style="font-size:16px;">👤</span>
+      <div><strong>Sender Details</strong><span class="mm-sub">ပို့သူ အချက်အလက်</span></div>
+    </div>
+
+    <!-- [n8n FIELD] text -->
+    <div class="field">
+      <label>Your Full Name <span class="mm-lbl">/ ပေးပို့သူအမည်</span> <span class="req">*</span></label>
+      <input type="text" id="f_sname" value="Ko Aung Aung">
+    </div>
+
+    <!-- [n8n FIELD] text -->
+    <div class="field">
+      <label>Singapore Phone +65 <span class="req">*</span></label>
+      <div class="phone-row">
+        <div class="prefix">🇸🇬 +65</div>
+        <input type="text" id="f_sphone" value="91234567">
+      </div>
+    </div>
+
+    <!-- [n8n FIELD] email -->
+    <div class="field">
+      <label>Email Address <span class="mm-lbl">/ အီးမေးလ်</span> <span class="req">*</span></label>
+      <input type="email" id="f_email" value="ko.aung@email.com">
+    </div>
+
+    <!-- [n8n FIELD] text — Singapore address, used by AI to find nearest 8 locations -->
+    <div class="field">
+      <label>Your Singapore Address <span class="mm-lbl">/ စင်ကာပူနေရပ်လိပ်စာ</span> <span class="req">*</span></label>
+      <input type="text" id="f_saddr" value="Blk 134 Jurong East St 13, #05-12, S609734" placeholder="e.g. Blk 10 Jurong East St 32, #03-01">
+    </div>
+
+    <!-- [HTML element] info note — explains why address is needed -->
+    <div class="info-note" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534;">
+      🤖 AI uses your address to recommend the 8 nearest drop-off points on the next page.<br>
+      <span class="mm" style="font-size:11px;">AI မှ သင့်လိပ်စာကို အသုံးပြု၍ အနီးဆုံး drop-off နေရာ ၈ ခု ရှာဖွေပေးမည်</span>
+    </div>
+
+    <!-- [HTML element] Section banner -->
+    <div class="banner">
+      <span style="font-size:16px;">🚚</span>
+      <div><strong>Collection Method</strong><span class="mm-sub">ပစ္စည်းအပ်နည်း</span></div>
+    </div>
+
+    <!-- [n8n FIELD] radio -->
+    <div class="field">
+      <label>How would you like to send? <span class="req">*</span></label>
+      <div class="radio-group">
+        <label class="radio-opt">
+          <input type="radio" name="method" id="r_dropoff" value="Drop-off (Free)" checked>
+          <div class="rl">🏪 Drop-off at collection point — <strong>FREE</strong><span class="sub">ကောက်ခံရမည့်နေရာသို့ကိုယ်တိုင်အပ်မည်</span></div>
+          <span class="badge green">Free</span>
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="method" id="r_pickup" value="Pickup (+$9.60)">
+          <div class="rl">🚐 Pickup from my address — <strong>+$9.60</strong><span class="sub">သင့်နေရာမှကောက်ယူမည်</span></div>
+          <span class="badge blue">+$9.60</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- [n8n DEFAULT] Next button -->
+    <button class="btn-submit" onclick="goToP2()">
+      Next — Find Nearest Locations 🤖 →
+    </button>
+  </div>
+
+  <!-- ================================================================
+       PAGE 2 — n8n Form node (second step)
+       AI recommendation HTML rendered from Code node output
+       Drop-off dropdown is native n8n field (all 32 locations)
+       ================================================================ -->
+  <div class="page" id="p2">
+    <div class="form-title">Confirm Your Booking</div>
+    <div class="form-desc">
+      Review details &amp; choose your drop-off point<br>
+      <span class="mm" style="font-size:12px;">အသေးစိတ်စစ်ဆေးပြီး နေရာရွေးချယ်ပါ</span>
+    </div>
+    <hr>
+
+    <!-- [HTML element] booking ref chip -->
+    <div class="ref-chip">
+      <div class="ref-icon">🔖</div>
+      <div>
+        <div class="ref-label">Booking Reference · မှာယူမှတ်တမ်းနံပါတ်</div>
+        <!-- [n8n VARIABLE] {{ $('Code').item.json.booking_ref }} -->
+        <div class="ref-val" id="s_ref">MMY260305xxxx</div>
+      </div>
+    </div>
+
+    <!-- [HTML element] Summary -->
+    <div class="sum-banner">
+      <strong>📋 Booking Summary</strong>
+      <span>အမှာစာ အကျဉ်းချုပ်</span>
+    </div>
+    <table class="sum-table">
+      <tr><td>📦 Recipient<br><span class="mm">လက်ခံသူ</span></td><td id="s_rname">—</td></tr>
+      <tr><td>📞 Myanmar Phone<br><span class="mm">မြန်မာဖုန်း</span></td><td id="s_rphone">—</td></tr>
+      <tr><td>📍 Delivery To<br><span class="mm">ပို့မည့်နေရာ</span></td><td id="s_dest">—</td></tr>
+      <tr><td>🏷️ Items<br><span class="mm">ပစ္စည်းအမျိုး</span></td><td id="s_itype">—</td></tr>
+      <tr><td>⚖️ Weight<br><span class="mm">အလေးချိန်</span></td><td id="s_weight">—</td></tr>
+      <tr><td>📝 Contents<br><span class="mm">အကြောင်းအရာ</span></td><td id="s_contents">—</td></tr>
+      <tr><td>🚚 Collection<br><span class="mm">အပ်နည်း</span></td><td id="s_method">—</td></tr>
+      <tr><td>👤 Sender<br><span class="mm">ပို့သူ</span></td><td id="s_sender">—</td></tr>
+      <tr><td>📍 Sender Address<br><span class="mm">နေရပ်လိပ်စာ</span></td><td id="s_saddr">—</td></tr>
+      <tr><td>📧 Email</td><td id="s_email">—</td></tr>
+    </table>
+
+    <!-- ============================================================
+         AI RECOMMENDATION BLOCK
+         [HTML element] in n8n — the entire block below is output
+         from the Code node as a pre-built HTML string injected via:
+         {{ $('Code').item.json.ai_recommendation_html }}
+
+         In real n8n workflow:
+         1. Google Sheets node reads all 32 locations (name, lat, lng)
+         2. AI Agent node receives: sender address + all 32 locations
+            Prompt: "Return the 8 nearest locations to this Singapore
+            address as a JSON array sorted by distance"
+         3. Code node formats AI response into this HTML block
+         4. HTML element on Page 2 renders it using {{ variable }}
+         ============================================================ -->
+
+    <!-- Demo: shows loading state then reveals AI result -->
+    <div class="banner" style="margin-top:20px;">
+      <span style="font-size:16px;">🤖</span>
+      <div>
+        <strong>AI Recommended Locations</strong>
+        <span class="mm-sub">AI မှ အနီးဆုံးနေရာများ ရှာဖွေပေးသည်</span>
+      </div>
+    </div>
+
+    <!-- Loading state (shown briefly in demo) -->
+    <div class="ai-loading" id="ai-loading">
+      <div class="spinner"></div>
+      <span>AI is finding the 8 nearest drop-off points to your address…<br>
+        <span class="mm" style="font-size:11px;">AI မှ အနီးဆုံးနေရာများ ရှာဖွေနေသည်…</span>
+      </span>
+    </div>
+
+    <!-- AI result block — this is what gets rendered from n8n Code node output -->
+    <div class="ai-block" id="ai-block">
+
+      <div class="ai-header">
+        <span class="ai-chip">✅ AI Found 8 Locations</span>
+        <!-- [n8n VARIABLE] {{ $('Form Trigger').item.json.singapore_address }} -->
+        <span class="ai-addr">Near: <strong id="ai-addr-text">Jurong East</strong></span>
+      </div>
+
+      <!-- These 8 rows are generated by the Code node in n8n -->
+      <!-- Each row = one location from AI response, formatted as HTML -->
+      <div id="ai-rows">
+        <!-- populated by JS in demo — in n8n: static HTML from Code node -->
+      </div>
+
+      <div class="ai-note">
+        ℹ️ These are informational. Select your preferred location from the dropdown below.<br>
+        <span class="mm" style="font-size:10px;">အောက်ပါ dropdown မှ တစ်ခုရွေးချယ်ပါ</span>
+      </div>
+    </div>
+
+    <!-- [HTML element] Drop-off banner -->
+    <div class="banner">
+      <span style="font-size:16px;">📍</span>
+      <div>
+        <strong>Select Your Drop-off Point</strong>
+        <span class="mm-sub">ပစ္စည်းအပ်မည့်နေရာ ရွေးချယ်ပါ</span>
+      </div>
+    </div>
+
+    <!-- [HTML element] Map link -->
+    <a href="https://mymaps.google.com" target="_blank"
+       style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:#fffbf0;border:1px solid #fde68a;border-radius:7px;text-decoration:none;color:#92400e;font-size:12px;font-weight:600;margin-bottom:10px;">
+      <span>🗺️ View all locations on map <span style="font-family:'Noto Sans Myanmar',sans-serif;font-weight:400;font-size:11px;color:#b45309;">/ မြေပုံပေါ်တွင်ကြည့်ရန်</span></span>
+      <span style="color:#C9A84C;">Open →</span>
+    </a>
+
+    <!-- [n8n FIELD] dropdown — all 32 locations, static, grouped by region -->
+    <div class="field">
+      <label>Drop-off Point <span class="mm-lbl">/ ပစ္စည်းအပ်မည့်နေရာ</span> <span class="req">*</span></label>
+      <select id="f_dropoff">
+        <option value="" disabled selected>Select a location / နေရာရွေးပါ</option>
+        <optgroup label="🟡 WEST — Jurong / Tuas / Boon Lay">
+          <option>🚐 Jurong East MRT (Van · Sun 7:00 PM)</option>
+          <option>🚐 Boon Lay MRT (Van · Sun 7:30 PM)</option>
+          <option>🏪 Jurong West Myanmar Shop (Mon–Sat 10am–8pm)</option>
+          <option>🚐 Tuas Dormitory Gate (Van · Sun 6:30 PM)</option>
+        </optgroup>
+        <optgroup label="🔵 NORTH — Woodlands / Sembawang / Yishun">
+          <option>🚐 Woodlands MRT (Van · Sun 8:30 PM)</option>
+          <option>🏪 Sembawang Myanmar Grocery (Daily 9am–9pm)</option>
+          <option>🚐 Yishun MRT (Van · Sun 9:00 PM)</option>
+          <option>🏪 Woodlands Myanmar Shop (Mon–Sat 10am–8pm)</option>
+        </optgroup>
+        <optgroup label="🟢 EAST — Tampines / Bedok / Pasir Ris">
+          <option>🚐 Tampines MRT (Van · Sun 6:00 PM)</option>
+          <option>🏪 Bedok Myanmar Shop (Daily 10am–9pm)</option>
+          <option>🚐 Pasir Ris MRT (Van · Sun 6:30 PM)</option>
+          <option>🏪 Tampines Myanmar Grocery (Daily 9am–9pm)</option>
+        </optgroup>
+        <optgroup label="🟣 CENTRAL — City / Orchard / Bugis">
+          <option>🏪 Peninsula Plaza (Daily 8am–10pm)</option>
+          <option>🚐 Toa Payoh MRT (Van · Sun 6:30 PM)</option>
+          <option>🏪 Bugis Myanmar Shop (Daily 10am–9pm)</option>
+          <option>🚐 Bishan MRT (Van · Sun 7:00 PM)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- [HTML element] TNC section -->
+    <div class="banner" style="margin-top:4px;">
+      <span style="font-size:16px;">📜</span>
+      <div><strong>Terms & Conditions</strong><span class="mm-sub">စည်းမျဉ်းစည်းကမ်းများ</span></div>
+    </div>
+
+    <div class="tnc-box">
+      • Parcels are non-refundable once shipped<br>
+      • Prohibited: weapons, drugs, cash, live animals<br>
+      • Not liable for customs delays · Yangon only · 2 weeks<br>
+      • Drop off within 24 hours of booking<br>
+      <span class="mm" style="font-size:11px;color:#9ca3af;">• တားမြစ်ပစ္စည်းများ မပါဝင်ကြောင်း သေချာပါစေ</span>
+    </div>
+
+    <!-- [n8n FIELD] checkbox -->
+    <label class="tnc-check" id="tnc-wrap" onclick="toggleTnc()">
+      <input type="checkbox" id="tnc-cb">
+      <div class="tcl">I agree to the Terms & Conditions
+        <span class="mm">စည်းမျဉ်းများကို သဘောတူသည်</span>
+      </div>
+    </label>
+
+    <!-- [HTML element] Payment banner -->
+    <div class="banner" style="margin-top:20px;">
+      <span style="font-size:16px;">💳</span>
+      <div><strong>Payment Method</strong><span class="mm-sub">ငွေပေးချေမည့်နည်းလမ်း</span></div>
+    </div>
+
+    <!-- [n8n FIELD] radio -->
+    <div class="field">
+      <div class="radio-group">
+        <label class="radio-opt">
+          <input type="radio" name="payment" id="pay-cash" value="Cash" checked>
+          <div class="rl">💵 Cash — Pay at drop-off point<span class="sub">ပစ္စည်းအပ်သောအခါ ငွေပေးချေမည်</span></div>
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="payment" id="pay-paynow" value="PayNow">
+          <div class="rl">📱 PayNow — QR shown after submitting<span class="sub">တင်သွင်းပြီး QR ဖြင့်ပေးချေပါ</span></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goTo('p2','p1',1)">← Back</button>
+      <button class="btn-submit" id="sub-btn" onclick="goToP3()" disabled>
+        ✅ Submit Booking <span class="mm" style="font-size:11px;">တင်သွင်းမည်</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       PAGE 3 — Completion (n8n "Show Text" with custom HTML)
+       All {{ variables }} filled by n8n from workflow data
+       Location photo = URL from Google Sheets, rendered as <img src="">
+       ================================================================ -->
+  <div class="page" id="p3">
+
+    <div style="text-align:center;padding:8px 0 16px;">
+      <div style="font-size:48px;margin-bottom:10px;">✅</div>
+      <div style="font-size:20px;font-weight:700;color:#166534;margin-bottom:4px;">Booking Confirmed!</div>
+      <div style="font-size:12px;color:#6b7280;">Sent to <strong id="conf-email">—</strong></div>
+    </div>
+
+    <div class="ref-chip">
+      <div class="ref-icon">🔖</div>
+      <div>
+        <div class="ref-label">Your Booking Reference</div>
+        <div class="ref-val" id="conf-ref">—</div>
+      </div>
+    </div>
+
+    <!-- Location card with photo -->
+    <!-- In n8n: <img src="{{ $('Google Sheets Lookup').item.json.photo_url }}"> -->
+    <div class="loc-card">
+      <div class="loc-img" id="conf-loc-img">
+        🚉
+        <div class="loc-img-label" id="conf-loc-name">—</div>
+      </div>
+      <div class="loc-body">
+        <div class="loc-detail" id="conf-loc-detail">—</div>
+        <a href="#" class="maps-link" id="conf-maps-link" target="_blank">
+          🗺️ Open in Google Maps
+        </a>
+      </div>
+    </div>
+
+    <div class="cash-block" id="conf-cash">
+      <h3>💵 Pay Cash at Drop-off</h3>
+      <div class="amount" id="conf-amount">SGD —</div>
+      <div class="instr">Bring exact amount and show booking reference on arrival.<br>
+        <span class="mm" style="font-size:11px;">တိကျသောငွေနှင့် booking နံပါတ်ပြပါ</span></div>
+    </div>
+
+    <div class="paynow-block" id="conf-paynow" style="display:none;">
+      <h3>📱 Pay via PayNow</h3>
+      <div class="amount" id="conf-paynow-amt">SGD —</div>
+      <div class="qr-box">[Paste Base64 PayNow QR here]</div>
+      <div class="instr">Scan · Enter amount · Use booking ref as payment note<br>
+        <span class="mm" style="font-size:11px;">QR scan ပြီး booking နံပါတ် မှတ်ချက်တွင်ရေးပါ</span></div>
+    </div>
+
+    <div class="confirm-note">
+      <strong>Next step / နောက်တစ်ဆင့်</strong><br>
+      Drop off within <strong>24 hours</strong> at the location above.<br>
+      Show reference: <strong id="conf-ref2">—</strong><br><br>
+      <span class="mm" style="font-size:11px;">၂၄နာရီအတွင်း အထက်ပါနေရာတွင် ပစ္စည်းအပ်ပါ</span>
+    </div>
+
+    <div style="text-align:center;margin-top:14px;font-size:12px;color:#9ca3af;">
+      📞 Questions? WhatsApp <strong style="color:#374151;">+65 XXXX XXXX</strong>
+    </div>
+  </div>
+
+</div><!-- end .n8n-form -->
+
+<!-- n8n Workflow annotation — shown during "AI processing" transition -->
+<div class="workflow-annotation" id="wf-annotation">
+  <div class="wf-title">⚙️ n8n workflow running between Page 1 → Page 2</div>
+  <span class="wf-node">Form Trigger</span> <span class="wf-arrow">→</span>
+  <span class="wf-node">Google Sheets</span> <span class="wf-note">// reads all 32 locations</span><br>
+  <span class="wf-arrow">→</span> <span class="wf-node">AI Agent (OpenAI)</span>
+  <span class="wf-note">// finds 8 nearest to sender address</span><br>
+  <span class="wf-arrow">→</span> <span class="wf-node">Code Node</span>
+  <span class="wf-note">// formats result + generates booking ref</span><br>
+  <span class="wf-arrow">→</span> <span class="wf-node">Form Node (Page 2)</span>
+  <span class="wf-note">// renders HTML with</span>
+  <span class="wf-var">{{ ai_recommendation_html }}</span>
+</div>
+
+<script>
+  /*
+  PREVIEW ONLY — this JS simulates n8n's multi-step form behaviour.
+  In real n8n: page transitions are handled by the Form node chain.
+  {{ variables }} are pre-filled by n8n before the page renders.
+  The AI block HTML is a static string output by the Code node.
+  */
+
+  // Mock 32 locations (in n8n: read from Google Sheets)
+  const ALL_LOCS = [
+    { name:'Jurong East MRT',          type:'Van',  lat:1.3329, lng:103.7436, sched:'Sun 7:00 PM',     maps:'https://maps.google.com/?cid=16559055903719836345', img:'🚉' },
+    { name:'Boon Lay MRT',             type:'Van',  lat:1.3388, lng:103.7060, sched:'Sun 7:30 PM',     maps:'https://maps.google.com/?q=Boon+Lay+MRT',           img:'🚇' },
+    { name:'Jurong West Myanmar Shop', type:'Shop', lat:1.3404, lng:103.7090, sched:'Mon–Sat 10am–8pm',maps:'https://maps.google.com/?q=Jurong+West+Singapore',   img:'🏪' },
+    { name:'Tuas Dormitory Gate',      type:'Van',  lat:1.3175, lng:103.6369, sched:'Sun 6:30 PM',     maps:'https://maps.google.com/?q=Tuas+South+Singapore',    img:'🏭' },
+    { name:'Woodlands MRT',            type:'Van',  lat:1.4369, lng:103.7864, sched:'Sun 8:30 PM',     maps:'https://maps.google.com/?cid=9887408598873654967',    img:'🚉' },
+    { name:'Sembawang Myanmar Grocery',type:'Shop', lat:1.4491, lng:103.8200, sched:'Daily 9am–9pm',   maps:'https://maps.google.com/?q=Sembawang+Singapore',     img:'🛒' },
+    { name:'Yishun MRT',               type:'Van',  lat:1.4294, lng:103.8354, sched:'Sun 9:00 PM',     maps:'https://maps.google.com/?q=Yishun+MRT',              img:'🚇' },
+    { name:'Tampines MRT',             type:'Van',  lat:1.3544, lng:103.9427, sched:'Sun 6:00 PM',     maps:'https://maps.google.com/?cid=3644172857920789602',    img:'🚉' },
+    { name:'Bedok Myanmar Shop',       type:'Shop', lat:1.3240, lng:103.9300, sched:'Daily 10am–9pm',  maps:'https://maps.google.com/?q=Bedok+Singapore',         img:'🛒' },
+    { name:'Pasir Ris MRT',            type:'Van',  lat:1.3731, lng:103.9494, sched:'Sun 6:30 PM',     maps:'https://maps.google.com/?q=Pasir+Ris+MRT',           img:'🚇' },
+    { name:'Peninsula Plaza',          type:'Shop', lat:1.2922, lng:103.8508, sched:'Daily 8am–10pm',  maps:'https://maps.google.com/?cid=17352027270000697380',   img:'🏢' },
+    { name:'Toa Payoh MRT',            type:'Van',  lat:1.3327, lng:103.8474, sched:'Sun 6:30 PM',     maps:'https://maps.google.com/?q=Toa+Payoh+MRT',           img:'🚉' },
+    { name:'Bishan MRT',               type:'Van',  lat:1.3510, lng:103.8485, sched:'Sun 7:00 PM',     maps:'https://maps.google.com/?q=Bishan+MRT',              img:'🚇' },
+    { name:'Bugis Myanmar Shop',       type:'Shop', lat:1.3010, lng:103.8563, sched:'Daily 10am–9pm',  maps:'https://maps.google.com/?q=Bugis+Singapore',         img:'🏬' },
+    { name:'Tampines Myanmar Grocery', type:'Shop', lat:1.3530, lng:103.9450, sched:'Daily 9am–9pm',   maps:'https://maps.google.com/?q=Tampines+Singapore',      img:'🛒' },
+    { name:'Woodlands Myanmar Shop',   type:'Shop', lat:1.4320, lng:103.7910, sched:'Mon–Sat 10am–8pm',maps:'https://maps.google.com/?q=Woodlands+Singapore',     img:'🏪' },
+  ];
+
+  function dist(lat1,lng1,lat2,lng2) {
+    const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+
+  // Simulate what the n8n AI Agent + Code node returns
+  function getNearest8(senderAddr) {
+    // Demo uses Jurong East coords as sender location
+    // In n8n: Google Geocoding API converts address to lat/lng first
+    const sLat=1.3329, sLng=103.7436;
+    return ALL_LOCS
+      .map(l => ({ ...l, km: dist(sLat, sLng, l.lat, l.lng) }))
+      .sort((a,b) => a.km - b.km)
+      .slice(0,8);
+  }
+
+  let nearest8 = [];
+
+  function goToP2() {
+    // Generate booking ref (Code node in n8n)
+    const now = new Date();
+    const ref = `MMY${String(now.getFullYear()).slice(2)}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${Math.floor(1000+Math.random()*9000)}`;
+    document.getElementById('s_ref').textContent = ref;
+
+    // Populate summary
+    document.getElementById('s_rname').textContent    = document.getElementById('f_rname').value;
+    document.getElementById('s_rphone').textContent   = '+95 ' + document.getElementById('f_rphone').value;
+    document.getElementById('s_dest').textContent     = document.getElementById('f_addr').value;
+    const itype = document.querySelector('input[name="itype"]:checked');
+    document.getElementById('s_itype').textContent    = itype ? itype.value : '—';
+    document.getElementById('s_weight').textContent   = document.getElementById('f_weight').value + ' kg';
+    document.getElementById('s_contents').textContent = document.getElementById('f_contents').value;
+    const method = document.querySelector('input[name="method"]:checked');
+    document.getElementById('s_method').textContent   = method ? method.value : '—';
+    document.getElementById('s_sender').textContent   = document.getElementById('f_sname').value + ' · +65 ' + document.getElementById('f_sphone').value;
+    document.getElementById('s_saddr').textContent    = document.getElementById('f_saddr').value;
+    document.getElementById('s_email').textContent    = document.getElementById('f_email').value;
+
+    // Switch to page 2 — show loading state
+    goTo('p1', 'p2', 2);
+
+    // Show workflow annotation
+    const ann = document.getElementById('wf-annotation');
+    ann.classList.add('visible');
+
+    // Simulate AI processing delay (in n8n this happens server-side)
+    document.getElementById('ai-loading').style.display = 'flex';
+    document.getElementById('ai-block').style.display   = 'none';
+
+    setTimeout(() => {
+      // "AI result arrives" — in n8n this is rendered as static HTML
+      const sAddr = document.getElementById('f_saddr').value || 'Jurong East';
+      const shortAddr = (sAddr.split(',')[0] || 'Jurong East').trim();
+      document.getElementById('ai-addr-text').textContent = shortAddr;
+
+      nearest8 = getNearest8(shortAddr);
+      renderAIRows(nearest8);
+
+      document.getElementById('ai-loading').style.display = 'none';
+      document.getElementById('ai-block').style.display   = 'block';
+      ann.classList.remove('visible');
+    }, 1800);
+  }
+
+  function renderAIRows(locations) {
+    /*
+    In n8n — the Code node outputs this as a pre-built HTML string.
+    The Code node JS looks like:
+      const rows = nearest8.map((loc, i) => `
+        <div style="display:flex;...">
+          <div>${i+1}</div>
+          <div>${loc.name} · ${loc.km.toFixed(1)}km</div>
+        </div>
+      `).join('');
+      return [{ json: { ai_recommendation_html: `<div>${rows}</div>` }}];
+    Then the HTML element in Page 2 uses:
+      {{ $('Code').item.json.ai_recommendation_html }}
+    */
+    const container = document.getElementById('ai-rows');
+    container.innerHTML = locations.map((loc, i) => {
+      const km   = loc.km.toFixed(1);
+      const walk = Math.round(loc.km * 13);
+      const isNear = loc.km < 2;
+      return `
+        <div class="ai-loc-row" onclick="hintDropdown('${loc.name}')">
+          <div class="ai-rank ${i<3?'top':''}">${i+1}</div>
+          <div style="font-size:18px;flex-shrink:0;">${loc.img}</div>
+          <div class="ai-loc-info">
+            <div class="ai-loc-name">${loc.name}</div>
+            <div class="ai-loc-sub">${loc.type==='Van'?'🚐 Van Stop':'🏪 Shop'} · ${loc.sched}</div>
+          </div>
+          <div class="ai-dist ${isNear?'near':''}">${km}km · ~${walk}min</div>
+        </div>`;
+    }).join('');
+  }
+
+  // Clicking an AI row hints the user to select it in the dropdown
+  function hintDropdown(name) {
+    const sel = document.getElementById('f_dropoff');
+    for (let i=0; i<sel.options.length; i++) {
+      if (sel.options[i].text.includes(name.split(' ').slice(0,2).join(' '))) {
+        sel.selectedIndex = i;
+        sel.style.borderColor = '#C9A84C';
+        sel.style.boxShadow   = '0 0 0 3px rgba(201,168,76,0.2)';
+        sel.scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => { sel.style.borderColor=''; sel.style.boxShadow=''; }, 1500);
+        break;
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  WEBHOOK SUBMIT — sends all form data to n8n Webhook node
+  //  👇 Replace WEBHOOK_URL with your real n8n webhook URL after
+  //     you create the Webhook node in n8n
+  // ══════════════════════════════════════════════════════════════════
+  const WEBHOOK_URL = 'https://YOUR-N8N-INSTANCE.app.n8n.cloud/webhook/mmy-booking';
+
+  async function goToP3() {
+    const ref     = document.getElementById('s_ref').textContent;
+    const weight  = parseFloat(document.getElementById('f_weight').value) || 1;
+    const itype   = document.querySelector('input[name="itype"]:checked');
+    const rate    = itype && itype.value.includes('Electronics') ? 20 : 14;
+    const method  = document.querySelector('input[name="method"]:checked');
+    const pickup  = method && method.value.includes('Pickup') ? 9.60 : 0;
+    const total   = (weight * rate + pickup).toFixed(2);
+    const payment = document.querySelector('input[name="payment"]:checked');
+    const dropoff = document.getElementById('f_dropoff').value;
+
+    // All form data packed into one JSON object for n8n
+    const payload = {
+      booking_ref:        ref,
+      recipient_name:     document.getElementById('f_rname').value,
+      myanmar_phone:      '+95' + document.getElementById('f_rphone').value,
+      delivery_address:   document.getElementById('f_addr').value,
+      item_type:          itype ? itype.value : '',
+      weight_kg:          document.getElementById('f_weight').value,
+      declared_value_sgd: document.getElementById('f_value').value,
+      contents:           document.getElementById('f_contents').value,
+      sender_name:        document.getElementById('f_sname').value,
+      sender_phone_sg:    '+65' + document.getElementById('f_sphone').value,
+      sender_email:       document.getElementById('f_email').value,
+      sender_address_sg:  document.getElementById('f_saddr').value,
+      collection_method:  method ? method.value : '',
+      dropoff_location:   dropoff,
+      payment_method:     payment ? payment.value : '',
+      rate_per_kg:        rate,
+      pickup_fee:         pickup,
+      total_sgd:          total,
+      submitted_at:       new Date().toISOString()
+    };
+
+    // Show loading state on button
+    const btn = document.getElementById('sub-btn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Sending booking… please wait';
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Server error ' + res.status);
+
+      // Success — render confirmation page
+      document.getElementById('conf-ref').textContent   = ref;
+      document.getElementById('conf-ref2').textContent  = ref;
+      document.getElementById('conf-email').textContent = payload.sender_email;
+
+      const loc = ALL_LOCS.find(l => dropoff.includes(l.name.split(' ').slice(0,2).join(' ')))
+               || nearest8[0] || ALL_LOCS[0];
+      document.getElementById('conf-loc-img').childNodes[0].textContent = loc.img;
+      document.getElementById('conf-loc-name').textContent  = loc.name;
+      document.getElementById('conf-loc-detail').innerHTML  =
+        `📍 ${loc.name}, Singapore<br>🕐 ${loc.sched}<br>ℹ️ Show booking reference on arrival`;
+      document.getElementById('conf-maps-link').href = loc.maps;
+
+      if (payment && payment.value === 'PayNow') {
+        document.getElementById('conf-cash').style.display   = 'none';
+        document.getElementById('conf-paynow').style.display = 'block';
+        document.getElementById('conf-paynow-amt').textContent = 'SGD ' + total;
+      } else {
+        document.getElementById('conf-cash').style.display   = 'block';
+        document.getElementById('conf-paynow').style.display = 'none';
+        document.getElementById('conf-amount').textContent   = 'SGD ' + total;
+      }
+
+      goTo('p2', 'p3', 3);
+
+    } catch (err) {
+      // Error — re-enable button and show message
+      btn.disabled = false;
+      btn.innerHTML = '✅ Submit Booking';
+      alert('Could not send booking. Please check your connection and try again.\n\n' + err.message);
+    }
+  }
+
+  function toggleTnc() {
+    const cb   = document.getElementById('tnc-cb');
+    const wrap = document.getElementById('tnc-wrap');
+    const btn  = document.getElementById('sub-btn');
+    cb.checked = !cb.checked;
+    wrap.classList.toggle('checked', cb.checked);
+    btn.disabled = !cb.checked;
+  }
+
+  function goTo(from, to, toNum) {
+    document.getElementById(from).classList.remove('active');
+    document.getElementById(to).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateDots(toNum);
+    const labels = { 1:'Page 1 of 3 — Fill Details', 2:'Page 2 of 3 — Confirm & Pay', 3:'Booking Confirmed ✅' };
+    document.getElementById('page-title').textContent = labels[toNum];
+  }
+
+  function updateDots(active) {
+    [1,2,3].forEach(i => {
+      const d = document.getElementById('d'+i);
+      d.classList.remove('active','done');
+      if (i < active) d.classList.add('done');
+      else if (i === active) d.classList.add('active');
+    });
+  }
+</script>
+</body>
+</html>
