@@ -1132,7 +1132,7 @@ body.lang-en .how-mm { display: none !important; }
 .loc-popup-carousel {
   position: relative; width: 100%; height: 200px;
   flex-shrink: 0; overflow: hidden; background: #2d1f00;
-  touch-action: pan-y;
+  touch-action: pan-y pinch-zoom;
 }
 .carousel-track {
   display: flex; height: 100%;
@@ -1158,15 +1158,14 @@ body.lang-en .how-mm { display: none !important; }
   cursor: pointer;
 }
 .c-dot.active { background: #fff; width: 18px; border-radius: 3px; }
-/* Prev/next arrows — hidden on mobile, visible on desktop */
+/* Prev/next arrows — always visible when multiple slides */
 .carousel-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
   background: rgba(0,0,0,0.4); border: none; color: #fff;
   width: 32px; height: 32px; border-radius: 50%;
-  font-size: 14px; cursor: pointer; display: none;
+  font-size: 14px; cursor: pointer; display: flex;
   align-items: center; justify-content: center; z-index: 5;
 }
-@media (min-width: 480px) { .carousel-arrow { display: flex; } }
 .carousel-arrow.prev { left: 10px; }
 .carousel-arrow.next { right: 10px; }
 
@@ -2212,10 +2211,19 @@ function openLocPopup(locData) {
   document.getElementById('car-next').style.display = slides.length > 1 ? 'flex' : 'none';
 
   // Touch swipe
-  carousel.ontouchstart = e => { carTouchStartX = e.touches[0].clientX; };
-  carousel.ontouchend   = e => {
+  let carTouchStartY = 0;
+  carousel.ontouchstart = e => {
+    carTouchStartX = e.touches[0].clientX;
+    carTouchStartY = e.touches[0].clientY;
+  };
+  carousel.ontouchmove = e => {
+    const dx = Math.abs(e.touches[0].clientX - carTouchStartX);
+    const dy = Math.abs(e.touches[0].clientY - carTouchStartY);
+    if (dx > dy && carouselTotal > 1) e.preventDefault();
+  };
+  carousel.ontouchend = e => {
     const dx = e.changedTouches[0].clientX - carTouchStartX;
-    if (Math.abs(dx) > 40) carouselStep(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 40 && carouselTotal > 1) carouselStep(dx < 0 ? 1 : -1);
   };
 
   carouselRender();
