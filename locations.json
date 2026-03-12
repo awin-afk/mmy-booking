@@ -1,0 +1,284 @@
+[
+  {
+    "id": "jurong-east-mrt",
+    "title": "Jurong East MRT",
+    "zone": "West",
+    "type": "Van",
+    "emoji": "🚉",
+    "address": "Jurong East MRT Station, Jurong East, Singapore 609731",
+    "coordinates": { "lng": 103.7436, "lat": 1.3329 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van stops at Carpark B entrance" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van stops at Carpark B entrance" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Jurong+East+MRT+Singapore",
+    "landmark": "Jurong East Bus Interchange",
+    "active": true
+  },
+  {
+    "id": "clementi-mrt",
+    "title": "Clementi MRT",
+    "zone": "West",
+    "type": "Van",
+    "emoji": "🚇",
+    "address": "Clementi MRT Station, Clementi Road, Singapore 129588",
+    "coordinates": { "lng": 103.7649, "lat": 1.3152 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at bus interchange side" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at bus interchange side" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Clementi+MRT+Singapore",
+    "landmark": "Clementi Mall entrance",
+    "active": true
+  },
+  {
+    "id": "pioneer-myanmar-mart",
+    "title": "Pioneer MRT Myanmar Mart",
+    "zone": "West",
+    "type": "Shop",
+    "emoji": "🏪",
+    "address": "Blk 649 Pioneer Road, #01-325, Singapore 640649",
+    "coordinates": { "lng": 103.6972, "lat": 1.3378 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Pioneer+Road+649+Singapore",
+    "landmark": "Near Pioneer MRT Exit A",
+    "active": true
+  },
+  {
+    "id": "boon-lay-mrt",
+    "title": "Boon Lay MRT",
+    "zone": "West",
+    "type": "Van",
+    "emoji": "🚇",
+    "address": "Boon Lay MRT Station, Jurong West Street, Singapore 649482",
+    "coordinates": { "lng": 103.7060, "lat": 1.3388 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at taxi stand side" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at taxi stand side" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Boon+Lay+MRT+Singapore",
+    "landmark": "Boon Lay Bus Interchange",
+    "active": true
+  },
+  {
+    "id": "tuas-dormitory",
+    "title": "Tuas Dormitory Gate A",
+    "zone": "West",
+    "type": "Van",
+    "emoji": "🏭",
+    "address": "Tuas South Avenue 3, Dormitory Gate A, Singapore 637335",
+    "coordinates": { "lng": 103.6369, "lat": 1.3175 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van waits at Gate A entrance" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van waits at Gate A entrance" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Tuas+South+Avenue+3+Singapore",
+    "landmark": "Dormitory Gate A security post",
+    "active": true
+  },
+  {
+    "id": "tampines-mrt",
+    "title": "Tampines MRT",
+    "zone": "East",
+    "type": "Van",
+    "emoji": "🚉",
+    "address": "Tampines MRT Station, Tampines Central, Singapore 529556",
+    "coordinates": { "lng": 103.9427, "lat": 1.3544 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Bus Interchange Carpark" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Bus Interchange Carpark" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Tampines+MRT+Singapore",
+    "landmark": "Tampines Bus Interchange",
+    "active": true
+  },
+  {
+    "id": "bedok-mini-mart",
+    "title": "Bedok Myanmar Mini Mart",
+    "zone": "East",
+    "type": "Shop",
+    "emoji": "🛒",
+    "address": "Blk 204 Bedok North Street 1, #01-377, Singapore 460204",
+    "coordinates": { "lng": 103.9300, "lat": 1.3240 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Bedok+North+Street+1+204+Singapore",
+    "landmark": "Near Bedok MRT",
+    "active": true
+  },
+  {
+    "id": "pasir-ris-mrt",
+    "title": "Pasir Ris MRT",
+    "zone": "East",
+    "type": "Van",
+    "emoji": "🚇",
+    "address": "Pasir Ris MRT Station, Pasir Ris Drive 3, Singapore 519497",
+    "coordinates": { "lng": 103.9494, "lat": 1.3731 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at main entrance" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at main entrance" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Pasir+Ris+MRT+Singapore",
+    "landmark": "White Sands Mall side",
+    "active": true
+  },
+  {
+    "id": "tampines-grocery",
+    "title": "Tampines Myanmar Grocery",
+    "zone": "East",
+    "type": "Shop",
+    "emoji": "🛒",
+    "address": "Blk 824 Tampines Street 81, #01-147, Singapore 520824",
+    "coordinates": { "lng": 103.9450, "lat": 1.3530 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Tampines+Street+81+824+Singapore",
+    "landmark": "Tampines Street 81 block 824",
+    "active": true
+  },
+  {
+    "id": "woodlands-mrt",
+    "title": "Woodlands MRT",
+    "zone": "North",
+    "type": "Van",
+    "emoji": "🚉",
+    "address": "Woodlands MRT Station, Woodlands Square, Singapore 738099",
+    "coordinates": { "lng": 103.7864, "lat": 1.4369 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Woodlands Interchange" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Woodlands Interchange" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Woodlands+MRT+Singapore",
+    "landmark": "Woodlands Bus Interchange",
+    "active": true
+  },
+  {
+    "id": "woodlands-myanmar-shop",
+    "title": "Woodlands Myanmar Shop",
+    "zone": "North",
+    "type": "Shop",
+    "emoji": "🏪",
+    "address": "Blk 6A Woodlands Centre Road, #01-08, Singapore 731006",
+    "coordinates": { "lng": 103.7910, "lat": 1.4320 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Woodlands+Centre+Road+6A+Singapore",
+    "landmark": "Woodlands Centre Road",
+    "active": true
+  },
+  {
+    "id": "sembawang-mart",
+    "title": "Sembawang Myanmar Mart",
+    "zone": "North",
+    "type": "Shop",
+    "emoji": "🛒",
+    "address": "Blk 406 Sembawang Drive, #01-21, Singapore 750406",
+    "coordinates": { "lng": 103.8200, "lat": 1.4491 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Sembawang+Drive+406+Singapore",
+    "landmark": "Sembawang Shopping Centre area",
+    "active": true
+  },
+  {
+    "id": "yishun-mrt",
+    "title": "Yishun MRT",
+    "zone": "North",
+    "type": "Van",
+    "emoji": "🚇",
+    "address": "Yishun MRT Station, Yishun Central 1, Singapore 768794",
+    "coordinates": { "lng": 103.8354, "lat": 1.4294 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Yishun Bus Interchange" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Yishun Bus Interchange" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Yishun+MRT+Singapore",
+    "landmark": "Northpoint City entrance",
+    "active": true
+  },
+  {
+    "id": "peninsula-plaza",
+    "title": "Peninsula Plaza",
+    "zone": "Central",
+    "type": "Shop",
+    "emoji": "🏢",
+    "address": "111 North Bridge Road, #04-20 Peninsula Plaza, Singapore 179098",
+    "coordinates": { "lng": 103.8508, "lat": 1.2922 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at #04-20 counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Peninsula+Plaza+Singapore",
+    "landmark": "Myanmar community hub — #04-20",
+    "active": true
+  },
+  {
+    "id": "toa-payoh-mrt",
+    "title": "Toa Payoh MRT",
+    "zone": "Central",
+    "type": "Van",
+    "emoji": "🚉",
+    "address": "Toa Payoh MRT Station, Lorong 6 Toa Payoh, Singapore 319385",
+    "coordinates": { "lng": 103.8474, "lat": 1.3327 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Toa Payoh Hub entrance" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Toa Payoh Hub entrance" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Toa+Payoh+MRT+Singapore",
+    "landmark": "Toa Payoh Hub",
+    "active": true
+  },
+  {
+    "id": "bishan-mrt",
+    "title": "Bishan MRT",
+    "zone": "Central",
+    "type": "Van",
+    "emoji": "🚇",
+    "address": "Bishan MRT Station, Bishan Place, Singapore 579838",
+    "coordinates": { "lng": 103.8485, "lat": 1.3510 },
+    "schedule": [
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Junction 8 carpark entrance" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Junction 8 carpark entrance" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Bishan+MRT+Singapore",
+    "landmark": "Junction 8 Shopping Mall",
+    "active": true
+  },
+  {
+    "id": "bugis-myanmar-shop",
+    "title": "Bugis Myanmar Shop",
+    "zone": "Central",
+    "type": "Shop",
+    "emoji": "🏬",
+    "address": "Blk 4 Queen Street, #01-145 Bugis Village, Singapore 188535",
+    "coordinates": { "lng": 103.8563, "lat": 1.3010 },
+    "schedule": [
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+    ],
+    "images": [],
+    "google_maps": "https://maps.google.com/?q=Bugis+Village+Singapore",
+    "landmark": "Bugis Village, Queen Street",
+    "active": true
+  }
+]

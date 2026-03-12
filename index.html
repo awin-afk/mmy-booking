@@ -1,0 +1,3540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Daung Lay Logistics — ဒေါင်းလေး လော်ဂျစ်စတစ်</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+<style>
+:root {
+  --gold:   #C9A84C;
+  --gold2:  #b8943d;
+  --dark:   #1a1612;
+  --text:   #2d2d2d;
+  --muted:  #6b7280;
+  --border: #e5e7eb;
+  --bg:     #f5f4f0;
+  --white:  #ffffff;
+  --green:  #16a34a;
+  --red:    #dc2626;
+  --blue:   #2563eb;
+  --van:    #C9A84C;
+  --shop:   #7c3aed;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0 0 40px;
+  overscroll-behavior: none;
+}
+
+.mm { font-family: 'Noto Sans Myanmar', sans-serif; }
+.mono { font-family: 'DM Mono', monospace; }
+
+/* ─────────────────────────────────────────
+   TOP HEADER BAR
+───────────────────────────────────────── */
+.top-bar {
+  background: var(--dark);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 8px;
+  overflow: visible;
+}
+.top-bar-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.top-bar-logo .icon {
+  width: 34px; height: 34px;
+  background: var(--gold);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.top-bar-logo .name {
+  font-size: 14px; font-weight: 700;
+  color: #fff; letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+@media (max-width: 360px) {
+  .top-bar-logo .name { max-width: 100px; font-size: 12px; }
+  .top-bar-logo .tagline { display: none; }
+  .lang-btn { padding: 4px 7px; font-size: 11px; }
+}
+.top-bar-logo .tagline {
+  font-size: 10px; color: #9ca3af;
+  display: block; margin-top: -1px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* Progress stepper */
+.stepper {
+  display: flex; align-items: center; gap: 0;
+}
+.step-item {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  font-weight: 600; color: #6b7280;
+  padding: 5px 10px; border-radius: 6px;
+  transition: all 0.2s;
+}
+.step-item.active { color: var(--gold); }
+.step-item.done   { color: #22c55e; }
+.step-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid #4b5563;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; color: #6b7280;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.step-item.active .step-dot { border-color: var(--gold); color: var(--gold); }
+.step-item.done   .step-dot { border-color: #22c55e; background: #22c55e; color: #fff; }
+.step-sep { color: #374151; font-size: 12px; padding: 0 2px; }
+
+/* Language toggle */
+.lang-toggle {
+  display: flex; align-items: center; gap: 3px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px; padding: 3px 4px;
+  flex-shrink: 0;
+}
+/* ── COUNTRY SELECTOR ───────────────────────────────────────── */
+.country-selector {
+  position: relative;
+  display: inline-block;
+}
+.country-btn {
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 5px 8px;
+  color: #fff; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.country-btn:hover { background: rgba(255,255,255,0.15); }
+.country-btn .chevron { font-size: 9px; opacity: 0.7; }
+.country-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1a1612;
+  border: 1px solid #3d3028;
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 180px;
+  z-index: 999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.country-dropdown.open { display: block; }
+.country-opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  font-size: 13px; font-weight: 600; color: #f5f0e8;
+  cursor: pointer; transition: background 0.15s;
+  border-bottom: 1px solid #2d2419;
+  text-decoration: none;
+}
+.country-opt:last-child { border-bottom: none; }
+.country-opt:hover { background: #2d2419; }
+.country-opt.active { color: #C9A84C; }
+.country-opt.active::after { content: "✓"; margin-left: auto; color: #C9A84C; }
+.country-opt.soon { opacity: 0.45; cursor: default; }
+.country-opt.soon::after { content: "Soon"; margin-left: auto; font-size: 10px; color: #8a7a5a; background: #2d2419; padding: 2px 6px; border-radius: 8px; }
+.country-opt.soon:hover { background: transparent; }
+
+.lang-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 16px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; background: transparent;
+  color: #9ca3af; transition: all 0.15s; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.lang-btn.active {
+  background: var(--gold); color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.lang-btn:hover:not(.active) { color: #e5e7eb; }
+
+/* ─────────────────────────────────────────
+   MAIN CONTAINER
+───────────────────────────────────────── */
+.wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 20px 16px 0;
+}
+
+/* ─────────────────────────────────────────
+   CARD
+───────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 22px 22px 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+  margin-bottom: 0;
+}
+.card-head h2 { font-size: 19px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.card-head p  { font-size: 12px; color: var(--muted); }
+
+.card-body { padding: 20px 22px; }
+
+/* ─────────────────────────────────────────
+   PAGE TRANSITIONS
+───────────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+/* ─────────────────────────────────────────
+   SECTION BANNERS
+───────────────────────────────────────── */
+.section-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: #fffbf0;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 9px 13px;
+  margin: 20px 0 14px;
+}
+.section-banner:first-child { margin-top: 0; }
+.section-banner .sb-icon { font-size: 17px; flex-shrink: 0; }
+.section-banner .sb-text strong { font-size: 13px; font-weight: 700; color: #92400e; display: block; }
+.section-banner .sb-text span   { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #b45309; }
+
+/* ─────────────────────────────────────────
+   FORM FIELDS
+───────────────────────────────────────── */
+.field { margin-bottom: 14px; }
+.field > label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: #374151; margin-bottom: 5px;
+}
+.lbl-mm { font-family: 'Noto Sans Myanmar', sans-serif; font-weight: 400; color: #9ca3af; font-size: 11px; }
+.req { color: var(--red); margin-left: 2px; }
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+select, textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+  -webkit-appearance: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+}
+input.err { border-color: var(--red); }
+input::placeholder, textarea::placeholder { color: #c0bfbc; font-size: 12px; }
+textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  padding-right: 34px;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.phone-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.phone-row select {
+  flex-shrink: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #f9f8f6;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  padding: 10px 28px 10px 12px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 100px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+.phone-prefix {
+  background: #f9f8f6;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px; font-weight: 500;
+  color: #555; white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+  flex-shrink: 0;
+}
+.phone-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─────────────────────────────────────────
+   RADIO OPTIONS
+───────────────────────────────────────── */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-opt {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+}
+.radio-opt:has(input:checked) {
+  border-color: var(--gold);
+  background: #fffbf0;
+}
+.radio-opt input[type="radio"] {
+  width: 17px; height: 17px;
+  accent-color: var(--gold);
+  flex-shrink: 0;
+  border: none; padding: 0; width: auto;
+}
+.ro-body { flex: 1; }
+.ro-main { font-size: 13px; font-weight: 600; color: var(--dark); }
+.ro-sub  { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: var(--muted); margin-top: 1px; }
+.pill {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.pill-green { background: #dcfce7; color: #15803d; }
+.pill-blue  { background: #dbeafe; color: #1d4ed8; }
+.pill-amber { background: #fef3c7; color: #92400e; }
+.pill-amber { background: #fef3c7; color: #92400e; }
+
+/* ─────────────────────────────────────────
+   NOTES / ALERTS
+───────────────────────────────────────── */
+.note {
+  border-radius: 8px; padding: 9px 13px;
+  font-size: 12px; line-height: 1.6;
+  margin: 8px 0;
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.note-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+.note.blue  { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+.note.green { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.note.amber { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+
+/* ─────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────── */
+.btn-primary {
+  width: 100%; padding: 13px 18px;
+  background: var(--gold); color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  border: none; border-radius: 9px;
+  cursor: pointer; margin-top: 20px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+.btn-primary:hover  { background: var(--gold2); }
+.btn-primary:active { transform: scale(0.99); }
+.btn-primary:disabled { opacity: 0.4; pointer-events: none; }
+
+.btn-ghost {
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { background: #f9f8f6; }
+
+.btn-row { display: flex; gap: 10px; align-items: stretch; margin-top: 20px; }
+.btn-row .btn-primary { margin-top: 0; flex: 1; }
+
+/* ─────────────────────────────────────────
+   PAGE 2 — MAP SECTION
+───────────────────────────────────────── */
+
+/* Geo status bar above map */
+.geo-bar {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px;
+  border-radius: 8px; font-size: 12px; font-weight: 500;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+}
+.geo-bar.searching { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+.geo-bar.found     { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.geo-bar.fallback  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.geo-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid #bfdbfe;
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Map wrapper */
+.map-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  position: relative;
+  height: 300px;
+  margin-bottom: 4px;
+}
+#map { width: 100%; height: 100%; }
+#map-overview { width: 100%; height: 100%; }
+
+/* Map legend overlay */
+.map-legend {
+  position: absolute;
+  bottom: 10px; left: 10px;
+  background: rgba(255,255,255,0.96);
+  border-radius: 8px; padding: 8px 11px;
+  font-size: 11px; font-weight: 500; color: #374151;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  pointer-events: none;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.leg-row { display: flex; align-items: center; gap: 7px; }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Sender pulse marker */
+.sender-pin {
+  width: 14px; height: 14px;
+  background: var(--blue);
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 0 rgba(37,99,235,0.4);
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(37,99,235,0); }
+  100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+}
+
+/* Map hint text */
+.map-hint {
+  text-align: center; font-size: 11px; color: var(--muted);
+  margin-bottom: 14px; padding: 0 4px;
+}
+
+/* ─────────────────────────────────────────
+   LOCATION LIST
+───────────────────────────────────────── */
+.loc-list { display: flex; flex-direction: column; gap: 7px; }
+
+.loc-card {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.15s;
+  position: relative;
+}
+.loc-card:hover  { border-color: #d1b96b; background: #fffdf6; transform: translateX(2px); }
+.loc-card.chosen { border-color: var(--gold); background: #fffbf0; }
+.loc-card.chosen::after {
+  content: '✓';
+  position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold); color: #fff;
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.loc-rank {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #f3f4f6; font-size: 11px; font-weight: 700; color: #6b7280;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.loc-rank.top3 { background: #fef3c7; color: #92400e; }
+
+.loc-emoji { font-size: 20px; flex-shrink: 0; }
+
+.loc-info { flex: 1; min-width: 0; }
+.loc-name { font-size: 13px; font-weight: 600; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.loc-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+.loc-dist {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px;
+  background: #f3f4f6; color: #374151;
+  white-space: nowrap; flex-shrink: 0;
+  margin-right: 24px; /* space for checkmark */
+}
+.loc-card:not(.chosen) .loc-dist { margin-right: 0; }
+.loc-dist.near { background: #dcfce7; color: #15803d; }
+
+/* ─────────────────────────────────────────
+   SUMMARY TABLE
+───────────────────────────────────────── */
+.sum-block {
+  background: #fffbf0;
+  border: 1px solid #fde68a;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 9px 9px 0;
+  padding: 13px 15px;
+  margin: 16px 0 14px;
+}
+.sum-block h4 {
+  font-size: 12px; font-weight: 700; color: #92400e;
+  margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.sum-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sum-table tr { border-bottom: 1px solid rgba(253,230,138,0.5); }
+.sum-table tr:last-child { border-bottom: none; }
+.sum-table td { padding: 5px 3px; vertical-align: top; }
+.sum-table td:first-child { color: #b45309; width: 38%; font-size: 11px; }
+.sum-table td:last-child  { font-weight: 600; color: var(--dark); }
+
+/* Booking ref */
+.ref-chip {
+  background: #f0fdf4; border: 1px solid #86efac;
+  border-radius: 9px; padding: 11px 14px;
+  display: flex; align-items: center; gap: 11px;
+  margin-bottom: 14px;
+}
+.ref-icon { font-size: 22px; }
+.ref-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.ref-val { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 700; color: #15803d; letter-spacing: 0.07em; }
+
+/* ─────────────────────────────────────────
+   T&C
+───────────────────────────────────────── */
+.tnc-scroll {
+  background: #f9f8f6;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 14px;
+  font-size: 12px; color: var(--muted);
+  line-height: 1.9; margin-bottom: 10px;
+}
+.tnc-check {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px; cursor: pointer;
+  transition: all 0.15s;
+}
+.tnc-check.on { border-color: var(--gold); background: #fffbf0; }
+.tnc-check input { width: 17px; height: 17px; accent-color: var(--gold); flex-shrink: 0; margin-top: 1px; border: none; padding: 0; width: auto; }
+.tnc-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.tnc-label small { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: var(--muted); display: block; margin-top: 2px; font-weight: 400; }
+
+/* ─────────────────────────────────────────
+   PAGE 3 — CONFIRMATION
+───────────────────────────────────────── */
+.conf-hero {
+  text-align: center;
+  padding: 24px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+.conf-tick {
+  width: 64px; height: 64px;
+  background: #f0fdf4; border: 2px solid #86efac;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; margin: 0 auto 14px;
+}
+.conf-hero h2 { font-size: 20px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+.conf-hero p  { font-size: 13px; color: var(--muted); }
+
+/* Confirmation map + location card */
+.conf-loc-wrap {
+  border: 1.5px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 14px;
+}
+#conf-map { width: 100%; height: 150px; }
+.conf-loc-body { padding: 13px 15px; }
+.conf-loc-name { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 5px; }
+.conf-loc-detail { font-size: 12px; color: var(--muted); line-height: 1.8; margin-bottom: 10px; }
+.gmaps-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px; border-radius: 8px;
+  background: #fffbf0; border: 1px solid #fde68a;
+  color: #92400e; font-size: 13px; font-weight: 600;
+  text-decoration: none; cursor: pointer;
+  transition: background 0.15s;
+}
+.gmaps-btn:hover { background: #fef9c3; }
+
+/* Payment blocks */
+.pay-block {
+  border-radius: 10px; padding: 15px;
+  margin: 12px 0;
+}
+.pay-block.cash   { background: #fffbf0; border: 1px solid #fde68a; }
+.pay-block.paynow { background: #f0fdf4; border: 1px solid #bbf7d0; text-align: center; }
+.pay-block h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.pay-block.cash   h3 { color: #92400e; }
+.pay-block.paynow h3 { color: #15803d; }
+.pay-amount { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.pay-block.cash   .pay-amount { color: #b45309; }
+.pay-block.paynow .pay-amount { color: #15803d; }
+.pay-instr { font-size: 12px; line-height: 1.8; }
+.pay-block.cash   .pay-instr { color: #92400e; }
+.pay-block.paynow .pay-instr { color: #15803d; }
+.qr-box {
+  width: 120px; height: 120px;
+  background: #fff; border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--muted); text-align: center; padding: 8px;
+}
+
+.next-step {
+  background: #fffbf0; border: 1px solid #fde68a;
+  border-radius: 10px; padding: 13px 15px;
+  font-size: 12px; color: #92400e; line-height: 1.9;
+  margin-top: 12px;
+}
+.next-step strong { font-weight: 700; }
+
+.check-notice {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: 8px; padding: 10px 13px;
+  font-size: 12px; color: #92400e; line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* Selected location detail card */
+.sel-loc-card {
+  background: #fffbf0; border: 1.5px solid var(--gold);
+  border-radius: 10px; padding: 12px 14px;
+  margin-top: 10px; margin-bottom: 4px;
+}
+.sel-loc-top { display: flex; align-items: center; gap: 12px; }
+.sel-loc-emoji { font-size: 26px; flex-shrink: 0; }
+.sel-loc-name { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.sel-loc-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+.contact-line {
+  text-align: center; margin-top: 16px;
+  font-size: 12px; color: var(--muted);
+}
+
+/* ── HERO SECTION ───────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, #1a1612 0%, #2d2318 50%, #1a1612 100%);
+  padding: 32px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.hero-peacock {
+  font-size: 64px;
+  filter: drop-shadow(0 4px 16px rgba(201,168,76,0.4));
+  animation: float 3s ease-in-out infinite;
+  line-height: 1;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.hero-badge {
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 11px; color: var(--gold);
+  font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-size: 26px; font-weight: 800;
+  color: #fff; line-height: 1.15;
+  margin-bottom: 6px; letter-spacing: -0.02em;
+}
+.hero-title span { color: var(--gold); }
+.hero-sub {
+  font-size: 13px; color: #9ca3af; margin-bottom: 20px;
+  font-family: 'Noto Sans Myanmar', sans-serif;
+}
+
+/* ── BANNER SLIDER ─────────────────────────────────────────── */
+.banner-slider {
+  position: relative; overflow: hidden;
+  border-radius: 14px; margin-bottom: 16px;
+  touch-action: pan-y;
+}
+.banner-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+}
+.banner-slide {
+  min-width: 100%; border-radius: 14px !important;
+  margin-bottom: 0 !important;
+}
+.banner-dots {
+  display: flex; justify-content: center; gap: 6px;
+  padding: 8px 0 4px;
+}
+.bdot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(26,22,18,0.2); cursor: pointer;
+  transition: all 0.25s;
+}
+.bdot.active { background: #5c3d00; width: 18px; border-radius: 4px; }
+
+/* ── COST BREAKDOWN ────────────────────────────────────────── */
+.cost-breakdown {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.cost-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #fde68a;
+  padding-bottom: 6px;
+}
+.cost-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #5c3d00;
+  padding: 3px 0;
+}
+.cost-total {
+  border-top: 1.5px solid #f59e0b;
+  margin-top: 6px;
+  padding-top: 6px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #1a1612;
+}
+
+/* ── PROMO BANNER ───────────────────────────────────────── */
+.promo-banner {
+  background: linear-gradient(135deg, #C9A84C, #e8c96a);
+  border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+  position: relative; overflow: hidden;
+}
+.promo-banner::after {
+  content: '🦚';
+  position: absolute; right: -8px; bottom: -10px;
+  font-size: 52px; opacity: 0.15;
+}
+.promo-left { flex: 1; }
+.promo-tag {
+  background: #fff; color: #92400e;
+  font-size: 10px; font-weight: 800;
+  padding: 2px 8px; border-radius: 10px;
+  display: inline-block; margin-bottom: 5px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.promo-price-row {
+  display: flex; align-items: baseline; gap: 8px;
+}
+.promo-old {
+  font-size: 16px; color: rgba(26,22,18,0.5);
+  text-decoration: line-through; font-weight: 600;
+}
+.promo-new {
+  font-size: 32px; font-weight: 800;
+  color: #1a1612; letter-spacing: -0.03em; line-height: 1;
+}
+.promo-unit { font-size: 13px; color: #5c3d00; font-weight: 600; }
+.promo-right { text-align: right; }
+.promo-save {
+  background: #dc2626; color: #fff;
+  font-size: 11px; font-weight: 800;
+  padding: 3px 10px; border-radius: 10px;
+  display: inline-block; margin-bottom: 4px;
+}
+.promo-note { font-size: 10px; color: #5c3d00; font-weight: 600; }
+
+/* ── HOW IT WORKS ───────────────────────────────────────── */
+.how-section {
+  background: #fff;
+  border-radius: 14px; padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+.how-title {
+  font-size: 13px; font-weight: 700; color: var(--dark);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+}
+.how-steps {
+  display: flex; flex-direction: column; gap: 0;
+}
+.how-step {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.how-step:last-child { border-bottom: none; padding-bottom: 0; }
+.how-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--gold); color: #fff;
+  font-size: 13px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.how-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); }
+.how-text span   { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ── COLLECTION METHOD CARDS (Ninja Van style) ──────────── */
+.collect-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 16px;
+}
+.collect-card {
+  background: #fff; border: 2px solid var(--border);
+  border-radius: 14px; padding: 14px 12px;
+  cursor: pointer; transition: all 0.15s;
+  position: relative; overflow: hidden;
+}
+.collect-card.selected {
+  border-color: var(--gold);
+  background: #fffbf0;
+  box-shadow: 0 0 0 1px var(--gold);
+}
+.collect-card input[type="radio"] { display: none; }
+.collect-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+.collect-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.collect-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+.collect-price-row { display: flex; align-items: baseline; gap: 6px; }
+.collect-old { font-size: 12px; color: #9ca3af; text-decoration: line-through; }
+.collect-new { font-size: 18px; font-weight: 800; color: var(--gold); }
+.collect-free { font-size: 14px; font-weight: 800; color: var(--green); }
+.collect-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--gold); color: #fff;
+  font-size: 9px; font-weight: 800; padding: 2px 7px;
+  border-radius: 8px; letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── PRICING TABLE ──────────────────────────────────────── */
+.pricing-section {
+  background: #fff; border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden; margin-bottom: 16px;
+}
+.pricing-head {
+  background: var(--dark); padding: 12px 16px;
+  font-size: 13px; font-weight: 700; color: var(--gold);
+  display: flex; align-items: center; gap: 6px;
+}
+.pricing-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px; border-bottom: 1px solid #f3f4f6;
+}
+.pricing-row:last-child { border-bottom: none; }
+.pricing-cat { font-size: 12px; color: var(--text); font-weight: 500; }
+.pricing-cat small { display: block; font-size: 10px; color: var(--muted); margin-top: 1px; }
+.pricing-amt { font-size: 14px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.pricing-amt.green { color: var(--green); }
+.pricing-amt small { display: block; font-size: 9px; color: var(--muted); font-weight: 400; text-align: right; }
+
+/* ── CTA BUTTON ─────────────────────────────────────────── */
+.hero-cta {
+  width: 100%;
+  background: linear-gradient(135deg, #C9A84C, #e8c96a);
+  color: #1a1612; font-size: 16px; font-weight: 800;
+  border: none; border-radius: 14px; padding: 16px;
+  cursor: pointer; letter-spacing: 0.01em;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 2;
+}
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.5); }
+.hero-cta:active { transform: scale(0.98); opacity: 0.9; }
+
+/* ── HAMBURGER NAV ──────────────────────────────────────── */
+.hamburger {
+  width: 40px; height: 40px;
+  min-width: 40px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+  cursor: pointer; padding: 6px; border-radius: 10px;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  transition: background 0.15s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.hamburger:hover { background: rgba(255,255,255,0.13); }
+.hamburger span {
+  display: block; width: 20px; height: 2px; border-radius: 2px;
+  background: #fff; transition: all 0.25s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.nav-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+.nav-overlay.open { opacity: 1; pointer-events: all; }
+
+.nav-drawer {
+  position: fixed; top: 0; right: -280px; bottom: 0;
+  width: 270px; z-index: 201;
+  background: var(--dark);
+  border-left: 1px solid rgba(201,168,76,0.2);
+  transition: right 0.28s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column;
+  padding: 0 0 32px;
+}
+.nav-drawer.open { right: 0; }
+
+.nav-drawer-head {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-drawer-head .icon {
+  width: 36px; height: 36px; background: var(--gold);
+  border-radius: 9px; display: flex; align-items: center;
+  justify-content: center; font-size: 18px;
+}
+.nav-drawer-head .name { font-size: 14px; font-weight: 700; color: #fff; }
+.nav-drawer-head .sub  { font-size: 10px; color: #9ca3af; margin-top: 1px;
+  font-family: 'Noto Sans Myanmar', sans-serif; }
+
+.nav-links { padding: 12px 0; flex: 1; }
+.nav-link {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 22px; color: #d1d5db;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s; text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--gold); background: rgba(201,168,76,0.07);
+  border-left-color: var(--gold);
+}
+.nav-link-icon { font-size: 20px; width: 26px; text-align: center; }
+
+.nav-footer {
+  padding: 16px 22px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 11px; color: #6b7280; text-align: center;
+}
+
+/* ── SECTIONS ───────────────────────────────────────────── */
+.section { display: none; pointer-events: none; }
+.section.active { display: block; pointer-events: auto; }
+
+/* ── LANGUAGE-DRIVEN VISIBILITY
+   pr-mm = Burmese pricing text  (shown by default)
+   pr-en = English pricing text  (shown in lang-en mode)
+─────────────────────────────────────────────────── */
+.pr-en { display: none !important; }
+.pr-mm { display: inline !important; }
+small.pr-mm { display: block !important; }
+
+body.lang-en .pr-en { display: inline !important; }
+body.lang-en small.pr-en { display: block !important; }
+body.lang-en .pr-mm { display: none !important; }
+
+/* ── LANGUAGE-DRIVEN VISIBILITY ────────────────────────────── */
+/* Default = MM mode: show .how-mm, hide .how-en */
+.how-en { display: none !important; }
+strong.how-mm { display: block !important; font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+span.how-mm   { display: block !important; font-size: 11px; color: var(--muted); }
+
+/* EN mode: show .how-en, hide .how-mm */
+body.lang-en .how-en { display: block !important; }
+body.lang-en .how-mm { display: none !important; }
+
+/* ── CONTACT PAGE ───────────────────────────────────────── */
+.contact-page {
+  min-height: 70vh;
+  padding: 32px 20px 60px;
+  background: var(--bg);
+}
+.contact-hero {
+  text-align: center; margin-bottom: 32px;
+}
+.contact-hero .peacock { font-size: 56px; margin-bottom: 12px; }
+.contact-hero h2 { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+.contact-hero p  { font-size: 13px; color: var(--muted); }
+
+.contact-cards { display: flex; flex-direction: column; gap: 14px; max-width: 400px; margin: 0 auto; }
+.contact-card {
+  background: #fff; border-radius: 16px;
+  border: 1.5px solid var(--border);
+  padding: 20px; display: flex; flex-direction: column;
+  align-items: center; gap: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.contact-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.contact-card-top { display: flex; align-items: center; gap: 14px; width: 100%; }
+.contact-app-icon { width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.contact-app-icon.wa  { background: #dcfce7; }
+.contact-app-icon.vib { background: #ede9fe; }
+.contact-app-name { font-size: 16px; font-weight: 800; color: var(--dark); }
+.contact-app-num  { font-size: 20px; font-weight: 700; color: var(--dark); letter-spacing: 0.02em; }
+.contact-app-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+.contact-qr {
+  width: 100%; background: #f9f9f7; border-radius: 10px;
+  border: 1.5px dashed var(--border);
+  padding: 20px; text-align: center;
+}
+.contact-qr p { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+.contact-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 13px;
+  border-radius: 10px; border: none; cursor: pointer;
+  font-size: 14px; font-weight: 700; text-decoration: none;
+  transition: all 0.15s;
+}
+.contact-btn.wa  { background: #22c55e; color: #fff; }
+.contact-btn.wa:hover  { background: #16a34a; }
+.contact-btn.vib { background: #7c3aed; color: #fff; }
+.contact-btn.vib:hover { background: #6d28d9; }
+
+.contact-note {
+  text-align: center; margin-top: 24px;
+  font-size: 12px; color: var(--muted); line-height: 1.8;
+}
+
+
+
+
+
+/* ── LOCATION POPUP OVERLAY ──────────────────────────────────── */
+.loc-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.loc-overlay.open { display: flex; }
+.loc-popup {
+  background: #fff;
+  width: 100%; max-width: 420px;
+  border-radius: 24px;
+  overflow: hidden;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+@keyframes popIn {
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+/* ── Close button ── */
+.loc-popup-close {
+  position: absolute; top: 12px; right: 12px; z-index: 20;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(0,0,0,0.55); border: none; cursor: pointer;
+  color: #fff; font-size: 22px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; touch-action: manipulation;
+}
+
+/* ── Image carousel ── */
+.loc-popup-carousel {
+  position: relative; width: 100%; height: 200px;
+  flex-shrink: 0; overflow: hidden; background: #2d1f00;
+  touch-action: pan-y;
+}
+.carousel-track {
+  display: flex; height: 100%;
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+}
+.carousel-slide {
+  min-width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px; flex-shrink: 0;
+  background: #2d1f00;
+}
+.carousel-slide img { width:100%; height:100%; object-fit:cover; display:block; }
+.carousel-slide.dark { background: #1a0a30; }
+/* Dot indicators */
+.carousel-dots {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px;
+}
+.c-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.45); transition: all 0.2s;
+  cursor: pointer;
+}
+.c-dot.active { background: #fff; width: 18px; border-radius: 3px; }
+/* Prev/next arrows — hidden on mobile, visible on desktop */
+.carousel-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.4); border: none; color: #fff;
+  width: 32px; height: 32px; border-radius: 50%;
+  font-size: 14px; cursor: pointer; display: none;
+  align-items: center; justify-content: center; z-index: 5;
+}
+@media (min-width: 480px) { .carousel-arrow { display: flex; } }
+.carousel-arrow.prev { left: 10px; }
+.carousel-arrow.next { right: 10px; }
+
+/* ── Body ── */
+.loc-popup-body {
+  padding: 18px 18px 20px;
+  overflow-y: auto; flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+.loc-popup-name {
+  font-size: 22px; font-weight: 900; color: #1a1612;
+  margin-bottom: 6px; line-height: 1.2;
+}
+.loc-popup-type {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.loc-popup-type.van  { background: #fef3c7; color: #92400e; }
+.loc-popup-type.shop { background: #ede9fe; color: #6d28d9; }
+.loc-popup-addr {
+  font-size: 12px; color: #6b7280; margin-bottom: 8px; line-height: 1.5;
+}
+.loc-popup-landmark {
+  font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 12px;
+}
+.loc-popup-sched {
+  background: #fffbeb; border: 1px solid #fde68a;
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+}
+.loc-popup-sched-title {
+  font-size: 10px; font-weight: 800; color: #92400e;
+  text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px;
+}
+.loc-popup-sched-row {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 13px; color: #1a1612; margin-bottom: 6px;
+}
+.loc-popup-sched-row:last-child { margin-bottom: 0; }
+.sched-day  { font-weight: 700; min-width: 72px; }
+.sched-note { font-size: 11px; color: #b45309; margin-top: 1px; }
+.loc-popup-actions {
+  display: flex; gap: 10px; margin-top: 6px;
+}
+.loc-popup-btn {
+  flex: 1; padding: 14px 8px; border-radius: 14px;
+  font-size: 14px; font-weight: 800; border: none;
+  cursor: pointer; text-align: center; text-decoration: none;
+  display: block; touch-action: manipulation;
+}
+.loc-popup-btn-dir  { background: #eff6ff; color: #1d4ed8; }
+.loc-popup-btn-book { background: linear-gradient(135deg,#C9A84C,#a07820); color: #1a1612; }
+
+/* ── FILTER CHIPS (dynamic highlight) ───────────────────────── */
+.filter-chip {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid #d1d5db; color: #6b7280; background: #fff;
+  transition: all 0.18s; -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.filter-chip.active {
+  background: var(--gold); border-color: var(--gold); color: #1a1612;
+  box-shadow: 0 2px 8px rgba(201,168,76,0.35);
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     TOP BAR
+═══════════════════════════════════════ -->
+<!-- Nav overlay + drawer -->
+<div class="nav-overlay" id="nav-overlay" onclick="closeNav()"></div>
+<div class="nav-drawer" id="nav-drawer">
+  <div class="nav-drawer-head">
+    <div class="icon">🦚</div>
+    <div>
+      <div class="name">Daung Lay Logistics</div>
+      <div class="sub">ဒေါင်းလေး လော်ဂျစ်စတစ်</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <div class="nav-link active" id="nl-home" onclick="showSection('home')">
+      <span class="nav-link-icon">🏠</span> Home
+    </div>
+    <div class="nav-link" id="nl-book" onclick="showSection('book')">
+      <span class="nav-link-icon">📦</span> Book a Parcel
+    </div>
+    <div class="nav-link" id="nl-contact" onclick="showSection('contact')">
+      <span class="nav-link-icon">💬</span> Contact Us
+    </div>
+  </div>
+  <div class="nav-footer">
+    🦚 Daung Lay · Little Peacock Logistics<br>Singapore → Myanmar
+  </div>
+</div>
+
+<div class="top-bar">
+  <div class="top-bar-logo">
+    <div class="icon">🦚</div>
+    <div>
+      <div class="name">Daung Lay Logistics</div>
+      <div class="tagline" style="font-family:'Noto Sans Myanmar',sans-serif;">ဒေါင်းလေး လော်ဂျစ်စတစ်</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <!-- Country selector -->
+    <div class="country-selector" id="countrySel">
+      <div class="country-btn" onclick="toggleCountryDrop()" ontouchend="toggleCountryDrop();event.preventDefault()">
+        <span id="active-flag">🇸🇬</span>
+        <span id="active-code">SG</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="country-dropdown" id="countryDrop">
+        <div class="country-opt active" id="copt-sg" onclick="switchCountry('sg')">🇸🇬 Singapore</div>
+        <a href="mm.html" class="country-opt" id="copt-mm">🇲🇲 Myanmar</a>
+        <div class="country-opt soon">🇲🇾 Malaysia</div>
+        <div class="country-opt soon">🇹🇭 Thailand</div>
+      </div>
+    </div>
+    <!-- Language toggle (SG only) -->
+    <div class="lang-toggle" id="lang-toggle-wrap">
+      <button class="lang-btn active" id="btn-mm" onclick="setLang('mm')" ontouchend="setLang('mm');event.preventDefault()">မြန်မာ</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')" ontouchend="setLang('en');event.preventDefault()">EN</button>
+    </div>
+    <button class="hamburger" id="hamburger" 
+      onclick="toggleNav()"
+      ontouchstart="this._t=Date.now()"
+      ontouchend="if(Date.now()-this._t<300){toggleNav();event.preventDefault();}">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ SECTION: HOME ═══ -->
+<div class="section active" id="sec-home">
+<!-- ═══════════════════════════════════════
+     HERO LANDING SECTION
+═══════════════════════════════════════ -->
+<div class="hero">
+
+  <!-- Top badge row -->
+  <div class="hero-top">
+    <div class="hero-badge">🇸🇬 SG → 🇲🇲 MM · Free delivery in Yangon</div>
+  </div>
+
+  <!-- Title + peacock -->
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;">
+    <div>
+      <div class="hero-title">Daung Lay<br><span>Send Easy</span> 🦚</div>
+      <div class="hero-sub">ဒေါင်းလေး — ပစ္စည်းပေးပို့ရန် အလွယ်ကူဆုံး</div>
+    </div>
+    <div class="hero-peacock">🦚</div>
+  </div>
+
+  <!-- Swipeable promo banners -->
+  <div class="banner-slider" id="bannerSlider">
+    <div class="banner-track" id="bannerTrack">
+
+      <!-- Banner 1: First kg $12 -->
+      <div class="promo-banner banner-slide">
+        <div class="promo-left">
+          <div class="promo-tag">🎉 Launch Promo</div>
+          <div class="promo-price-row">
+            <span class="promo-new">$12</span>
+            <span class="promo-unit">/first kg</span>
+          </div>
+          <div style="font-size:11px;color:#5c3d00;font-weight:700;margin-top:4px;">
+            <span class="pr-mm mm">ပထမ ၁ ကီလို $12 · ကျန်ပမာဏ $15/kg</span>
+            <span class="pr-en">First 1kg at $12 · Rest at $15/kg</span>
+          </div>
+        </div>
+        <div class="promo-right">
+          <div class="promo-save">SAVE $3</div>
+          <div class="promo-note">
+            <span class="pr-mm mm">အချိန်ကန့်သတ်ချက်ရှိသည်</span>
+            <span class="pr-en">Limited time only</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner 2: 10kg 5% discount + cute peacock -->
+      <div class="promo-banner banner-slide" style="background:linear-gradient(135deg,#b8860b,#e8c84a);">
+        <div class="promo-left" style="flex:1;">
+          <div class="promo-tag" style="background:#fff;color:#5c3d00;">📦 Bulk Promo · 10kg+</div>
+          <div class="promo-price-row" style="margin-top:6px;">
+            <span class="promo-new" style="font-size:26px;">5%</span>
+            <span class="promo-unit" style="font-size:13px;">off 10kg+</span>
+          </div>
+          <div style="font-size:11px;color:#5c3d00;font-weight:700;margin-top:4px;">
+            <span class="pr-mm mm">ကီလိုပိုပို့လေး ပိုသက်သာလေး — $8 အထိ သက်သာနိုင်</span>
+            <span class="pr-en">More kg, more save — up to $8 off</span>
+          </div>
+        </div>
+        <!-- Cute 2D peacock holding parcel -->
+        <div style="flex-shrink:0;width:80px;display:flex;align-items:center;justify-content:center;">
+          <svg viewBox="0 0 80 90" width="80" height="90" xmlns="http://www.w3.org/2000/svg">
+            <!-- Tail fan -->
+            <ellipse cx="22" cy="58" rx="13" ry="5" fill="#a07010" opacity="0.55" transform="rotate(-50 22 58)"/>
+            <ellipse cx="18" cy="62" rx="14" ry="5" fill="#c9a84c" opacity="0.5" transform="rotate(-65 18 62)"/>
+            <ellipse cx="16" cy="68" rx="13" ry="4" fill="#b8940a" opacity="0.45" transform="rotate(-80 16 68)"/>
+            <!-- Tail eye dots -->
+            <circle cx="12" cy="50" r="2.5" fill="#1a5c3a" opacity="0.7"/>
+            <circle cx="8"  cy="58" r="2.5" fill="#1a5c3a" opacity="0.7"/>
+            <circle cx="7"  cy="67" r="2.5" fill="#1a5c3a" opacity="0.65"/>
+            <!-- Body -->
+            <ellipse cx="38" cy="62" rx="18" ry="20" fill="#e8c84a"/>
+            <ellipse cx="34" cy="59" rx="11" ry="14" fill="#f5df7a" opacity="0.45"/>
+            <!-- Neck -->
+            <rect x="33" y="38" width="10" height="18" rx="5" fill="#e8c84a"/>
+            <!-- Head -->
+            <circle cx="38" cy="33" r="11" fill="#e8c84a"/>
+            <circle cx="38" cy="31" r="7"  fill="#f5df7a" opacity="0.4"/>
+            <!-- Crest -->
+            <line x1="34" y1="23" x2="32" y2="14" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="38" y1="22" x2="38" y2="12" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="42" y1="23" x2="44" y2="14" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="32" cy="13" r="2.2" fill="#1a5c3a"/>
+            <circle cx="38" cy="11" r="2.2" fill="#1a5c3a"/>
+            <circle cx="44" cy="13" r="2.2" fill="#1a5c3a"/>
+            <!-- Happy eye -->
+            <path d="M41,30 Q43,27 45,30" stroke="#1a1612" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <!-- Smile beak open holding string -->
+            <path d="M43,35 Q47,37 43,39" fill="#c8860b"/>
+            <path d="M47,37 Q54,34 58,40" stroke="#7c4a00" stroke-width="1" fill="none" stroke-dasharray="2,1.5"/>
+            <!-- Parcel -->
+            <rect x="56" y="34" width="20" height="18" rx="3" fill="#8B6914"/>
+            <rect x="56" y="34" width="20" height="6"  rx="3" fill="#a07820"/>
+            <line x1="56" y1="43" x2="76" y2="43" stroke="#dc2626" stroke-width="1.8"/>
+            <line x1="66" y1="34" x2="66" y2="52" stroke="#dc2626" stroke-width="1.8"/>
+            <path d="M62,40 Q60,36 64,37 Q66,40 66,40" fill="#dc2626"/>
+            <path d="M70,40 Q72,36 70,37 Q66,40 66,40" fill="#dc2626"/>
+            <!-- Legs -->
+            <line x1="32" y1="80" x2="28" y2="90" stroke="#c8860b" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="28" y1="90" x2="23" y2="93" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
+            <line x1="28" y1="90" x2="32" y2="94" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
+            <line x1="44" y1="80" x2="48" y2="90" stroke="#c8860b" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="48" y1="90" x2="43" y2="93" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
+            <line x1="48" y1="90" x2="52" y2="94" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+    </div><!-- /track -->
+
+    <!-- Dots -->
+    <div class="banner-dots">
+      <span class="bdot active" onclick="goSlide(0)"></span>
+      <span class="bdot" onclick="goSlide(1)"></span>
+    </div>
+  </div><!-- /slider -->
+
+  <!-- How it works -->
+  <div class="how-section">
+    <div class="how-title" id="how-title">✨ ဒေါင်းလေး ပစ္စည်းပို့နည်း — Daung Lay Send Easy</div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-text">
+          <strong class="how-en" data-i18n="how1Title">Choose Drop-off or Pick-up</strong>
+          <strong class="how-mm mm">Drop-off သို့မဟုတ် Pick-up ရွေးချယ်ပါ</strong>
+          <span class="how-en" data-i18n="how1Desc">Drop off FREE at any drop-off point · Pick-up from your door for $6.99</span>
+          <span class="how-mm mm">အပ်နေရာသို့ ကိုယ်တိုင်အပ်မည် (အခမဲ့) · သင့်တံခါးပေါက်မှ ကောက်ယူမည် ($6.99)</span>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-text">
+          <strong class="how-en" data-i18n="how2Title">Fill in the details</strong>
+          <strong class="how-mm mm">အချက်အလက်များ ဖြည့်သွင်းပါ</strong>
+          <span class="how-en" data-i18n="how2Desc">Recipient name · Myanmar address · Parcel weight · Your contact</span>
+          <span class="how-mm mm">လက်ခံသူအမည် · မြန်မာလိပ်စာ · ပစ္စည်းအလေးချိန် · ဆက်သွယ်ရန်နံပါတ်</span>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-text">
+          <strong class="how-en" data-i18n="how3Title">Pay easily</strong>
+          <strong class="how-mm mm">လွယ်ကူစွာ ငွေပေးချေပါ</strong>
+          <span class="how-en" data-i18n="how3Desc">💵 Cash at drop-off or to driver · 📱 PayNow QR — your choice</span>
+          <span class="how-mm mm">💵 ပစ္စည်းအပ်သောနေရာ သို့မဟုတ် ယာဉ်မောင်းထံ ငွေသားပေးပါ · 📱 PayNow QR ဖြင့်လည်း ပေးနိုင်သည်</span>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <div class="how-text">
+          <strong class="how-en" data-i18n="how4Title">Free delivery within Yangon 🎁</strong>
+          <strong class="how-mm mm">ရန်ကုန်အတွင်း အခမဲ့ ပို့ဆောင်ပေးသည် 🎁</strong>
+          <span class="how-en" data-i18n="how4Desc">Your parcel arrives at recipient's door in ~2 weeks. No extra charge.</span>
+          <span class="how-mm mm">ပစ္စည်းသည် ၂ ပတ်ခန့်အတွင်း လက်ခံသူ၏ တံခါးပေါက်ရောက်မည်။ ထပ်ဆောင်းကြေးမရှိ။</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing table -->
+  <div class="pricing-section">
+    <div class="pricing-head">
+      <span class="pr-mm mm">💰 ကီလိုဂရမ်တစ်ခုချင်းစီ စျေးနှုန်း — SG → Myanmar</span>
+      <span class="pr-en">💰 Pricing per kg — SG → Myanmar</span>
+    </div>
+    <div class="pricing-row">
+      <div class="pricing-cat">
+        <span class="pr-mm mm">🛍️ အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း</span>
+        <span class="pr-en">🛍️ Food / Clothes / Medicine / Cosmetics</span>
+        <small class="pr-mm mm">ဖိနပ် · အိတ် · စာအုပ် အပါအဝင်</small>
+        <small class="pr-en">Shoes · Bags · Books included</small>
+      </div>
+      <div class="pricing-amt">$15<small>/kg</small></div>
+    </div>
+    <div class="pricing-row">
+      <div class="pricing-cat">
+        <span class="pr-mm mm">📱 ဖုန်း / တက်ဘလက် / လျှပ်စစ်ပစ္စည်း / စက်ယန္တရား</span>
+        <span class="pr-en">📱 Phones / Tablets / Electronics / Machinery</span>
+        <small class="pr-mm mm">$30/kg သို့မဟုတ် တန်ဖိုး၏ 10% — မည်သည့်ဈေးနှုန်းပိုများသည်ကို ကောက်ခံမည်</small>
+        <small class="pr-en">$30/kg or 10% declared value — higher applies</small>
+      </div>
+      <div class="pricing-amt">$30<small class="pr-mm mm">/kg သို့ 10%</small><small class="pr-en">/kg or 10% value</small></div>
+    </div>
+    <div class="pricing-row" style="background:#f9f9f7;">
+      <div class="pricing-cat">
+        <span class="pr-mm mm">🚐 သင့်နေရပ်မှ ကောက်ယူခြင်း</span>
+        <span class="pr-en">🚐 Pick-up from your address</span>
+        <small class="pr-mm mm">သင့်တံခါးပေါက်သို့ ကျွန်ုပ်တို့ လာရောက်ကောက်ယူမည်</small>
+        <small class="pr-en">We come to your door</small>
+      </div>
+      <div class="pricing-amt">
+        $6.99
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DROP-OFF LOCATIONS MAP ═══ -->
+  <div style="padding: 0 16px; margin-bottom: 6px;">
+    <div style="font-size:14px;font-weight:700;color:#1a1612;margin-bottom:8px;">
+      📍 <span class="how-mm mm">ပစ္စည်းအပ်နိုင်သော နေရာများ</span><span class="how-en" style="display:none;">Drop-off Locations</span>
+    </div>
+    <!-- Zone filter chips -->
+    <div id="home-filter-chips" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:relative;z-index:10;">
+      <button class="filter-chip active" data-filter="All"     onclick="homeFilterDrops(this,'All')">🗺️ All</button>
+      <button class="filter-chip"        data-filter="West"    onclick="homeFilterDrops(this,'West')">🌅 West</button>
+      <button class="filter-chip"        data-filter="East"    onclick="homeFilterDrops(this,'East')">🌄 East</button>
+      <button class="filter-chip"        data-filter="North"   onclick="homeFilterDrops(this,'North')">🌿 North</button>
+      <button class="filter-chip"        data-filter="Central" onclick="homeFilterDrops(this,'Central')">🏙️ Central</button>
+      <button class="filter-chip"        data-filter="Van"     onclick="homeFilterDrops(this,'Van')">🚐 Van</button>
+      <button class="filter-chip"        data-filter="Shop"    onclick="homeFilterDrops(this,'Shop')">🏪 Shop</button>
+    </div>
+    <!-- Mapbox overview map -->
+    <div id="map-overview" style="width:100%;height:280px;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);touch-action:none;"></div>
+    <!-- Location count -->
+    <div id="home-drop-count" style="font-size:11px;color:#9ca3af;margin-top:6px;text-align:right;">17 locations</div>
+  </div>
+
+  <!-- CTA button scrolls to form -->
+  <div style="padding:16px 16px 20px;position:relative;z-index:10;">
+    <button class="hero-cta" onclick="showSection('book')" ontouchend="showSection('book')">
+      🦚 Book Now — Daung Lay Send Easy
+    </button>
+  </div>
+
+</div>
+
+</div><!-- /sec-home -->
+
+<!-- ═══ SECTION: BOOK ═══ -->
+<div class="section" id="sec-book">
+<!-- ═══════════════════════════════════════
+     MAIN FORM
+═══════════════════════════════════════ -->
+<div id="booking-form"></div>
+<div class="wrap">
+<div class="card">
+
+<!-- ════════════════════════════════
+     PAGE 1
+════════════════════════════════ -->
+<div class="page active" id="p1">
+
+  <div class="card-body">
+
+    <!-- ① DESTINATION DROPDOWN ────────────────────────────────────────────── -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">✈️ Shipping Destination</div>
+
+      <!-- Custom styled select wrapper -->
+      <div style="position:relative;">
+        <select id="dest-select" onchange="onDestChange(this)" style="width:100%;padding:14px 44px 14px 48px;border-radius:14px;border:2px solid var(--gold);background:linear-gradient(135deg,#fffbeb,#fef3c7);font-size:14px;font-weight:700;color:#92400e;appearance:none;-webkit-appearance:none;cursor:pointer;outline:none;">
+          <option value="mm" data-flag="🇲🇲">🇲🇲  Myanmar (Yangon) — ✈️ Air · ~2 weeks</option>
+          <option value="my" disabled>🇲🇾  Malaysia — Coming Soon</option>
+          <option value="th" disabled>🇹🇭  Thailand — Coming Soon</option>
+        </select>
+        <!-- Chevron icon -->
+        <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#b45309;font-size:16px;">▾</div>
+      </div>
+
+    </div>
+
+    <!-- ② RECIPIENT ──────────────────────────────────────────────────────── -->
+    <div class="section-banner" style="margin-top:22px;">
+      <span class="sb-icon">👤</span>
+      <div class="sb-text"><strong data-i18n="secRecipient">Recipient Details</strong><span data-i18n="secRecipientMM" class="mm">လက်ခံမည့်သူ အချက်အလက်</span></div>
+    </div>
+
+    <div class="field">
+      <label><span data-i18n="lblRName">Recipient Full Name</span> <span class="lbl-mm" data-i18n="lblRNameMM">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
+      <input type="text" id="f_rname" placeholder="e.g. ဒေါ်အေးအေး" data-i18n-ph="phRName">
+    </div>
+    <div class="field">
+      <label><span data-i18n="lblMPhone">Myanmar Phone +95</span> <span class="lbl-mm" data-i18n="lblMPhoneMM">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
+      <div class="phone-row">
+        <div class="phone-prefix">🇲🇲 +95</div>
+        <input type="text" id="f_rphone" placeholder="9765432100" data-i18n-ph="phRPhone">
+      </div>
+    </div>
+    <div class="field">
+      <label><span data-i18n="lblAddr">Full Delivery Address</span> <span class="lbl-mm" data-i18n="lblAddrMM">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
+      <textarea id="f_addr" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" data-i18n-ph="phAddr"></textarea>
+    </div>
+
+    <!-- ③ PARCEL ──────────────────────────────────────────────────────────── -->
+    <div class="section-banner">
+      <span class="sb-icon">📦</span>
+      <div class="sb-text"><strong data-i18n="secParcel">Parcel Details</strong><span data-i18n="secParcelMM" class="mm">ပစ္စည်းအသေးစိတ်</span></div>
+    </div>
+
+    <!-- ③ COLLECTION METHOD — sub-section under Parcel Details ─────────────── -->
+    <div style="font-size:12px;font-weight:700;color:#92400e;margin:18px 0 8px;padding-left:2px;">
+      🚚 ပစ္စည်းအပ်နည်း &nbsp;<span style="font-weight:400;color:#b45309;font-size:11px;">Collection Method</span>
+    </div>
+    <div class="collect-cards">
+      <label class="collect-card selected" id="cc-dropoff" onclick="selectCollect(this,'Drop-off (Free)')">
+        <input type="radio" name="method" value="Drop-off (Free)" checked>
+        <span class="collect-badge">Popular</span>
+        <span class="collect-icon">🏪</span>
+        <div class="collect-title" data-i18n="dropoffTitle">Drop-off</div>
+        <div class="collect-desc" data-i18n="dropoffSub">Bring to any drop-off point island-wide</div>
+        <div class="collect-price-row">
+          <span class="collect-free">FREE</span>
+        </div>
+      </label>
+      <label class="collect-card" id="cc-pickup" onclick="selectCollect(this,'Pickup')">
+        <input type="radio" name="method" value="Pickup">
+        <span class="collect-icon">🚐</span>
+        <div class="collect-title" data-i18n="pickupTitle">Pick-up</div>
+        <div class="collect-desc" data-i18n="pickupSub">We collect from your doorstep</div>
+        <div class="collect-price-row">
+          <span class="collect-new" id="pickup-price">$7.99</span>
+        </div>
+      </label>
+    </div>
+    <div id="pickup-note" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:9px 13px;font-size:12px;color:#92400e;margin-top:8px;">
+      🚐 <span id="pickup-note-text"></span>
+    </div>
+
+    <!-- ③b DROP-OFF POINT PICKER — shown only when drop-off is selected ──────── -->
+    <div id="dropoff-picker-wrap" style="margin-top:14px;">
+      <div class="field" style="margin-bottom:0;">
+        <label style="display:flex;align-items:center;justify-content:space-between;">
+          <span>📍 Drop-off Point
+            <span class="lbl-mm mm">/ ပစ္စည်းအပ်မည့်နေရာ</span><span class="req">*</span>
+            &nbsp;<a onclick="scrollToMap()" href="#" style="font-size:11px;font-weight:600;color:var(--gold);text-decoration:underline;white-space:nowrap;" onclick="scrollToMap();return false;">🗺️ View map</a>
+          </span>
+          <span id="dropoff-picker-count" style="font-size:10px;color:#9ca3af;font-weight:400;"></span>
+        </label>
+        <select id="f_dropoff_select" onchange="onDropoffSelectChange()" style="background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222%22><polyline points=%226 9 12 15 18 9%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;background-size:18px;padding-right:36px;appearance:none;-webkit-appearance:none;">
+          <option value="">— Choose a drop-off point —</option>
+        </select>
+        <!-- Selected location preview card -->
+        <div id="dropoff-preview" style="display:none;margin-top:10px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="dp-emoji" style="font-size:24px;">📍</span>
+            <div style="flex:1;min-width:0;">
+              <div id="dp-name" style="font-size:14px;font-weight:800;color:#1a1612;"></div>
+              <div id="dp-zone" style="font-size:11px;color:#92400e;margin-top:1px;"></div>
+              <div id="dp-sched" style="font-size:11px;color:#374151;margin-top:3px;line-height:1.5;"></div>
+            </div>
+            <a id="dp-maps" href="#" target="_blank" style="flex-shrink:0;padding:6px 10px;background:#eff6ff;color:#1d4ed8;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;">🗺️ Map</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:24px;">
+      <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
+      <div class="radio-group">
+        <label class="radio-opt" onclick="selectItemType('food')">
+          <input type="radio" name="itype" value="Food/Clothes/Medicine" checked>
+          <div class="ro-body">
+            <div class="ro-main">🛍️ Food / Clothes / Medicine / Cosmetics</div>
+            <div class="ro-sub">အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း · Shoes · Bags · Books</div>
+          </div>
+          <span class="pill pill-green">$15/kg</span>
+        </label>
+        <label class="radio-opt" onclick="selectItemType('devices')">
+          <input type="radio" name="itype" value="Phones/Tablets/Laptops">
+          <div class="ro-body">
+            <div class="ro-main">📱 Phones / Tablets / Laptops</div>
+            <div class="ro-sub">ဖုန်း / တက်ဘလက် / လက်တော့ပ်</div>
+          </div>
+          <span class="pill pill-blue">$50/item</span>
+        </label>
+        <label class="radio-opt" onclick="selectItemType('machinery')">
+          <input type="radio" name="itype" value="Electronics/Machinery">
+          <div class="ro-body">
+            <div class="ro-main">⚙️ Electronics / Machinery</div>
+            <div class="ro-sub">Rice cooker · Fan · Printer · စက်ယန္တရား / လျှပ်စစ်ပစ္စည်း</div>
+          </div>
+          <span class="pill pill-amber">$20/kg</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Weight field (food + machinery) -->
+    <div id="weight-section">
+      <div class="two-col">
+      <div class="field">
+        <label>Weight (kg) <span class="lbl-mm mm">/ အလေးချိန်</span><span class="req">*</span></label>
+        <input type="number" id="f_weight" placeholder="e.g. 2.5" min="0.1" max="100" step="0.1"
+          oninput="
+            let v=parseFloat(this.value);
+            if(this.value!==''&&v<0.1){this.value=0.1;}
+            if(v>100){this.value=100;}
+            updatePickupPrice(); updateWeightTotal();">
+        <div id="weight-err" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">Max 100kg per booking</div>
+      </div>
+      <div class="field">
+        <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
+        <input type="number" id="f_value" placeholder="e.g. 50" min="1" max="10000"
+          oninput="let v=parseFloat(this.value); if(this.value!==''&&v<0)this.value=0; if(v>10000)this.value=10000; validateDeclaredValue();">
+        <div id="value-err" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">Please enter a valid declared value</div>
+      </div>
+      </div><!-- /two-col -->
+      <div class="note green" id="weight-total-note" style="display:none;">
+        <span class="note-icon">💰</span>
+        <span id="weight-total-text"></span>
+      </div>
+    </div>
+
+    <!-- Number of devices (phones/tablets/laptops only) -->
+    <div id="devices-section" style="display:none;">
+      <div class="two-col">
+        <div class="field">
+          <label>No. of Items <span class="lbl-mm mm">/ အရေအတွက်</span><span class="req">*</span></label>
+          <select id="f_devices" onchange="updateDeviceTotal()">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
+          <input type="number" id="f_value_dev" placeholder="e.g. 1300" min="1" max="10000"
+          oninput="let v=parseFloat(this.value); if(this.value!==''&&v<0)this.value=0; if(v>10000)this.value=10000; validateDeclaredValue();">
+        </div>
+      </div>
+      <div class="note green" id="device-total-note">
+        <span class="note-icon">💰</span>
+        <span id="device-total-text">1 item × $50 = <strong>$50.00</strong></span>
+      </div>
+    </div>
+
+    <div class="note blue"><span class="note-icon">ℹ️</span><span>Max 100kg per booking · Declared value is for customs reference only.</span></div>
+
+    <div class="field" style="margin-top:10px;">
+      <label><span data-i18n="lblContents">Contents Description</span> <span class="lbl-mm" data-i18n="lblContentsMM">/ ပစ္စည်းဖော်ပြချက်</span><span class="req">*</span></label>
+      <textarea id="f_contents" placeholder="ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး" data-i18n-ph="phContents"></textarea>
+    </div>
+
+    <!-- ④ SENDER ──────────────────────────────────────────────────────────── -->
+    <div class="section-banner">
+      <span class="sb-icon">👤</span>
+      <div class="sb-text"><strong data-i18n="secSender">Sender Details</strong><span data-i18n="secSenderMM" class="mm">ပို့သူ အချက်အလက်</span></div>
+    </div>
+
+    <div class="field">
+      <label><span data-i18n="lblSName">Your Full Name</span> <span class="lbl-mm" data-i18n="lblSNameMM">/ ပေးပို့သူအမည်</span><span class="req">*</span></label>
+      <input type="text" id="f_sname" placeholder="ဥပမာ — ကိုအောင်အောင်" data-i18n-ph="phSName">
+    </div>
+    <div class="field">
+      <label>Singapore Phone +65<span class="req">*</span></label>
+      <div class="phone-row">
+        <div class="phone-prefix">🇸🇬 +65</div>
+        <input type="text" id="f_sphone" placeholder="91234567">
+      </div>
+    </div>
+    <div class="field">
+      <label><span data-i18n="lblEmail">Email Address</span> <span class="lbl-mm" data-i18n="lblEmailMM">/ အီးမေးလ်</span><span class="req">*</span></label>
+      <input type="email" id="f_email" placeholder="yourname@email.com" data-i18n-ph="phEmail">
+    </div>
+    <div class="field">
+      <label><span data-i18n="lblSAddr">Your Singapore Address</span> <span class="lbl-mm" data-i18n="lblSAddrMM">/ စင်ကာပူနေရပ်လိပ်စာ</span><span class="req">*</span></label>
+      <textarea id="f_saddr" rows="2" placeholder="e.g. Blk 134 Jurong East St 13, #05-12, S609734" data-i18n-ph="phSAddr" style="resize:none;"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="goToP2()">
+      <span data-i18n="btnNext">Next →</span> &nbsp;📍
+    </button>
+
+  </div>
+</div><!-- /p1 -->
+
+<!-- ════════════════════════════════
+     PAGE 2
+════════════════════════════════ -->
+<div class="page" id="p2">
+
+  <div class="card-body">
+
+    <!-- ① BOOKING SUMMARY ─────────────────────────── -->
+    <div class="section-banner" style="margin-top:0;">
+      <span class="sb-icon">📋</span>
+      <div class="sb-text"><strong data-i18n="secSummary">Booking Summary</strong><span data-i18n="secSummaryMM" class="mm">အမှာစာ အကျဉ်းချုပ်</span></div>
+    </div>
+    <div class="check-notice">
+      <span>👀</span>
+      <span><span data-i18n="noteCheck">ဆက်လက်မတင်မီ အချက်အလက်များကို သေချာစစ်ဆေးပါ</span></span>
+    </div>
+    <div class="sum-block">
+      <table class="sum-table">
+        <tr><td>📦 Recipient</td><td id="s_rname">—</td></tr>
+        <tr><td>📞 Myanmar Phone</td><td id="s_rphone">—</td></tr>
+        <tr><td>📍 Delivery To</td><td id="s_dest">—</td></tr>
+        <tr><td>🏷️ Item Type</td><td id="s_itype">—</td></tr>
+        <tr><td>⚖️ Weight / Qty</td><td id="s_weight">—</td></tr>
+        <tr><td>📝 Contents</td><td id="s_contents">—</td></tr>
+        <tr><td>🚚 Collection</td><td id="s_method">—</td></tr>
+        <tr><td>👤 Sender</td><td id="s_sender">—</td></tr>
+        <tr><td>📍 Your SG Address</td><td id="s_saddr">—</td></tr>
+        <tr><td>📧 Email</td><td id="s_email">—</td></tr>
+      </table>
+    </div>
+    <!-- Cost breakdown -->
+    <div class="cost-breakdown" id="cost-breakdown">
+      <div class="cost-title">💰 Cost Breakdown <span class="mm" style="font-size:11px;">/ ကုန်ကျစရိတ် အသေးစိတ်</span></div>
+      <div class="cost-row"><span id="cb_shipping_label">Shipping</span><span id="cb_shipping">—</span></div>
+      <div class="cost-row" id="cb_pickup_row" style="display:none;"><span>🚐 Pick-up fee</span><span id="cb_pickup">—</span></div>
+      <div class="cost-row cost-total"><span>Total</span><span id="cb_total">—</span></div>
+    </div>
+
+    <!-- ② DROP-OFF POINT — passed from page 1, read-only ────────────────────── -->
+    <div id="dropoff-point-section">
+      <div class="section-banner">
+        <span class="sb-icon">📍</span>
+        <div class="sb-text"><strong>Drop-off Point</strong><span class="mm">ပစ္စည်းအပ်မည့်နေရာ</span></div>
+      </div>
+      <!-- Read-only card showing selected location from page 1 -->
+      <div id="p2-dropoff-card" style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:14px 16px;margin-top:10px;display:flex;align-items:flex-start;gap:12px;">
+        <span id="p2-drop-emoji" style="font-size:26px;flex-shrink:0;margin-top:2px;">📍</span>
+        <div style="flex:1;min-width:0;">
+          <div id="p2-drop-name" style="font-size:15px;font-weight:800;color:#1a1612;margin-bottom:3px;">—</div>
+          <div id="p2-drop-zone" style="font-size:11px;color:#92400e;font-weight:600;margin-bottom:4px;"></div>
+          <div id="p2-drop-sched" style="font-size:12px;color:#374151;line-height:1.6;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Pickup info (shown if pickup selected) ──────────────────────────────── -->
+    <div id="pickup-info-section" style="display:none;">
+      <div class="section-banner">
+        <span class="sb-icon">🚐</span>
+        <div class="sb-text"><strong>Pick-up Details</strong><span class="mm">ကောက်ယူမည့် အချက်အလက်</span></div>
+      </div>
+      <div class="note green">
+        <span class="note-icon">📅</span>
+        <span>Our driver will contact you within <strong>1–2 working days</strong> to arrange pick-up from your address.<br>
+        <span class="mm" style="font-size:11px;">ကျွန်ုပ်တို့ ယာဉ်မောင်းသည် ၁–၂ ရက်အတွင်း သင့်ထံ ဆက်သွယ်မည်</span></span>
+      </div>
+      <div class="sel-loc-card" style="display:block;margin-top:10px;">
+        <div class="sel-loc-top">
+          <span class="sel-loc-emoji">🏠</span>
+          <div>
+            <div class="sel-loc-name">Pick-up from your address</div>
+            <div class="sel-loc-meta" id="pickup-addr-display">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ PAYMENT INFO ──────────────────────────── -->
+    <div class="section-banner">
+      <span class="sb-icon">💳</span>
+      <div class="sb-text"><strong data-i18n="secPayment">Payment</strong><span data-i18n="secPaymentMM" class="mm">ငွေပေးချေနည်း</span></div>
+    </div>
+    <!-- Hidden input so goToP3 / webhook still gets a payment value -->
+    <input type="hidden" name="payment" id="payment-hidden" value="Cash or PayNow at drop-off">
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;">
+
+      <!-- Cash -->
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:#fffbf0;border:1px solid #fde68a;">
+        <span style="font-size:24px;flex-shrink:0;">💵</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#92400e;">Cash</div>
+          <div style="font-size:12px;color:#b45309;margin-top:2px;">Pay when you drop off the parcel</div>
+          <div style="font-size:11px;color:#b45309;margin-top:1px;" class="mm">ပစ္စည်းအပ်သောအခါ ငွေသားဖြင့် ပေးချေနိုင်သည်</div>
+        </div>
+      </div>
+
+      <!-- PayNow -->
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:#f0fdf4;border:1px solid #bbf7d0;">
+        <span style="font-size:24px;flex-shrink:0;">📱</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#15803d;">PayNow QR</div>
+          <div style="font-size:12px;color:#166534;margin-top:2px;">Scan QR at drop-off point or van</div>
+          <div style="font-size:11px;color:#166534;margin-top:1px;" class="mm">ပစ္စည်းအပ်သောနေရာ၌ QR ဖြင့် ပေးချေနိုင်သည်</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ④ TERMS & CONDITIONS ─────────────────────── -->
+    <div class="section-banner" style="margin-top:18px;">
+      <span class="sb-icon">📜</span>
+      <div class="sb-text"><strong>Terms & Conditions</strong><span class="mm">စည်းမျဉ်းစည်းကမ်းများ</span></div>
+    </div>
+    <div class="tnc-scroll">
+      <ul style="margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:#5c3d00;">
+        <li>Parcels are <strong>non-refundable</strong> once shipped to Myanmar</li>
+        <li>Prohibited items: weapons, drugs, cash, live animals, perishables</li>
+        <li>Daung Lay Logistics is <strong>not liable</strong> for customs delays or inspections</li>
+        <li>Delivery to <strong>Yangon only</strong> · Estimated <strong>2 weeks</strong> from collection</li>
+        <li>Drop off your parcel within <strong>24 hours</strong> of booking confirmation</li>
+        <li>Please ensure no prohibited items are included</li>
+        <li>The content stated are true to sender's knowledge and information of contents are accurate</li>
+      </ul>
+      <div style="margin-top:8px;font-size:11px;color:#92400e;">
+        By booking, you agree to our full <a href="terms.html" target="_blank" style="color:var(--gold);font-weight:700;text-decoration:underline;">Terms & Conditions →</a>
+      </div>
+    </div>
+    <label class="tnc-check" id="tnc-wrap" for="tnc-cb">
+      <input type="checkbox" id="tnc-cb" onchange="toggleTnc()">
+      <div class="tnc-label"><span>I confirm the above and agree to the Terms & Conditions</span>
+        <small class="mm">အထက်ပါသည် မှန်ကန်ကြောင်း အတည်ပြု၍ စည်းမျဉ်းများကို သဘောတူသည်</small>
+      </div>
+    </label>
+
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn-ghost" onclick="goTo('p2','p1',1)"><span data-i18n="btnBack">← Back</span></button>
+      <button class="btn-primary" id="sub-btn" onclick="goToP3()" disabled><span data-i18n="btnSubmit">✅ Confirm Booking</span></button>
+    </div>
+
+  </div>
+</div><!-- /p2 -->
+
+<!-- ════════════════════════════════
+     PAGE 3
+════════════════════════════════ -->
+<div class="page" id="p3">
+  <div class="card-body">
+
+    <div class="conf-hero">
+      <div class="conf-tick">✅</div>
+      <h2 data-i18n="confTitle">Booking Confirmed!</h2>
+      <p>Confirmation sent to <strong id="conf-email">—</strong></p>
+    </div>
+
+    <div class="ref-chip">
+      <div class="ref-icon">🔖</div>
+      <div>
+        <div class="ref-label"><span data-i18n="confRef">Your Booking Reference</span></div>
+        <div class="ref-val" id="conf-ref">—</div>
+      </div>
+    </div>
+
+    <!-- Mini map + location card -->
+    <div class="conf-loc-wrap">
+      <div id="conf-map"></div>
+      <div class="conf-loc-body">
+        <div class="conf-loc-name" id="conf-loc-name">—</div>
+        <div class="conf-loc-detail" id="conf-loc-detail">—</div>
+        <a href="#" id="conf-maps-link" class="gmaps-btn" target="_blank"><span data-i18n="confMaps">🗺️ Open in Google Maps</span></a>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    <div class="pay-block cash" id="conf-cash">
+      <h3 data-i18n="confCashTitle">💵 Pay Cash at Drop-off</h3>
+      <div class="pay-amount" id="conf-amount">SGD —</div>
+      <div class="pay-instr">
+        Bring exact amount and show your booking reference on arrival.<br>
+        <span class="mm" style="font-size:11px;">တိကျသောငွေနှင့် booking နံပါတ်ပြပါ</span>
+      </div>
+    </div>
+    <div class="pay-block paynow" id="conf-paynow" style="display:none;">
+      <h3 data-i18n="confPaynowTitle">📱 Pay via PayNow</h3>
+      <div class="pay-amount" id="conf-paynow-amt">SGD —</div>
+      <div class="qr-box">[Your PayNow QR here]</div>
+      <div class="pay-instr">
+        Scan QR · Enter amount · Use booking ref as reference note<br>
+        Send payment screenshot to +65 XXXX XXXX<br>
+        <span class="mm" style="font-size:11px;">QR scan ပြီး booking နံပါတ် မှတ်ချက်တွင်ရေးပါ</span>
+      </div>
+    </div>
+
+    <div class="next-step">
+      <strong data-i18n="confNextTitle">Next Step</strong><br>
+      Drop off your parcel within <strong>24 hours</strong> at the location above.<br>
+      Show reference: <strong id="conf-ref2">—</strong><br>
+      <span class="mm" style="font-size:11px;">၂၄နာရီအတွင်း အထက်ပါနေရာတွင် ပစ္စည်းအပ်ပါ</span>
+    </div>
+
+    <div class="contact-line">
+      🦚 Daung Lay Logistics &nbsp;·&nbsp; <span style="cursor:pointer;color:var(--gold);" onclick="showSection('contact')">Contact Us →</span>
+    </div>
+
+  </div>
+</div><!-- /p3 -->
+
+</div><!-- /card -->
+</div><!-- /wrap -->
+</div><!-- /sec-book -->
+
+
+<!-- ═══ SECTION: DROPS ═══ -->
+
+
+<!-- ═══ SECTION: CONTACT ═══ -->
+<div class="section" id="sec-contact">
+  <div class="contact-page">
+    <div class="contact-hero">
+      <div class="peacock">🦚</div>
+      <h2>Contact Us</h2>
+      <p>We're here to help · ကူညီရန် အဆင်သင့်ရှိပါသည်</p>
+    </div>
+
+    <div class="contact-cards">
+
+      <!-- WhatsApp -->
+      <div class="contact-card">
+        <div class="contact-card-top">
+          <div class="contact-app-icon wa">💬</div>
+          <div>
+            <div class="contact-app-name">WhatsApp</div>
+            <div class="contact-app-num">+65 9837 5711</div>
+            <div class="contact-app-sub">Chat with us anytime · မေးမြန်းရန်</div>
+          </div>
+        </div>
+        <div class="contact-qr" id="wa-qr">
+          <div style="font-size:40px;opacity:0.3;">📱</div>
+          <p>WhatsApp QR code coming soon<br>QR ကုဒ် မကြာမီရောက်ရှိမည်</p>
+        </div>
+        <a href="https://wa.me/6598375711" target="_blank" class="contact-btn wa">
+          💬 Open WhatsApp
+        </a>
+      </div>
+
+      <!-- Viber -->
+      <div class="contact-card">
+        <div class="contact-card-top">
+          <div class="contact-app-icon vib">📲</div>
+          <div>
+            <div class="contact-app-name">Viber</div>
+            <div class="contact-app-num">+65 9837 5711</div>
+            <div class="contact-app-sub">Message or call · မက်ဆေ့ပို့ပါ</div>
+          </div>
+        </div>
+        <div class="contact-qr" id="vib-qr">
+          <div style="font-size:40px;opacity:0.3;">📲</div>
+          <p>Viber QR code coming soon<br>QR ကုဒ် မကြာမီရောက်ရှိမည်</p>
+        </div>
+        <a href="viber://chat?number=6598375711" class="contact-btn vib">
+          📲 Open Viber
+        </a>
+      </div>
+
+    </div>
+
+    <div class="contact-note">
+      🦚 Daung Lay Logistics — Little Peacock<br>
+      Singapore → Myanmar (Yangon)<br>
+      ဒေါင်းလေး လော်ဂျစ်စတစ်
+    </div>
+  </div>
+</div><!-- /sec-contact -->
+
+<script>
+// ═══════════════════════════════════════════════════
+//  ⚙️  CONFIGURATION — edit these two lines
+// ═══════════════════════════════════════════════════
+
+// Your Mapbox public token — get a free one at mapbox.com
+const MAPBOX_TOKEN = '__MAPBOX_TOKEN__';
+
+// Your n8n webhook URL
+const WEBHOOK_URL = '__WEBHOOK_URL__'; // Daung Lay Logistics
+
+// ═══════════════════════════════════════════════════
+//  📍  COLLECTION POINTS
+//  To add/remove: just edit this array.
+//  type: 'Van' = Sunday van stop | 'Shop' = partner shop
+// ═══════════════════════════════════════════════════
+// ── Zone-grouped drop-off points ──────────────────────────────────────────
+// zone: used to group the dropdown with <optgroup> labels
+const LOCATIONS = [
+
+  // ── WEST ──────────────────────────────────────────────────────────────────
+  { zone:'West', name:'Jurong East MRT',          type:'Van',  lat:1.3329, lng:103.7436, sched:'Sun 7:00 PM',       addr:'Jurong East MRT Station, Singapore 609731',              maps:'https://maps.google.com/?q=Jurong+East+MRT+Singapore',       emoji:'🚉' },
+  { zone:'West', name:'Clementi MRT',             type:'Van',  lat:1.3152, lng:103.7649, sched:'Sun 6:30 PM',       addr:'Clementi MRT Station, Clementi Road, Singapore 129588',  maps:'https://maps.google.com/?q=Clementi+MRT+Singapore',          emoji:'🚇' },
+  { zone:'West', name:'Pioneer MRT Myanmar Mart', type:'Shop', lat:1.3378, lng:103.6972, sched:'Daily 10am–9pm',    addr:'Blk 649 Pioneer Road, #01-325, Singapore 640649',        maps:'https://maps.google.com/?q=Pioneer+MRT+Singapore',           emoji:'🏪' },
+  { zone:'West', name:'Boon Lay MRT',             type:'Van',  lat:1.3388, lng:103.7060, sched:'Sun 7:30 PM',       addr:'Boon Lay MRT Station, Jurong West Street, Singapore 649482', maps:'https://maps.google.com/?q=Boon+Lay+MRT+Singapore',     emoji:'🚇' },
+  { zone:'West', name:'Tuas Dormitory Gate A',    type:'Van',  lat:1.3175, lng:103.6369, sched:'Sun 6:00 PM',       addr:'Tuas South Avenue 3, Dormitory Gate A, Singapore 637335', maps:'https://maps.google.com/?q=Tuas+South+Singapore',          emoji:'🏭' },
+
+  // ── EAST ──────────────────────────────────────────────────────────────────
+  { zone:'East', name:'Tampines MRT',             type:'Van',  lat:1.3544, lng:103.9427, sched:'Sun 6:00 PM',       addr:'Tampines MRT Station, Tampines Central, Singapore 529556', maps:'https://maps.google.com/?q=Tampines+MRT+Singapore',       emoji:'🚉' },
+  { zone:'East', name:'Bedok Myanmar Mini Mart',  type:'Shop', lat:1.3240, lng:103.9300, sched:'Daily 10am–9pm',    addr:'Blk 204 Bedok North Street 1, #01-377, Singapore 460204', maps:'https://maps.google.com/?q=Bedok+Singapore',              emoji:'🛒' },
+  { zone:'East', name:'Pasir Ris MRT',            type:'Van',  lat:1.3731, lng:103.9494, sched:'Sun 6:30 PM',       addr:'Pasir Ris MRT Station, Pasir Ris Drive 3, Singapore 519497', maps:'https://maps.google.com/?q=Pasir+Ris+MRT+Singapore',   emoji:'🚇' },
+  { zone:'East', name:'Tampines Myanmar Grocery', type:'Shop', lat:1.3530, lng:103.9450, sched:'Daily 9am–9pm',     addr:'Blk 824 Tampines Street 81, #01-147, Singapore 520824',  maps:'https://maps.google.com/?q=Tampines+Singapore',             emoji:'🛒' },
+
+  // ── NORTH ─────────────────────────────────────────────────────────────────
+  { zone:'North', name:'Woodlands MRT',           type:'Van',  lat:1.4369, lng:103.7864, sched:'Sun 8:30 PM',       addr:'Woodlands MRT Station, Woodlands Square, Singapore 738099', maps:'https://maps.google.com/?q=Woodlands+MRT+Singapore',    emoji:'🚉' },
+  { zone:'North', name:'Woodlands Myanmar Shop',  type:'Shop', lat:1.4320, lng:103.7910, sched:'Mon–Sat 10am–8pm',  addr:'Blk 6A Woodlands Centre Road, #01-08, Singapore 731006', maps:'https://maps.google.com/?q=Woodlands+Singapore',           emoji:'🏪' },
+  { zone:'North', name:'Sembawang Myanmar Mart',  type:'Shop', lat:1.4491, lng:103.8200, sched:'Daily 9am–9pm',     addr:'Blk 406 Sembawang Drive, #01-21, Singapore 750406',      maps:'https://maps.google.com/?q=Sembawang+Singapore',            emoji:'🛒' },
+  { zone:'North', name:'Yishun MRT',              type:'Van',  lat:1.4294, lng:103.8354, sched:'Sun 9:00 PM',       addr:'Yishun MRT Station, Yishun Central 1, Singapore 768794', maps:'https://maps.google.com/?q=Yishun+MRT+Singapore',         emoji:'🚇' },
+
+  // ── CENTRAL / SOUTH ───────────────────────────────────────────────────────
+  { zone:'Central', name:'Peninsula Plaza',       type:'Shop', lat:1.2922, lng:103.8508, sched:'Daily 8am–10pm',    addr:'111 North Bridge Road, #04-20 Peninsula Plaza, Singapore 179098', maps:'https://maps.google.com/?q=Peninsula+Plaza+Singapore', emoji:'🏢' },
+  { zone:'Central', name:'Toa Payoh MRT',         type:'Van',  lat:1.3327, lng:103.8474, sched:'Sun 6:30 PM',       addr:'Toa Payoh MRT Station, Lorong 6 Toa Payoh, Singapore 319385', maps:'https://maps.google.com/?q=Toa+Payoh+MRT+Singapore',  emoji:'🚉' },
+  { zone:'Central', name:'Bishan MRT',            type:'Van',  lat:1.3510, lng:103.8485, sched:'Sun 7:00 PM',       addr:'Bishan MRT Station, Bishan Place, Singapore 579838',     maps:'https://maps.google.com/?q=Bishan+MRT+Singapore',           emoji:'🚇' },
+  { zone:'Central', name:'Bugis Myanmar Shop',    type:'Shop', lat:1.3010, lng:103.8563, sched:'Daily 10am–9pm',    addr:'Blk 4 Queen Street, #01-145 Bugis Village, Singapore 188535', maps:'https://maps.google.com/?q=Bugis+Singapore',          emoji:'🏬' },
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let map = null;
+let overviewMap = null;
+let confMap = null;
+let senderMarker = null;
+let locMarkers = [];
+let sorted = [];        // LOCATIONS sorted by distance from sender
+let chosen = null;      // selected location object
+let bookingRef = '';
+let senderCoords = null; // { lat, lng } from geocoding
+
+// ═══════════════════════════════════════════════════
+//  HAVERSINE
+// ═══════════════════════════════════════════════════
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371, r = Math.PI/180;
+  const dLat = (lat2-lat1)*r, dLng = (lng2-lng1)*r;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ═══════════════════════════════════════════════════
+//  GEOCODE — Mapbox Geocoding API
+// ═══════════════════════════════════════════════════
+async function geocode(address) {
+  const q = encodeURIComponent(address + ', Singapore');
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${q}.json?access_token=${MAPBOX_TOKEN}&country=SG&limit=1&types=address,postcode,place,locality,neighborhood`;
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    if (d.features && d.features.length > 0) {
+      const [lng, lat] = d.features[0].center;
+      return { lat, lng, place: d.features[0].place_name };
+    }
+  } catch(e) { console.warn('Geocode error:', e); }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════
+//  JSON-DRIVEN LOCATIONS — loaded once, used everywhere
+// ═══════════════════════════════════════════════════
+let LOCATIONS_JSON = []; // loaded from locations.json
+let overviewMarkers = [];
+
+async function loadLocations() {
+  // Try to fetch locations.json; fall back to LOCATIONS array if unavailable
+  try {
+    const res = await fetch('locations.json');
+    if (res.ok) {
+      const data = await res.json();
+      LOCATIONS_JSON = data.filter(d => d.active !== false);
+      // Sync into LOCATIONS array so existing booking form code still works
+      LOCATIONS.length = 0;
+      LOCATIONS_JSON.forEach(d => {
+        LOCATIONS.push({
+          zone:  d.zone,
+          name:  d.title,
+          type:  d.type,
+          lat:   d.coordinates.lat,
+          lng:   d.coordinates.lng,
+          sched: d.schedule.map(s => s.day + ' ' + s.time).join(' · '),
+          addr:  d.address,
+          maps:  d.google_maps,
+          emoji: d.emoji,
+        });
+      });
+      return;
+    }
+  } catch(e) { /* fall through */ }
+  // Fallback — use existing LOCATIONS array as source
+  LOCATIONS_JSON = LOCATIONS.map(l => ({
+    id: l.name.toLowerCase().replace(/\s+/g,'-'),
+    title: l.name, zone: l.zone, type: l.type, emoji: l.emoji,
+    address: l.addr, coordinates: { lat: l.lat, lng: l.lng },
+    schedule: [{ day: l.sched, time: '', note: '' }],
+    images: [], google_maps: l.maps, landmark: '', active: true,
+  }));
+}
+
+// ═══════════════════════════════════════════════════
+//  LOCATION POPUP OVERLAY
+// ═══════════════════════════════════════════════════
+let currentPopupLocId = null;
+let carouselIndex = 0;
+let carouselTotal = 0;
+let carTouchStartX = 0;
+
+function openLocPopup(locData) {
+  currentPopupLocId = locData.id;
+  const isVan = locData.type === 'Van';
+
+  // ── Build carousel ──────────────────────────────────────────────────
+  const track   = document.getElementById('carousel-track');
+  const dotsEl  = document.getElementById('carousel-dots');
+  const carousel = document.getElementById('pop-carousel');
+
+  const slides = locData.images && locData.images.length > 0
+    ? locData.images.map(url =>
+        `<div class="carousel-slide"><img src="${url}" alt="${locData.title}" loading="lazy"></div>`)
+    : [`<div class="carousel-slide ${isVan ? '' : 'dark'}" style="font-size:80px;">${locData.emoji}</div>`];
+
+  track.innerHTML = slides.join('');
+  carouselIndex = 0;
+  carouselTotal = slides.length;
+
+  // Dots
+  dotsEl.innerHTML = slides.map((_, i) =>
+    `<div class="c-dot${i===0?' active':''}" onclick="carouselGoTo(${i})"></div>`).join('');
+  dotsEl.style.display = slides.length > 1 ? 'flex' : 'none';
+
+  // Hide arrows if only one slide
+  document.getElementById('car-prev').style.display = slides.length > 1 ? 'flex' : 'none';
+  document.getElementById('car-next').style.display = slides.length > 1 ? 'flex' : 'none';
+
+  // Touch swipe
+  carousel.ontouchstart = e => { carTouchStartX = e.touches[0].clientX; };
+  carousel.ontouchend   = e => {
+    const dx = e.changedTouches[0].clientX - carTouchStartX;
+    if (Math.abs(dx) > 40) carouselStep(dx < 0 ? 1 : -1);
+  };
+
+  carouselRender();
+
+  // ── Text fields ─────────────────────────────────────────────────────
+  document.getElementById('pop-name').textContent = locData.title;
+
+  const typeEl = document.getElementById('pop-type');
+  typeEl.textContent = isVan ? '🚐 Van Stop' : '🏪 Mini Mart / Partner Shop';
+  typeEl.className   = 'loc-popup-type ' + (isVan ? 'van' : 'shop');
+
+  document.getElementById('pop-addr').textContent = '📍 ' + locData.address;
+
+  const lmEl = document.getElementById('pop-landmark');
+  lmEl.textContent = locData.landmark ? '📌 ' + locData.landmark : '';
+
+  const schedEl = document.getElementById('pop-sched');
+  schedEl.innerHTML =
+    '<div class="loc-popup-sched-title">📦 Drop-off / Collection Schedule</div>' +
+    locData.schedule.map(s => `
+      <div class="loc-popup-sched-row">
+        <span class="sched-day">${s.day}</span>
+        <div>
+          <div style="font-weight:700;">${s.time_window || s.time}</div>
+          ${s.note ? '<div class="sched-note">↳ ' + s.note + '</div>' : ''}
+        </div>
+      </div>`).join('');
+
+  document.getElementById('pop-dir-btn').href = locData.google_maps;
+
+  document.getElementById('loc-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function carouselRender() {
+  const track = document.getElementById('carousel-track');
+  if (track) track.style.transform = `translateX(-${carouselIndex * 100}%)`;
+  document.querySelectorAll('.c-dot').forEach((d, i) =>
+    d.classList.toggle('active', i === carouselIndex));
+}
+
+function carouselStep(dir) {
+  carouselIndex = (carouselIndex + dir + carouselTotal) % carouselTotal;
+  carouselRender();
+}
+
+function carouselGoTo(i) {
+  carouselIndex = i;
+  carouselRender();
+}
+
+function closeLocPopup(e) {
+  if (e && e.target !== document.getElementById('loc-overlay')) return;
+  document.getElementById('loc-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT OVERVIEW MAP — Home page, JSON-driven pins
+// ═══════════════════════════════════════════════════
+function initOverviewMap() {
+  if (overviewMap) return;
+  if (typeof mapboxgl === 'undefined') return;
+
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+
+  overviewMap = new mapboxgl.Map({
+    container:        'map-overview',
+    style:            'mapbox://styles/mapbox/dark-v11',
+    center:           [103.8198, 1.3521],
+    zoom:             10.5,
+    attributionControl: false,
+    // Mobile optimisations
+    dragRotate:       false,
+    pitchWithRotate:  false,
+    touchPitch:       false,
+    maxTileCacheSize: 20,          // limit memory on mobile
+    localIdeographFontFamily: "'Noto Sans Myanmar', sans-serif",
+  });
+
+  overviewMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+  overviewMap.addControl(new mapboxgl.AttributionControl({ compact: true }));
+
+  overviewMap.on('load', () => {
+    // Ensure canvas doesn't interfere with page scroll outside map bounds
+    const canvas = overviewMap.getCanvas();
+    if (canvas) canvas.style.touchAction = 'none';
+
+    const data = LOCATIONS_JSON.length ? LOCATIONS_JSON : [];
+
+    data.forEach(loc => {
+      const isVan = loc.type === 'Van';
+
+      // Outer wrapper — Mapbox controls its position, no absolute/relative
+      const el = document.createElement('div');
+      el.style.cssText = 'width:36px;height:36px;cursor:pointer;';
+
+      // Inner circle — all visual styling here
+      const inner = document.createElement('div');
+      inner.style.cssText = [
+        'width:36px', 'height:36px', 'border-radius:50%',
+        `background:${isVan ? '#C9A84C' : '#7c3aed'}`,
+        'border:2.5px solid #fff',
+        'box-shadow:0 2px 12px rgba(0,0,0,0.55)',
+        'display:flex', 'align-items:center', 'justify-content:center',
+        'font-size:17px', 'transition:transform 0.15s',
+        'pointer-events:none',
+      ].join(';');
+      inner.textContent = loc.emoji;
+      el.appendChild(inner);
+
+      // Desktop hover
+      el.addEventListener('mouseenter', () => inner.style.transform = 'scale(1.25)');
+      el.addEventListener('mouseleave', () => inner.style.transform = 'scale(1)');
+
+      // Click (desktop) and touchend (mobile) — both open popup
+      el.addEventListener('click',    (e) => { e.stopPropagation(); openLocPopup(loc); });
+      el.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); openLocPopup(loc); });
+
+      const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([loc.coordinates.lng, loc.coordinates.lat])
+        .addTo(overviewMap);
+
+      overviewMarkers.push({ marker, loc, el, inner });
+    });
+
+    updateHomeCount();
+  });
+
+  // Handle token/network errors gracefully — map stays visible, just shows dark background
+  overviewMap.on('error', (e) => {
+    console.warn('Mapbox error:', e.error?.message || e);
+  });
+}
+
+function homeFilterDrops(chip, filter) {
+  const chips = document.querySelectorAll('#home-filter-chips .filter-chip');
+
+  if (filter === 'All') {
+    // All = clear everything else, activate only All
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  } else {
+    // Multi-select: toggle this chip
+    chip.classList.toggle('active');
+    // If nothing selected, fall back to All
+    const anyActive = [...chips].some(c => c.dataset.filter !== 'All' && c.classList.contains('active'));
+    const allChip   = document.querySelector('#home-filter-chips .filter-chip[data-filter="All"]');
+    if (!anyActive) {
+      chips.forEach(c => c.classList.remove('active'));
+      if (allChip) allChip.classList.add('active');
+    } else {
+      // Deactivate "All" when specific filters are chosen
+      if (allChip) allChip.classList.remove('active');
+    }
+  }
+
+  // Collect active filters
+  const active = [...document.querySelectorAll('#home-filter-chips .filter-chip.active')]
+    .map(c => c.dataset.filter);
+  const showAll = active.includes('All') || active.length === 0;
+
+  let visible = 0;
+  overviewMarkers.forEach(({ el, loc }) => {
+    const show = showAll
+      || active.includes(loc.zone)
+      || (active.includes('Van')  && loc.type === 'Van')
+      || (active.includes('Shop') && loc.type === 'Shop');
+    el.style.visibility = show ? 'visible' : 'hidden';
+    if (show) visible++;
+  });
+  updateHomeCount(visible);
+}
+
+function updateHomeCount(n) {
+  const total = n !== undefined ? n : (LOCATIONS_JSON.length || LOCATIONS.length);
+  const el = document.getElementById('home-drop-count');
+  if (el) el.textContent = total + ' location' + (total !== 1 ? 's' : '');
+}
+
+function scrollToMap() {
+  showSection('home');
+  setTimeout(() => {
+    const mapEl = document.getElementById('map-overview');
+    if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
+
+// Destination dropdown — disabled options are coming soon, keep Myanmar selected
+function onDestChange(sel) {
+  if (sel.value !== 'mm') {
+    sel.value = 'mm'; // snap back
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  DROP-OFF PICKER — populate from JSON, auto-select
+// ═══════════════════════════════════════════════════
+let pendingDropoffId = null; // set by map "Book here" button
+
+function populateDropoffSelect() {
+  const sel = document.getElementById('f_dropoff_select');
+  if (!sel) return;
+  // Clear existing options except placeholder
+  sel.innerHTML = '<option value="">— Choose a drop-off point —</option>';
+
+  // Group by zone
+  const zones = ['West','East','North','Central'];
+  zones.forEach(zone => {
+    const locs = LOCATIONS_JSON.filter(l => l.zone === zone && l.active !== false);
+    if (!locs.length) return;
+    const grp = document.createElement('optgroup');
+    grp.label = zoneEmoji(zone) + ' ' + zone;
+    locs.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.id;
+      const typeTag = loc.type === 'Van' ? '🚐' : '🏪';
+      opt.textContent = typeTag + ' ' + loc.title;
+      opt.dataset.locId = loc.id;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+
+  const count = LOCATIONS_JSON.filter(l => l.active !== false).length;
+  const countEl = document.getElementById('dropoff-picker-count');
+  if (countEl) countEl.textContent = count + ' locations';
+
+  // Auto-select if coming from map
+  if (pendingDropoffId) {
+    sel.value = pendingDropoffId;
+    pendingDropoffId = null;
+    onDropoffSelectChange();
+  }
+}
+
+function zoneEmoji(zone) {
+  return { West:'🌅', East:'🌄', North:'🌿', Central:'🏙️' }[zone] || '📍';
+}
+
+function onDropoffSelectChange() {
+  const sel  = document.getElementById('f_dropoff_select');
+  const id   = sel.value;
+  const prev = document.getElementById('dropoff-preview');
+  if (!id) { prev.style.display = 'none'; return; }
+
+  const loc = LOCATIONS_JSON.find(l => l.id === id);
+  if (!loc) { prev.style.display = 'none'; return; }
+
+  document.getElementById('dp-emoji').textContent = loc.emoji;
+  document.getElementById('dp-name').textContent  = loc.title;
+  document.getElementById('dp-zone').textContent  =
+    zoneEmoji(loc.zone) + ' ' + loc.zone + ' · ' + (loc.type === 'Van' ? '🚐 Van Stop' : '🏪 Mini Mart');
+  document.getElementById('dp-sched').innerHTML   =
+    loc.schedule.map(s => '⏰ ' + s.day + ' <strong>' + (s.time_window || s.time) + '</strong>').join('<br>');
+  document.getElementById('dp-maps').href         = loc.google_maps;
+  prev.style.display = 'block';
+}
+
+
+
+// "Book here" called from popup — store ID and navigate
+function bookFromMap(locId) {
+  closeLocPopup(null);
+  pendingDropoffId = locId;
+  // Make sure drop-off card is selected
+  const cc = document.getElementById('cc-dropoff');
+  if (cc) cc.click();
+  showSection('book');
+  // After section renders, populate and scroll to picker
+  setTimeout(() => {
+    populateDropoffSelect();
+    const el = document.getElementById('dropoff-picker-wrap');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 350);
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT MAPBOX MAP
+// ═══════════════════════════════════════════════════
+function buildMap(cLat, cLng) {
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+
+  if (map) {
+    map.flyTo({ center:[cLng, cLat], zoom:13, speed:1.1 });
+    return;
+  }
+
+  map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: [cLng, cLat],
+    zoom: 12,
+    attributionControl: false,
+  });
+
+  map.addControl(new mapboxgl.NavigationControl({ showCompass:false }), 'top-right');
+  map.addControl(new mapboxgl.AttributionControl({ compact:true }));
+}
+
+// ═══════════════════════════════════════════════════
+//  PIN ALL LOCATIONS on map
+// ═══════════════════════════════════════════════════
+function pinLocations() {
+  locMarkers.forEach(m => m.remove());
+  locMarkers = [];
+
+  LOCATIONS.forEach((loc) => {
+    const isVan = loc.type === 'Van';
+    const km = sorted.find(s => s.name === loc.name)?.km;
+
+    // Wrapper: Mapbox controls position — do NOT add position/transform to this
+    const el = document.createElement('div');
+    el.style.cssText = 'width:30px;height:30px;cursor:pointer;';
+    // Inner circle: all visuals live here
+    const inner = document.createElement('div');
+    inner.style.cssText = [
+      'width:30px','height:30px','border-radius:50%',
+      `background:${isVan ? '#C9A84C' : '#7c3aed'}`,
+      'border:2.5px solid #fff',
+      'box-shadow:0 2px 8px rgba(0,0,0,0.35)',
+      'display:flex','align-items:center','justify-content:center',
+      'font-size:14px','transition:transform 0.15s',
+      'pointer-events:none',
+    ].join(';');
+    inner.textContent = loc.emoji;
+    el.appendChild(inner);
+    el.addEventListener('mouseenter', () => { inner.style.transform = 'scale(1.3)'; });
+    el.addEventListener('mouseleave', () => { inner.style.transform = 'scale(1)'; });
+
+    // Popup content
+    const popupHtml = `
+      <div style="font-family:'DM Sans',sans-serif;padding:4px 2px;min-width:170px;">
+        <div style="font-size:14px;font-weight:700;color:#1a1612;margin-bottom:4px;">${loc.emoji} ${loc.name}</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:3px;">${isVan ? '🚐 Van Stop' : '🏪 Partner Shop'}</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:6px;">🕐 ${loc.sched}</div>
+        ${km !== undefined ? `<div style="font-size:12px;font-weight:700;color:#15803d;">📏 ${km.toFixed(1)} km from you</div>` : ''}
+        <div onclick="selectLoc(LOCATIONS.find(l=>l.name==='${loc.name.replace(/'/g,"\\'")}'))"
+          style="margin-top:8px;padding:6px 10px;background:#C9A84C;color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;">
+          ✓ Select this point
+        </div>
+      </div>`;
+
+    const popup = new mapboxgl.Popup({ offset:14, closeButton:true, maxWidth:'220px' })
+      .setHTML(popupHtml);
+
+    const marker = new mapboxgl.Marker({ element:el, anchor:'center' })
+      .setLngLat([loc.lng, loc.lat])
+      .setPopup(popup)
+      .addTo(map);
+
+    el.addEventListener('click', () => {
+      marker.togglePopup();
+    });
+
+    locMarkers.push(marker);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  SENDER MARKER — blue pulsing dot
+// ═══════════════════════════════════════════════════
+function placeSenderPin(lat, lng) {
+  if (senderMarker) senderMarker.remove();
+  const el = document.createElement('div');
+  el.className = 'sender-pin';
+
+  const popup = new mapboxgl.Popup({ offset:12, closeButton:false })
+    .setHTML(`<div style="font-family:'DM Sans',sans-serif;font-size:12px;padding:2px;"><strong>📍 Your Address</strong><br><span style="color:#6b7280;">${document.getElementById('f_saddr').value.split(',')[0]}</span></div>`);
+
+  senderMarker = new mapboxgl.Marker({ element:el, anchor:'center' })
+    .setLngLat([lng, lat])
+    .setPopup(popup)
+    .addTo(map);
+}
+
+// ═══════════════════════════════════════════════════
+//  FIT BOUNDS — sender + nearest 6 locations
+// ═══════════════════════════════════════════════════
+function fitBounds(sLat, sLng) {
+  const bounds = new mapboxgl.LngLatBounds();
+  bounds.extend([sLng, sLat]);
+  sorted.slice(0, 6).forEach(loc => bounds.extend([loc.lng, loc.lat]));
+  map.fitBounds(bounds, { padding:{ top:44, bottom:44, left:36, right:56 }, maxZoom:14, duration:1000 });
+}
+
+// ═══════════════════════════════════════════════════
+//  POPULATE DROPDOWN — grouped by zone, nearest first within zone
+// ═══════════════════════════════════════════════════
+const ZONES = [
+  { key:'West',    label:'🌅 West — Jurong · Clementi · Tuas' },
+  { key:'East',    label:'🌄 East — Tampines · Bedok · Pasir Ris' },
+  { key:'North',   label:'🌿 North — Woodlands · Sembawang · Yishun' },
+  { key:'Central', label:'🏙️ Central — Toa Payoh · Bishan · Bugis · City' },
+];
+
+function renderList() {
+  const sel = document.getElementById('f_dropoff');
+  sel.innerHTML = '<option value="">— Choose a drop-off point —</option>';
+
+  // Find overall nearest location (across all zones)
+  const nearest = sorted[0];
+
+  ZONES.forEach(zone => {
+    // Get locations for this zone, sorted by distance
+    const zoneLocs = sorted.filter(l => l.zone === zone.key);
+    if (zoneLocs.length === 0) return;
+
+    const grp = document.createElement('optgroup');
+    grp.label = zone.label;
+
+    zoneLocs.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.name;
+      const typeLabel = loc.type === 'Van' ? '🚐 Van stop' : '🏪 Shop';
+      const isNearest = loc.name === nearest.name;
+      opt.textContent = `${isNearest ? '⭐ NEAREST · ' : ''}${loc.name}  ·  ${loc.km.toFixed(1)}km  ·  ${typeLabel}  ·  ${loc.sched}`;
+      grp.appendChild(opt);
+    });
+
+    sel.appendChild(grp);
+  });
+
+  // Auto-select nearest overall
+  sel.value = nearest.name;
+  selectLoc(nearest, false);
+}
+
+// ═══════════════════════════════════════════════════
+//  SELECT LOCATION — update detail card + fly map
+// ═══════════════════════════════════════════════════
+function selectLoc(loc, flyTo = true) {
+  if (!loc) return;
+  chosen = loc;
+
+  // Sync dropdown value
+  const sel = document.getElementById('f_dropoff');
+  if (sel.value !== loc.name) sel.value = loc.name;
+
+  // Update detail card below dropdown
+  const card = document.getElementById('sel-loc-card');
+  card.style.display = 'block';
+  document.getElementById('sel-emoji').textContent = loc.emoji;
+  document.getElementById('sel-name').textContent  = loc.name;
+  document.getElementById('sel-meta').innerHTML    =
+    `${loc.type === 'Van' ? '🚐 Van Stop' : '🏪 Partner Shop'} &nbsp;·&nbsp; 🕐 ${loc.sched}` +
+    (loc.addr ? `<br>📍 ${loc.addr}` : '') +
+    (loc.km !== undefined ? `<br>📏 ${loc.km.toFixed(1)} km from your address` : '');
+
+  // Fly map to selected pin
+  if (flyTo && map) {
+    map.flyTo({ center:[loc.lng, loc.lat], zoom:15, speed:1.3 });
+    const mi = LOCATIONS.findIndex(l => l.name === loc.name);
+    if (mi >= 0 && locMarkers[mi]) {
+      locMarkers.forEach((m, j) => { if (j !== mi && m.getPopup().isOpen()) m.togglePopup(); });
+      if (!locMarkers[mi].getPopup().isOpen()) locMarkers[mi].togglePopup();
+    }
+  }
+
+  // Enable submit if T&C checked
+  document.getElementById('sub-btn').disabled = !document.getElementById('tnc-cb').checked;
+}
+
+// ═══════════════════════════════════════════════════
+//  DROPDOWN CHANGE HANDLER
+// ═══════════════════════════════════════════════════
+function onDropdownChange() {
+  const val = document.getElementById('f_dropoff').value;
+  if (!val) {
+    document.getElementById('sel-loc-card').style.display = 'none';
+    chosen = null;
+    document.getElementById('sub-btn').disabled = true;
+    return;
+  }
+  const loc = sorted.find(l => l.name === val) || LOCATIONS.find(l => l.name === val);
+  if (loc) selectLoc(loc, true);
+}
+
+// ═══════════════════════════════════════════════════
+//  goToP2
+// ═══════════════════════════════════════════════════
+async function goToP2() {
+  // Detect item type mode
+  const itypeVal  = document.querySelector('input[name="itype"]:checked')?.value || '';
+  const isDevices = itypeVal === 'Phones/Tablets/Laptops';
+
+  // Validate required fields — swap f_weight for f_devices when in device mode
+  const baseFields = ['f_rname','f_rphone','f_addr','f_contents','f_sname','f_sphone','f_email','f_saddr'];
+  const valueField = isDevices ? 'f_value_dev' : 'f_value';
+  const qtyField   = isDevices ? 'f_devices'   : 'f_weight';
+  const fields = [...baseFields, valueField, qtyField];
+
+  let ok = true;
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.value.trim()) {
+      if (el) { el.classList.add('err'); setTimeout(() => el.classList.remove('err'), 2500); }
+      ok = false;
+    }
+  });
+  // Validate drop-off point (required for drop-off method)
+  const methodVal = document.querySelector('input[name="method"]:checked')?.value || '';
+  const isDropoffMethod = !methodVal.includes('Pickup');
+  if (isDropoffMethod) {
+    const dropSel = document.getElementById('f_dropoff_select');
+    if (!dropSel || !dropSel.value) {
+      if (dropSel) { dropSel.classList.add('err'); setTimeout(() => dropSel.classList.remove('err'), 2500); }
+      dropSel?.scrollIntoView({ behavior:'smooth', block:'center' });
+      ok = false;
+    }
+  }
+  if (!ok) {
+    if (ok !== false || document.querySelector('.err')) {
+      document.querySelector('.err')?.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    return;
+  }
+
+  // Booking ref
+  const now = new Date();
+  bookingRef = `DLL${String(now.getFullYear()).slice(2)}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${Math.floor(1000+Math.random()*9000)}`;
+
+  // Build weight/qty display for summary
+  const itype  = document.querySelector('input[name="itype"]:checked');
+  const method = document.querySelector('input[name="method"]:checked');
+  const weightDisplay = isDevices
+    ? document.getElementById('f_devices').value + ' device(s)'
+    : document.getElementById('f_weight').value + ' kg';
+  const declaredValue = isDevices
+    ? document.getElementById('f_value_dev').value
+    : document.getElementById('f_value').value;
+
+  // Populate summary
+  document.getElementById('s_rname').textContent    = document.getElementById('f_rname').value;
+  document.getElementById('s_rphone').textContent   = '+95 ' + document.getElementById('f_rphone').value;
+  document.getElementById('s_dest').textContent     = document.getElementById('f_addr').value;
+  document.getElementById('s_itype').textContent    = itype   ? itype.value   : '—';
+  document.getElementById('s_weight').textContent   = weightDisplay;
+  document.getElementById('s_contents').textContent = document.getElementById('f_contents').value;
+  document.getElementById('s_method').textContent   = method  ? method.value  : '—';
+  document.getElementById('s_sender').textContent   = document.getElementById('f_sname').value + ' · +65 ' + document.getElementById('f_sphone').value;
+  document.getElementById('s_saddr').textContent    = document.getElementById('f_saddr').value;
+  document.getElementById('s_email').textContent    = document.getElementById('f_email').value;
+
+  // ── Populate cost breakdown ────────────────────────────────────────────────
+  const itypeVal2   = itype ? itype.value : '';
+  const isDevices2  = itypeVal2 === 'Phones/Tablets/Laptops';
+  const isMachinery2= itypeVal2 === 'Electronics/Machinery';
+  const rawKg2      = isDevices2 ? (parseInt(document.getElementById('f_devices')?.value)||1)
+                                 : (parseFloat(document.getElementById('f_weight').value)||1);
+  const billKg2     = isDevices2 ? rawKg2 : Math.ceil(rawKg2);
+
+  let rate2, shippingCost2, shippingLabel2;
+  if (isDevices2)   { rate2=50; shippingCost2=billKg2*50; shippingLabel2='📱 '+billKg2+' item(s) × $50'; }
+  else if(isMachinery2){ rate2=20; shippingCost2=billKg2*20; shippingLabel2='⚙️ '+billKg2+'kg × $20/kg'; }
+  else              { rate2=15; shippingCost2=billKg2*15; shippingLabel2='🛍️ '+billKg2+'kg × $15/kg'; }
+
+  const isPickup2   = method && method.value.includes('Pickup');
+  const kgPickup2   = isDevices2 ? billKg2*0.5 : billKg2;
+  const pickupFee2  = isPickup2 ? getPickupPrice(kgPickup2) : 0;
+  const total2      = (shippingCost2 + pickupFee2).toFixed(2);
+
+  document.getElementById('cb_shipping_label').textContent = shippingLabel2;
+  document.getElementById('cb_shipping').textContent       = '$' + shippingCost2.toFixed(2);
+  const pickupRow = document.getElementById('cb_pickup_row');
+  if (isPickup2) {
+    pickupRow.style.display = '';
+    document.getElementById('cb_pickup').textContent = '+$' + pickupFee2.toFixed(2);
+  } else {
+    pickupRow.style.display = 'none';
+  }
+  document.getElementById('cb_total').textContent = 'SGD ' + total2;
+
+  // ── Toggle drop-off vs pickup sections + populate p2 card ──────────────────
+  const dpSec = document.getElementById('dropoff-point-section');
+  const puSec = document.getElementById('pickup-info-section');
+  if (isPickup2) {
+    if (dpSec) dpSec.style.display = 'none';
+    if (puSec) puSec.style.display = 'block';
+    const padEl = document.getElementById('pickup-addr-display');
+    if (padEl) padEl.textContent = document.getElementById('f_saddr').value;
+    chosen = { name:'Pick-up from address', type:'Pickup', sched:'Driver contacts within 1–2 working days',
+               lat: senderCoords?.lat||1.3521, lng: senderCoords?.lng||103.8198, maps:'#', emoji:'🚐' };
+  } else {
+    if (dpSec) dpSec.style.display = 'block';
+    if (puSec) puSec.style.display = 'none';
+    // Populate read-only p2 drop-off card from page 1 selection
+    const selId  = document.getElementById('f_dropoff_select')?.value;
+    const selLoc = selId ? LOCATIONS_JSON.find(l => l.id === selId) : null;
+    if (selLoc) {
+      document.getElementById('p2-drop-emoji').textContent = selLoc.emoji;
+      document.getElementById('p2-drop-name').textContent  = selLoc.title;
+      document.getElementById('p2-drop-zone').textContent  =
+        zoneEmoji(selLoc.zone) + ' ' + selLoc.zone + ' · ' + (selLoc.type === 'Van' ? '🚐 Van Stop' : '🏪 Mini Mart');
+      document.getElementById('p2-drop-sched').innerHTML   =
+        selLoc.schedule.map(s => '⏰ ' + s.day + ' <strong>' + (s.time_window || s.time) + '</strong>').join('<br>');
+      chosen = { name: selLoc.title, type: selLoc.type, sched: selLoc.schedule.map(s=>s.day+' '+s.time).join(' · '),
+                 lat: selLoc.coordinates.lat, lng: selLoc.coordinates.lng,
+                 maps: selLoc.google_maps, emoji: selLoc.emoji };
+    } else {
+      chosen = null;
+    }
+  }
+
+  // Go to page 2
+  goTo('p1', 'p2', 2);
+
+  // ── GEOCODE & MAP ────────────────────────────────
+  const geoBar  = document.getElementById('geo-bar');
+  const geoTxt  = document.getElementById('geo-txt');
+  const geoSpin = document.getElementById('geo-spin');
+
+  geoBar.className = 'geo-bar searching';
+  geoSpin.style.display = 'block';
+  geoTxt.textContent = 'Locating your Singapore address…';
+
+  const addr = document.getElementById('f_saddr').value;
+
+  // Default = Singapore centre (fallback)
+  let sLat = 1.3521, sLng = 103.8198;
+  const result = await geocode(addr);
+
+  if (result) {
+    sLat = result.lat;
+    sLng = result.lng;
+    senderCoords = { lat:sLat, lng:sLng };
+    geoBar.className = 'geo-bar found';
+    geoSpin.style.display = 'none';
+    geoTxt.textContent = `✅ Found: ${addr.split(',')[0].trim()}`;
+  } else {
+    senderCoords = { lat:sLat, lng:sLng };
+    geoBar.className = 'geo-bar fallback';
+    geoSpin.style.display = 'none';
+    geoTxt.textContent = '⚠️ Address not pinpointed — showing all Singapore locations';
+  }
+
+  // Sort locations by distance from sender (or SG centre if geocode failed)
+  sorted = LOCATIONS
+    .map(l => ({ ...l, km: haversine(sLat, sLng, l.lat, l.lng) }))
+    .sort((a, b) => a.km - b.km);
+
+  // ✅ Populate dropdown IMMEDIATELY — no waiting for map
+  renderList();
+
+  // Build map (decorative — dropdown already works without it)
+  buildMap(sLat, sLng);
+
+  const onMapReady = () => {
+    pinLocations();
+    placeSenderPin(sLat, sLng);
+    fitBounds(sLat, sLng);
+    // Re-render list after map loads in case order updated
+    renderList();
+  };
+
+  if (map.loaded()) { onMapReady(); }
+  else              { map.on('load', onMapReady); }
+}
+
+// ═══════════════════════════════════════════════════
+//  goToP3 — submit to webhook
+// ═══════════════════════════════════════════════════
+async function goToP3() {
+  if (!chosen) { alert('Please select a drop-off location from the list.'); return; }
+
+  const itype      = document.querySelector('input[name="itype"]:checked');
+  const itypeVal   = itype ? itype.value : '';
+  const isDevices  = itypeVal === 'Phones/Tablets/Laptops';
+  const isMachinery= itypeVal === 'Electronics/Machinery';
+
+  // Weight / qty
+  const rawWeight  = isDevices
+    ? parseInt(document.getElementById('f_devices')?.value) || 1
+    : parseFloat(document.getElementById('f_weight').value) || 1;
+  const weight     = isDevices ? rawWeight : Math.ceil(rawWeight); // ceil kg, exact for devices
+
+  // Declared value
+  const declaredVal = isDevices
+    ? document.getElementById('f_value_dev')?.value || '0'
+    : document.getElementById('f_value')?.value || '0';
+
+  // Rate & total
+  let rate, shippingTotal;
+  if (isDevices) {
+    rate          = 50; // per item
+    shippingTotal = weight * 50;
+  } else if (isMachinery) {
+    rate          = 20; // per kg
+    shippingTotal = weight * 20;
+  } else {
+    rate          = 15; // food/clothes $15/kg
+    shippingTotal = weight * 15;
+  }
+
+  // Pickup fee — dynamic based on weight
+  const method    = document.querySelector('input[name="method"]:checked');
+  const isPickup  = method && method.value.includes('Pickup');
+  const kgForPickup = isDevices ? weight * 0.5 : weight;
+  const pickup    = isPickup ? getPickupPrice(kgForPickup) : 0;
+  const total     = (shippingTotal + pickup).toFixed(2);
+  const payment   = { value: 'Cash or PayNow at drop-off' };
+
+  const payload = {
+    booking_ref:        bookingRef,
+    recipient_name:     document.getElementById('f_rname').value,
+    myanmar_phone:      '+95' + document.getElementById('f_rphone').value,
+    delivery_address:   document.getElementById('f_addr').value,
+    item_type:          itypeVal,
+    weight_kg:          isDevices ? weight + ' device(s)' : weight + ' kg',
+    declared_value_sgd: declaredVal,
+    contents:           document.getElementById('f_contents').value,
+    sender_name:        document.getElementById('f_sname').value,
+    sender_phone_sg:    '+65' + document.getElementById('f_sphone').value,
+    sender_email:       document.getElementById('f_email').value,
+    sender_address_sg:  document.getElementById('f_saddr').value,
+    sender_lat:         senderCoords ? senderCoords.lat : null,
+    sender_lng:         senderCoords ? senderCoords.lng : null,
+    collection_method:  method ? method.value : '',
+    dropoff_name:       chosen.name,
+    dropoff_type:       chosen.type,
+    dropoff_schedule:   chosen.sched,
+    dropoff_lat:        chosen.lat,
+    dropoff_lng:        chosen.lng,
+    payment_method:     payment ? payment.value : '',
+    rate:               isDevices ? '$50/item' : '$' + rate + '/kg',
+    pickup_fee:         pickup,
+    total_sgd:          total,
+    submitted_at:       new Date().toISOString(),
+  };
+
+  const btn = document.getElementById('sub-btn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Sending…';
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    // Build confirmation
+    document.getElementById('conf-ref').textContent   = bookingRef;
+    document.getElementById('conf-ref2').textContent  = bookingRef;
+    document.getElementById('conf-email').textContent = payload.sender_email;
+    document.getElementById('conf-loc-name').textContent = chosen.emoji + ' ' + chosen.name;
+    document.getElementById('conf-loc-detail').innerHTML =
+      `🚐 ${chosen.type === 'Van' ? 'Van Stop' : 'Partner Shop'}<br>🕐 ${chosen.sched}<br>ℹ️ Show your booking reference when you arrive`;
+    document.getElementById('conf-maps-link').href = chosen.maps;
+
+    if (payment && payment.value === 'PayNow') {
+      document.getElementById('conf-cash').style.display   = 'none';
+      document.getElementById('conf-paynow').style.display = 'block';
+      document.getElementById('conf-paynow-amt').textContent = 'SGD ' + total;
+    } else {
+      document.getElementById('conf-cash').style.display   = 'block';
+      document.getElementById('conf-paynow').style.display = 'none';
+      document.getElementById('conf-amount').textContent   = 'SGD ' + total;
+    }
+
+    goTo('p2', 'p3', 3);
+
+    // Mini confirmation map
+    setTimeout(() => {
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+      if (!confMap) {
+        confMap = new mapboxgl.Map({
+          container: 'conf-map',
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [chosen.lng, chosen.lat],
+          zoom: 15,
+          interactive: false,
+          attributionControl: false,
+        });
+        confMap.on('load', () => {
+          const el = document.createElement('div');
+          el.style.cssText = 'width:36px;height:36px;border-radius:50%;background:#C9A84C;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;';
+          el.textContent = chosen.emoji;
+          new mapboxgl.Marker({ element:el, anchor:'center' })
+            .setLngLat([chosen.lng, chosen.lat])
+            .addTo(confMap);
+        });
+      }
+    }, 400);
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.innerHTML = '✅ Confirm Booking';
+    alert('Could not send booking — please check your connection and try again.\n\n' + err.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  T&C TOGGLE
+// ═══════════════════════════════════════════════════
+function toggleTnc() {
+  const cb   = document.getElementById('tnc-cb');
+  const wrap = document.getElementById('tnc-wrap');
+  // onchange fires after state already changed — no need to flip
+  wrap.classList.toggle('on', cb.checked);
+  document.getElementById('sub-btn').disabled = !(cb.checked && chosen);
+}
+
+// ═══════════════════════════════════════════════════
+//  FALLBACK: populate dropdown on page load with unsorted data
+//  so it's never empty even before user clicks Next
+// ═══════════════════════════════════════════════════
+(function populateFallback() {
+  const sel = document.getElementById('f_dropoff');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Choose a drop-off point —</option>';
+  ZONES.forEach(zone => {
+    const zoneLocs = LOCATIONS.filter(l => l.zone === zone.key);
+    if (!zoneLocs.length) return;
+    const grp = document.createElement('optgroup');
+    grp.label = zone.label;
+    zoneLocs.forEach(loc => {
+      const opt = document.createElement('option');
+      opt.value = loc.name;
+      opt.textContent = `${loc.name}  ·  ${loc.type === 'Van' ? '🚐 Van stop' : '🏪 Shop'}  ·  ${loc.sched}`;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+})();
+
+// ═══════════════════════════════════════════════════
+//  PAGE NAVIGATION
+// ═══════════════════════════════════════════════════
+// ── Item Type Switcher ───────────────────────────────────────────────────────
+function selectItemType(type) {
+  const weightSec  = document.getElementById('weight-section');
+  const devicesSec = document.getElementById('devices-section');
+
+  if (type === 'devices') {
+    weightSec.style.display  = 'none';
+    devicesSec.style.display = 'block';
+    // clear weight so validation doesn't trip
+    const wEl = document.getElementById('f_weight');
+    if (wEl) wEl.value = '';
+    const noteEl = document.getElementById('weight-total-note');
+    if (noteEl) noteEl.style.display = 'none';
+    updateDeviceTotal();
+  } else {
+    weightSec.style.display  = '';
+    devicesSec.style.display = 'none';
+    updateWeightTotal();
+  }
+  updatePickupPrice();
+}
+
+function updateDeviceTotal() {
+  const qty   = parseInt(document.getElementById('f_devices')?.value) || 1;
+  const total = qty * 50;
+  const el    = document.getElementById('device-total-text');
+  if (el) el.innerHTML = qty + ' item' + (qty > 1 ? 's' : '') + ' × $50 = <strong>$' + total.toFixed(2) + '</strong>';
+}
+
+function updateWeightTotal() {
+  const kg      = parseFloat(document.getElementById('f_weight')?.value) || 0;
+  const noteEl  = document.getElementById('weight-total-note');
+  const textEl  = document.getElementById('weight-total-text');
+  if (!noteEl || !textEl) return;
+  if (!kg || kg <= 0) { noteEl.style.display = 'none'; return; }
+
+  const billableKg = Math.ceil(kg); // always round up to nearest whole kg
+  const itype = document.querySelector('input[name="itype"]:checked')?.value || '';
+  let rate, emoji;
+  if (itype === 'Electronics/Machinery') {
+    rate = 20; emoji = '⚙️';
+  } else {
+    rate = 15; emoji = '🛍️';
+  }
+  const total = (billableKg * rate).toFixed(2);
+  textEl.innerHTML = emoji + ' ' + billableKg + 'kg × $' + rate + '/kg = <strong>$' + total + '</strong>';
+  noteEl.style.display = 'block';
+}
+
+// ── Dynamic Pickup Pricing ────────────────────────────────────────────────────
+// Base $7.99, +$3 for every 5kg tier above 1kg
+// Tiers: 1kg=$7.99, 5kg=$10.99, 10kg=$13.99, 20kg=$16.99, 30kg=$19.99
+function getPickupPrice(kg) {
+  const base = 7.99;
+  // For devices, use qty as proxy weight estimate (avg 0.3kg each, round up)
+  const selectedType = document.querySelector('input[name="itype"]:checked')?.value || '';
+  if (selectedType === 'Phones/Tablets/Laptops') {
+    const qty = parseInt(document.getElementById('f_devices')?.value) || 1;
+    kg = qty * 0.5; // treat each device as ~0.5kg for pickup tier
+  }
+  if (!kg || kg <= 0) return base;
+  if (kg <= 5)  return base;
+  if (kg <= 10) return base + 3;
+  if (kg <= 20) return base + 6;
+  if (kg <= 30) return base + 9;
+  return base + 9;
+}
+
+function getPickupTierNote(kg) {
+  if (!kg || kg <= 5)  return '';
+  if (kg <= 10) return 'Weight 5–10kg: +$3 pickup surcharge';
+  if (kg <= 20) return 'Weight 10–20kg: +$6 pickup surcharge';
+  if (kg <= 30) return 'Weight 20–30kg: +$9 pickup surcharge';
+  return '';
+}
+
+function updatePickupPrice() {
+  const kg    = parseFloat(document.getElementById('f_weight')?.value) || 0;
+  const price = getPickupPrice(kg);
+  const priceEl = document.getElementById('pickup-price');
+  const noteEl  = document.getElementById('pickup-note');
+  const noteTxt = document.getElementById('pickup-note-text');
+  const weightErr = document.getElementById('weight-err');
+
+  // Weight validation
+  if (kg > 30) {
+    if (weightErr) weightErr.style.display = 'block';
+    document.getElementById('f_weight').value = 30;
+    return;
+  } else {
+    if (weightErr) weightErr.style.display = 'none';
+  }
+
+  // Update pickup price display
+  if (priceEl) priceEl.textContent = '$' + price.toFixed(2);
+
+  // Show/hide surcharge note
+  const note = getPickupTierNote(kg);
+  if (noteEl && noteTxt) {
+    if (note) {
+      noteTxt.textContent = note;
+      noteEl.style.display = 'block';
+    } else {
+      noteEl.style.display = 'none';
+    }
+  }
+
+  // Update the method value if pickup is selected
+  const pickupCard = document.getElementById('cc-pickup');
+  if (pickupCard && pickupCard.classList.contains('selected')) {
+    const radio = pickupCard.querySelector('input[type="radio"]');
+    if (radio) radio.value = 'Pickup (+$' + price.toFixed(2) + ')';
+  }
+}
+
+function validateDeclaredValue() {
+  ['f_value','f_value_dev'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let v = parseFloat(el.value);
+    if (!isNaN(v) && v < 0) el.value = 0;
+    if (!isNaN(v) && v > 10000) el.value = 10000;
+  });
+  const errEl = document.getElementById('value-err');
+  if (errEl) errEl.style.display = 'none';
+}
+
+// ── Collection card selector ─────────────────────────────────────────────────
+function selectCollect(el, value) {
+  document.querySelectorAll('.collect-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const radio = el.querySelector('input[type="radio"]');
+  if (radio) {
+    radio.checked = true;
+    if (value === 'Pickup') {
+      const kg    = parseFloat(document.getElementById('f_weight')?.value) || 0;
+      const price = getPickupPrice(kg);
+      radio.value = 'Pickup (+$' + price.toFixed(2) + ')';
+    }
+  }
+  updatePickupPrice();
+  // Show/hide drop-off picker
+  const isDropoff = value && value.toLowerCase().includes('drop');
+  const wrap = document.getElementById('dropoff-picker-wrap');
+  if (wrap) wrap.style.display = isDropoff ? 'block' : 'none';
+  if (isDropoff) populateDropoffSelect();
+}
+
+function goTo(from, to, step) {
+  document.getElementById(from).classList.remove('active');
+  document.getElementById(to).classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+
+  [1,2,3].forEach(i => {
+    const s = document.getElementById('st' + i);
+    s.classList.remove('active', 'done');
+    if (i < step)      s.classList.add('done');
+    else if (i===step) s.classList.add('active');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  🧭  NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function toggleNav() {
+  const drawer   = document.getElementById('nav-drawer');
+  const overlay  = document.getElementById('nav-overlay');
+  const burger   = document.getElementById('hamburger');
+  const isOpen   = drawer.classList.contains('open');
+  drawer.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  burger.classList.toggle('open', !isOpen);
+}
+
+function closeNav() {
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+function showSection(name) {
+  // Hide all sections
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  // Show target
+  document.getElementById('sec-' + name).classList.add('active');
+  // Update nav links
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const nl = document.getElementById('nl-' + name);
+  if (nl) nl.classList.add('active');
+  // Close drawer
+  closeNav();
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Init map if switching to home
+  if (name === 'home') setTimeout(initOverviewMap, 300);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  🌍  COUNTRY SELECTOR + AUTO-DETECT
+// ═══════════════════════════════════════════════════════════════
+function toggleCountryDrop() {
+  document.getElementById('countryDrop').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  const sel = document.getElementById('countrySel');
+  if (sel && !sel.contains(e.target)) {
+    document.getElementById('countryDrop').classList.remove('open');
+  }
+});
+function switchCountry(code) {
+  document.getElementById('countryDrop').classList.remove('open');
+  if (code === 'mm') { window.location.href = 'mm.html'; }
+}
+async function autoDetectCountry() {
+  try {
+    const res  = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
+    const data = await res.json();
+    if (data.country_code === 'MM') {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1a1612;border-top:2px solid #C9A84C;padding:14px 16px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.4);';
+      banner.innerHTML = `
+        <div style="font-size:13px;color:#f5f0e8;font-family:'Noto Sans Myanmar',sans-serif;line-height:1.5;">
+          🇲🇲 မြန်မာမှ ဝင်ရောက်နေပါသည်<br>
+          <span style="font-size:11px;color:#8a7a5a;">Myanmar version သို့ ပြောင်းမည်လား?</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <a href="mm.html" style="background:#C9A84C;color:#0f0d0a;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;">🇲🇲 ရွေးချယ်မည်</a>
+          <button onclick="this.parentElement.parentElement.remove()" style="background:transparent;border:1px solid #3d3028;color:#8a7a5a;padding:8px 12px;border-radius:20px;font-size:12px;cursor:pointer;">ဤနေရာတွင် ဆက်နေမည်</button>
+        </div>`;
+      document.body.appendChild(banner);
+    }
+  } catch(e) { /* silent fail */ }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  🎠  BANNER SLIDER
+// ═══════════════════════════════════════════════════════════════
+(function() {
+  let cur = 0;
+  const total = 2;
+  let startX = 0;
+  let timer;
+
+  function goSlide(n) {
+    cur = (n + total) % total;
+    document.getElementById('bannerTrack').style.transform = 'translateX(-' + (cur * 100) + '%)';
+    document.querySelectorAll('.bdot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  }
+  window.goSlide = goSlide;
+
+  function startTimer() { timer = setInterval(() => goSlide(cur + 1), 3500); }
+  function resetTimer()  { clearInterval(timer); startTimer(); }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('bannerSlider');
+    if (!slider) return;
+    startTimer();
+    slider.addEventListener('touchstart', e => { startX = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
+    slider.addEventListener('touchend',   e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) goSlide(diff > 0 ? cur + 1 : cur - 1);
+      resetTimer();
+    });
+    let md = false;
+    slider.addEventListener('mousedown', e => { startX = e.clientX; md = true; clearInterval(timer); });
+    slider.addEventListener('mouseup',   e => {
+      if (!md) return; md = false;
+      const diff = startX - e.clientX;
+      if (Math.abs(diff) > 40) goSlide(diff > 0 ? cur + 1 : cur - 1);
+      resetTimer();
+    });
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════════
+//  🌐  LOCALISATION — MM (Burmese default) / EN (English)
+// ═══════════════════════════════════════════════════════════════════
+let currentLang = 'mm';
+
+const STRINGS = {
+  mm: {
+    // Stepper
+    step1: 'အချက်အလက်', step2: 'အပ်နေရာ', step3: 'ပြီးဆုံး',
+    // Card head
+    formTitle: '🦚 ပစ္စည်းပို့ဆောင်ရေး မှာယူမှတ်တမ်း',
+    formDesc:  'ဒေါင်းလေး လော်ဂျစ်စတစ် · Singapore → Myanmar (Yangon) · ၂ ပတ်ခန့်ကြာမည်',
+    // Section banners
+    secDropoffPt: 'ပစ္စည်းအပ်နေရာများ',   secDropoffPtMM: '',
+    secMethod:     'ပစ္စည်းအပ်နည်း',         secMethodMM:     '',
+    secRecipient:  'လက်ခံသူ အချက်အလက်',     secRecipientMM:  '',
+    secParcel:     'ပစ္စည်းအသေးစိတ်',         secParcelMM:     '',
+    secSender:     'ပို့သူ အချက်အလက်',        secSenderMM:     '',
+    secSummary:    'အမှာစာ အကျဉ်းချုပ်',      secSummaryMM:    '',
+    secDropoff:    'ပစ္စည်းအပ်မည့်နေရာ',      secDropoffMM:    '',
+    secPayment:    'ငွေပေးချေမည့်နည်းလမ်း',   secPaymentMM:    '',
+    secTnc:        'စည်းမျဉ်းစည်းကမ်းများ',    secTncMM:        '',
+    // Field labels
+    lblRName:      'လက်ခံသူ အမည်အပြည့်အစုံ',     lblRNameMM:  '',
+    lblMPhone:     'မြန်မာဖုန်းနံပါတ်',             lblMPhoneMM: '',
+    lblAddr:       'မြန်မာပြည်လိပ်စာ (အသေးစိတ်)',  lblAddrMM:   '',
+    lblContents:   'ပစ္စည်းဖော်ပြချက်',              lblContentsMM:'',
+    lblSName:      'ပို့သူ အမည်အပြည့်အစုံ',         lblSNameMM:  '',
+    lblEmail:      'အီးမေးလ်လိပ်စာ',               lblEmailMM:  '',
+    lblSAddr:      'စင်ကာပူနေရပ်လိပ်စာ',            lblSAddrMM:  '',
+    lblDropoff:    'ပစ္စည်းအပ်မည့်နေရာ ရွေးချယ်ပါ',  lblDropoffMM:'',
+    // Placeholders
+    phRName:    'ဥပမာ — ဒေါ်အေးအေး',
+    phRPhone:   '9765432100',
+    phAddr:     'ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်',
+    phContents: 'ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး',
+    phSName:    'ဥပမာ — ကိုအောင်အောင်',
+    phEmail:    'yourname@email.com',
+    phSAddr:    'ဥပမာ — Blk 134 Jurong East St 13, #05-12',
+    // Radio subtitles
+    dropoffSub: 'ကောက်ခံရမည့်နေရာသို့ ကိုယ်တိုင်အပ်မည်',
+    pickupSub:  'သင့်နေရာမှ ကောက်ယူမည်',
+    foodSub:    'အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း',
+    elecSub:    'အီလက်ထရောနစ် / ဖုန်း / လက်တော့ပ်',
+    cashSub:    'ပစ္စည်းအပ်သောအခါ ငွေပေးချေမည်',
+    paynowSub:  'တင်သွင်းပြီး QR ဖြင့်ပေးချေပါ',
+    // Buttons & notes
+    btnNext:    'ဆက်လက်မည် — အပ်နေရာရွေးချယ်ပါ',
+    btnBack:    '← နောက်သို့',
+    btnSubmit:  '✅ မှာယူမှတ်တမ်းတင်မည်',
+    noteMapOverview: 'မြေပုံပေါ်ရှိ pin များကို နှိပ်၍ နေရာအသေးစိတ်ကြည့်ပါ။ Singapore တစ်ဝှမ်း အပ်နေရာ ၁၇ ခု ရှိသည်။',
+    noteMapP2:  'Pin နှိပ်ပါ — အောက်မှ dropdown မှ နေရာရွေးချယ်ပါ',
+    noteSAddr:  'နောက်တစ်မျက်နှာတွင် မြေပုံသည် သင့်နေရာသို့ ချဲ့ပြမည်',
+    noteCheck:  'ဆက်လက်မတင်မီ အချက်အလက်များကို သေချာစစ်ဆေးပါ',
+    noteBlue:   'ကြေညာသောတန်ဖိုးသည် အကောက်ခွန်အတွက်သာ ဖြစ်ပြီး ပို့ဆောင်ခနှင့် မသက်ဆိုင်ပါ',
+    // T&C
+    tncAgree: 'စည်းမျဉ်းစည်းကမ်းများကို သဘောတူသည်',
+    tncAgreeMM: '',
+    tnc: '• ပစ္စည်းကို Myanmar သို့ပေးပို့ပြီးနောက် ပြန်မပေးနိုင်ပါ<br>• တားမြစ်ပစ္စည်းများ — လက်နက်၊ မူးယစ်ဆေး၊ ငွေသား၊ တိရစ္ဆာန်မထည့်ပါနှင့်<br>• အကောက်ခွန်ကြောင့် နှောင့်နှေးမှုများအတွက် Daung Lay Logistics တာဝန်မရှိပါ<br>• Yangon မြို့သာ ပို့ဆောင်ပေးသည် · ကောက်ယူပြီး ၂ ပတ်ခန့်ကြာမည်<br>• မှာယူပြီး ၂၄ နာရီအတွင်း ပစ္စည်းအပ်ပါ<br><span style="color:#aaa;font-size:11px;">• တားမြစ်ပစ္စည်းများ မပါဝင်ကြောင်း သေချာပါစေ</span>',
+    // P3
+    confTitle: '✅ မှာယူမှတ်တမ်း အတည်ပြုပြီး!',
+    confRef:   'မှာယူမှတ်တမ်းနံပါတ်',
+    confMaps:  '🗺️ Google Maps တွင်ဖွင့်ရန်',
+    confCashTitle:   '💵 ပစ္စည်းအပ်သောအခါ ငွေပေးချေရမည်',
+    confPaynowTitle: '📱 PayNow ဖြင့်ပေးချေပါ',
+    confNextTitle:   'နောက်တစ်ဆင့်',
+  },
+
+  en: {
+    // Stepper
+    step1: 'Details', step2: 'Drop-off', step3: 'Done',
+    // Card head
+    formTitle: '🦚 Parcel Delivery Booking',
+    formDesc:  'Daung Lay Logistics · Singapore → Myanmar (Yangon) · ~2 weeks',
+    // Section banners
+    secDropoffPt: 'Drop-off Points',   secDropoffPtMM: 'ပစ္စည်းအပ်နေရာများ',
+    secMethod:     'Collection Method',   secMethodMM:     'ပစ္စည်းအပ်နည်း',
+    secRecipient:  'Recipient Details',   secRecipientMM:  'လက်ခံမည့်သူ အချက်အလက်',
+    secParcel:     'Parcel Details',      secParcelMM:     'ပစ္စည်းအသေးစိတ်',
+    secSender:     'Sender Details',      secSenderMM:     'ပို့သူ အချက်အလက်',
+    secSummary:    'Booking Summary',     secSummaryMM:    'အမှာစာ အကျဉ်းချုပ်',
+    secDropoff:    'Drop-off Point',    secDropoffMM:    'ပစ္စည်းအပ်မည့်နေရာ',
+    secPayment:    'Payment Method',      secPaymentMM:    'ငွေပေးချေမည့်နည်းလမ်း',
+    secTnc:        'Terms & Conditions',  secTncMM:        'စည်းမျဉ်းစည်းကမ်းများ',
+    // Field labels
+    lblRName:     'Recipient Full Name',        lblRNameMM:   '/ လက်ခံသူအမည်',
+    lblMPhone:    'Myanmar Phone',              lblMPhoneMM:  '/ မြန်မာဖုန်းနံပါတ်',
+    lblAddr:      'Full Delivery Address',      lblAddrMM:    '/ အသေးစိတ်လိပ်စာ',
+    lblContents:  'Contents Description',       lblContentsMM:'/ ပစ္စည်းဖော်ပြချက်',
+    lblSName:     'Your Full Name',             lblSNameMM:   '/ ပေးပို့သူအမည်',
+    lblEmail:     'Email Address',              lblEmailMM:   '/ အီးမေးလ်',
+    lblSAddr:     'Your Singapore Address',     lblSAddrMM:   '/ စင်ကာပူနေရပ်လိပ်စာ',
+    lblDropoff:   'Select Drop-off Location',   lblDropoffMM: '/ ပစ္စည်းအပ်မည့်နေရာ',
+    // Placeholders
+    phRName:    'e.g. Daw Aye Aye',
+    phRPhone:   '9765432100',
+    phAddr:     'e.g. No.12, Shwe Padauk St, Ward 6, Hlaing, Yangon',
+    phContents: 'e.g. 2 shirts, vitamin C, face cream, shampoo',
+    phSName:    'e.g. Ko Aung Aung',
+    phEmail:    'yourname@email.com',
+    phSAddr:    'e.g. Blk 134 Jurong East St 13, #05-12, S609734',
+    // Radio subtitles
+    dropoffSub: 'Drop off at the drop-off point yourself',
+    pickupSub:  'We collect from your address',
+    foodSub:    'Food / Clothes / Medicine / Cosmetics',
+    elecSub:    'Electronics / Phones / Laptops',
+    cashSub:    'Pay when you drop off the parcel',
+    paynowSub:  'Scan QR code shown after submitting',
+    // Buttons & notes
+    btnNext:    'Next — Choose Drop-off Point',
+    btnBack:    '← Back',
+    btnSubmit:  '✅ Confirm Booking',
+    noteMapOverview: 'Tap any pin to see location details. All 17 drop-off points across Singapore.',
+    noteMapP2:  'Tap a pin to see details · Select from the dropdown below',
+    noteSAddr:  'On the next page the map will zoom to your area to help you confirm your drop-off point.',
+    noteCheck:  'Please check your details carefully before continuing.',
+    noteBlue:   'Declared value is for customs only and does not affect the shipping cost.',
+    // T&C
+    tncAgree:   'I agree to the Terms & Conditions',
+    tncAgreeMM: 'စည်းမျဉ်းများကို သဘောတူသည်',
+    tnc: '• Parcels are non-refundable once shipped to Myanmar<br>• Prohibited items: weapons, drugs, cash, live animals, perishables<br>• Daung Lay Logistics is not liable for customs delays or inspections<br>• Delivery to Yangon only · Estimated 2 weeks from collection<br>• Drop off your parcel within 24 hours of booking confirmation<br><span style="color:#aaa;font-size:11px;">• Please ensure no prohibited items are included</span>',
+    // P3
+    confTitle: 'Booking Confirmed!',
+    confRef:   'Your Booking Reference',
+    confMaps:  '🗺️ Open in Google Maps',
+    confCashTitle:   '💵 Pay Cash at Drop-off',
+    confPaynowTitle: '📱 Pay via PayNow',
+    confNextTitle:   'Next Step',
+  }
+};
+
+// ── Apply language to all tagged elements ─────────────────────────────────────
+function setLang(lang) {
+  currentLang = lang;
+  const S = STRINGS[lang];
+
+  // Toggle button states
+  document.getElementById('btn-mm').classList.toggle('active', lang === 'mm');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.body.classList.toggle('lang-en', lang === 'en');
+  document.body.classList.toggle('lang-mm', lang === 'mm');
+
+  // Update all data-i18n text nodes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (S[key] !== undefined) el.textContent = S[key];
+  });
+
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (S[key] !== undefined) el.placeholder = S[key];
+  });
+
+  // Update T&C block (innerHTML)
+  const tncBlock = document.getElementById('tnc-body');
+  if (tncBlock && S.tnc) tncBlock.innerHTML = S.tnc;
+
+  // Update note-blue (declared value note)
+  document.querySelectorAll('[data-i18n-block="noteBlue"]').forEach(el => {
+    if (S.noteBlue) el.textContent = S.noteBlue;
+  });
+
+  // Update stepper step labels via data-i18n (already handled above)
+  // Hide/show Burmese sub-labels in section banners
+  document.querySelectorAll('.sb-text span[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = S[key];
+    // Hide MM span in MM mode (already in main), show in EN mode as sub-label
+    if (key.endsWith('MM')) {
+      el.style.display = val ? 'block' : 'none';
+    }
+  });
+}
+
+// ── Initialise with Burmese on page load ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  setLang('mm');
+  autoDetectCountry();
+  await loadLocations(); // fetch locations.json → populate LOCATIONS_JSON
+  populateDropoffSelect(); // pre-fill dropdown from JSON
+  setTimeout(initOverviewMap, 300);
+});
+
+</script>
+
+<!-- ── LOCATION POPUP OVERLAY ── -->
+<div class="loc-overlay" id="loc-overlay" onclick="closeLocPopup(event)">
+  <div class="loc-popup" id="loc-popup">
+
+    <!-- Close button -->
+    <button class="loc-popup-close" onclick="closeLocPopup(null)">✕</button>
+
+    <!-- Image carousel -->
+    <div class="loc-popup-carousel" id="pop-carousel">
+      <div class="carousel-track" id="carousel-track"></div>
+      <button class="carousel-arrow prev" id="car-prev" onclick="carouselStep(-1)">‹</button>
+      <button class="carousel-arrow next" id="car-next" onclick="carouselStep(1)">›</button>
+      <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="loc-popup-body">
+      <div class="loc-popup-name" id="pop-name">—</div>
+      <div class="loc-popup-type" id="pop-type">—</div>
+      <div class="loc-popup-addr" id="pop-addr">—</div>
+      <div class="loc-popup-landmark" id="pop-landmark"></div>
+      <div class="loc-popup-sched" id="pop-sched"></div>
+      <div class="loc-popup-actions">
+        <a id="pop-dir-btn" href="#" target="_blank" class="loc-popup-btn loc-popup-btn-dir">🗺️ Directions</a>
+        <div class="loc-popup-btn loc-popup-btn-book" id="pop-book-btn" onclick="bookFromMap(currentPopupLocId)">📦 Book here</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
