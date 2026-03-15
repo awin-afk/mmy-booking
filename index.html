@@ -2222,12 +2222,23 @@ function openLocPopup(locData) {
 
   carouselRender();
 
-  // ── Text fields ─────────────────────────────────────────────────────
+  // ── Language-aware text ─────────────────────────────────────────────
+  const isMM = currentLang === 'mm';
+
+  const DAY_MM = {
+    'Monday':'တနင်္လာနေ့', 'Tuesday':'အင်္ဂါနေ့', 'Wednesday':'ဗုဒ္ဓဟူးနေ့',
+    'Thursday':'ကြာသပတေးနေ့', 'Friday':'သောကြာနေ့', 'Saturday':'စနေနေ့',
+    'Sunday':'တနင်္ဂနွေနေ့', 'Mon – Sun':'တနင်္လာ – တနင်္ဂနွေ',
+    'Mon-Sun':'တနင်္လာ – တနင်္ဂနွေ'
+  };
+
   document.getElementById('pop-name').textContent = locData.title;
 
   const typeEl = document.getElementById('pop-type');
-  typeEl.textContent = isVan ? '🚐 Van Stop' : '🏪 Mini Mart / Partner Shop';
-  typeEl.className   = 'loc-popup-type ' + (isVan ? 'van' : 'shop');
+  typeEl.textContent = isVan
+    ? (isMM ? '🚐 ဗင်ကား ရပ်နားရာ'         : '🚐 Van Stop')
+    : (isMM ? '🏪 မြန်မာဆိုင် / ပါတနာဆိုင်' : '🏪 Mini Mart / Partner Shop');
+  typeEl.className = 'loc-popup-type ' + (isVan ? 'van' : 'shop');
 
   document.getElementById('pop-addr').textContent = '📍 ' + locData.address;
 
@@ -2236,16 +2247,22 @@ function openLocPopup(locData) {
 
   const schedEl = document.getElementById('pop-sched');
   schedEl.innerHTML =
-    '<div class="loc-popup-sched-title">📦 Drop-off / Collection Schedule</div>' +
-    locData.schedule.map(s => `
+    `<div class="loc-popup-sched-title">📦 ${isMM ? 'ပစ္စည်းအပ်/ထုတ် အချိန်ဇယား' : 'Drop-off / Collection Schedule'}</div>` +
+    locData.schedule.map(s => {
+      const day  = isMM ? (DAY_MM[s.day] || s.day) : s.day;
+      const note = isMM ? (s.note_mm || s.note) : s.note;
+      return `
       <div class="loc-popup-sched-row">
-        <span class="sched-day">${s.day}</span>
+        <span class="sched-day">${day}</span>
         <div>
           <div style="font-weight:700;">${s.time_window || s.time}</div>
-          ${s.note ? '<div class="sched-note">↳ ' + s.note + '</div>' : ''}
+          ${note ? '<div class="sched-note">↳ ' + note + '</div>' : ''}
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
+  document.getElementById('pop-dir-btn').textContent  = isMM ? '🗺️ လမ်းကြောင်း'    : '🗺️ Directions';
+  document.getElementById('pop-book-btn').textContent = isMM ? '📦 ဒီနေရာမှ မှာယူမည်' : '📦 Book here';
   document.getElementById('pop-dir-btn').href = locData.google_maps;
 
   document.getElementById('loc-overlay').classList.add('open');

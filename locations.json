@@ -8,8 +8,8 @@
     "address": "Jurong East MRT Station, Jurong East, Singapore 609731",
     "coordinates": { "lng": 103.7436, "lat": 1.3329 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van stops at Carpark B entrance" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van stops at Carpark B entrance" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van stops at Carpark B entrance", "note_mm": "ကားပါ့ B ဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van stops at Carpark B entrance", "note_mm": "ကားပါ့ B ဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [
       "images/dropoff/carpark_1.jpeg",
@@ -28,8 +28,8 @@
     "address": "Clementi MRT Station, Clementi Road, Singapore 129588",
     "coordinates": { "lng": 103.7649, "lat": 1.3152 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at bus interchange side" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at bus interchange side" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at bus interchange side", "note_mm": "ဘတ်စ်ကား ဘူတာဘက်တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at bus interchange side", "note_mm": "ဘတ်စ်ကား ဘူတာဘက်တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Clementi+MRT+Singapore",
@@ -45,7 +45,7 @@
     "address": "Blk 649 Pioneer Road, #01-325, Singapore 640649",
     "coordinates": { "lng": 103.6972, "lat": 1.3378 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter", "note_mm": "ဆိုင်ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Pioneer+Road+649+Singapore",
@@ -61,8 +61,8 @@
     "address": "Boon Lay MRT Station, Jurong West Street, Singapore 649482",
     "coordinates": { "lng": 103.7060, "lat": 1.3388 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at taxi stand side" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at taxi stand side" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at taxi stand side", "note_mm": "တက်စီ ရပ်နားရာဘက်တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at taxi stand side", "note_mm": "တက်စီ ရပ်နားရာဘက်တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Boon+Lay+MRT+Singapore",
@@ -78,8 +78,8 @@
     "address": "Tuas South Avenue 3, Dormitory Gate A, Singapore 637335",
     "coordinates": { "lng": 103.6369, "lat": 1.3175 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van waits at Gate A entrance" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van waits at Gate A entrance" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van waits at Gate A entrance", "note_mm": "Gate A ဝင်ပေါက်တွင် ဗင်ကား စောင့်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van waits at Gate A entrance", "note_mm": "Gate A ဝင်ပေါက်တွင် ဗင်ကား စောင့်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Tuas+South+Avenue+3+Singapore",
@@ -95,8 +95,8 @@
     "address": "Tampines MRT Station, Tampines Central, Singapore 529556",
     "coordinates": { "lng": 103.9427, "lat": 1.3544 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Bus Interchange Carpark" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Bus Interchange Carpark" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Bus Interchange Carpark", "note_mm": "ဘတ်စ်ကား ဘူတာ ကားပါ့တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Bus Interchange Carpark", "note_mm": "ဘတ်စ်ကား ဘူတာ ကားပါ့တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Tampines+MRT+Singapore",
@@ -112,7 +112,7 @@
     "address": "Blk 204 Bedok North Street 1, #01-377, Singapore 460204",
     "coordinates": { "lng": 103.9300, "lat": 1.3240 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter", "note_mm": "ဆိုင်ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Bedok+North+Street+1+204+Singapore",
@@ -128,8 +128,8 @@
     "address": "Pasir Ris MRT Station, Pasir Ris Drive 3, Singapore 519497",
     "coordinates": { "lng": 103.9494, "lat": 1.3731 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at main entrance" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at main entrance" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at main entrance", "note_mm": "အဓိကဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at main entrance", "note_mm": "အဓိကဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Pasir+Ris+MRT+Singapore",
@@ -145,7 +145,7 @@
     "address": "Blk 824 Tampines Street 81, #01-147, Singapore 520824",
     "coordinates": { "lng": 103.9450, "lat": 1.3530 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter", "note_mm": "ဆိုင်ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Tampines+Street+81+824+Singapore",
@@ -161,8 +161,8 @@
     "address": "Woodlands MRT Station, Woodlands Square, Singapore 738099",
     "coordinates": { "lng": 103.7864, "lat": 1.4369 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Woodlands Interchange" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Woodlands Interchange" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Woodlands Interchange", "note_mm": "Woodlands Interchange တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Woodlands Interchange", "note_mm": "Woodlands Interchange တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Woodlands+MRT+Singapore",
@@ -178,7 +178,7 @@
     "address": "Blk 6A Woodlands Centre Road, #01-08, Singapore 731006",
     "coordinates": { "lng": 103.7910, "lat": 1.4320 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter", "note_mm": "ဆိုင်ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Woodlands+Centre+Road+6A+Singapore",
@@ -194,7 +194,7 @@
     "address": "Blk 406 Sembawang Drive, #01-21, Singapore 750406",
     "coordinates": { "lng": 103.8200, "lat": 1.4491 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter", "note_mm": "ဆိုင်ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Sembawang+Drive+406+Singapore",
@@ -210,8 +210,8 @@
     "address": "Yishun MRT Station, Yishun Central 1, Singapore 768794",
     "coordinates": { "lng": 103.8354, "lat": 1.4294 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Yishun Bus Interchange" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Yishun Bus Interchange" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Yishun Bus Interchange", "note_mm": "Yishun ဘတ်စ်ကား ဘူတာတွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Yishun Bus Interchange", "note_mm": "Yishun ဘတ်စ်ကား ဘူတာတွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Yishun+MRT+Singapore",
@@ -227,7 +227,7 @@
     "address": "111 North Bridge Road, #04-20 Peninsula Plaza, Singapore 179098",
     "coordinates": { "lng": 103.8508, "lat": 1.2922 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at #04-20 counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at #04-20 counter", "note_mm": "#04-20 ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Peninsula+Plaza+Singapore",
@@ -243,8 +243,8 @@
     "address": "Toa Payoh MRT Station, Lorong 6 Toa Payoh, Singapore 319385",
     "coordinates": { "lng": 103.8474, "lat": 1.3327 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Toa Payoh Hub entrance" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Toa Payoh Hub entrance" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Toa Payoh Hub entrance", "note_mm": "Toa Payoh Hub ဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Toa Payoh Hub entrance", "note_mm": "Toa Payoh Hub ဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Toa+Payoh+MRT+Singapore",
@@ -260,8 +260,8 @@
     "address": "Bishan MRT Station, Bishan Place, Singapore 579838",
     "coordinates": { "lng": 103.8485, "lat": 1.3510 },
     "schedule": [
-      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Junction 8 carpark entrance" },
-      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Junction 8 carpark entrance" }
+      { "day": "Monday",   "time": "7:00 PM", "note": "Van at Junction 8 carpark entrance", "note_mm": "Junction 8 ကားပါ့ ဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" },
+      { "day": "Thursday", "time": "8:00 PM", "note": "Van at Junction 8 carpark entrance", "note_mm": "Junction 8 ကားပါ့ ဝင်ပေါက်တွင် ဗင်ကား ရပ်မည်" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Bishan+MRT+Singapore",
@@ -277,7 +277,7 @@
     "address": "Blk 4 Queen Street, #01-145 Bugis Village, Singapore 188535",
     "coordinates": { "lng": 103.8563, "lat": 1.3010 },
     "schedule": [
-      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter" }
+      { "day": "Mon – Sun", "time": "10:00 AM – 10:00 PM", "note": "Drop off at shop counter", "note_mm": "ဆိုင်ကောင်တာတွင် ပစ္စည်းအပ်ပါ" }
     ],
     "images": [],
     "google_maps": "https://maps.google.com/?q=Bugis+Village+Singapore",
