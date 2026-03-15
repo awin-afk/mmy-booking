@@ -2344,36 +2344,6 @@ function initOverviewMap() {
     });
 
     updateHomeCount();
-
-    // Ask for user location and zoom to nearest drop-off
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        const userLng = pos.coords.longitude;
-        const userLat = pos.coords.latitude;
-
-        // Add user location marker
-        const userEl = document.createElement('div');
-        userEl.style.cssText = 'width:14px;height:14px;border-radius:50%;background:#2563eb;border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,0.25);';
-        new mapboxgl.Marker({ element: userEl, anchor: 'center' })
-          .setLngLat([userLng, userLat])
-          .addTo(overviewMap);
-
-        // Find nearest drop-off
-        let nearest = null, minDist = Infinity;
-        data.forEach(loc => {
-          const d = haversine(userLat, userLng, loc.coordinates.lat, loc.coordinates.lng);
-          if (d < minDist) { minDist = d; nearest = loc; }
-        });
-
-        // Zoom to fit user + nearest drop-off
-        if (nearest) {
-          const bounds = new mapboxgl.LngLatBounds()
-            .extend([userLng, userLat])
-            .extend([nearest.coordinates.lng, nearest.coordinates.lat]);
-          overviewMap.fitBounds(bounds, { padding: 80, maxZoom: 14, duration: 1200 });
-        }
-      }, () => { /* permission denied — keep default view */ });
-    }
   });
 
   overviewMap.on('error', (e) => {
