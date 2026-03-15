@@ -64,11 +64,13 @@ body {
   display: flex; align-items: center; gap: 10px;
 }
 .top-bar-logo .icon {
-  width: 34px; height: 34px;
-  background: var(--gold);
-  border-radius: 8px;
+  width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+}
+.top-bar-logo .icon img {
+  width: 38px; height: 38px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(201,168,76,0.5));
 }
 .top-bar-logo .name {
   font-size: 14px; font-weight: 700;
@@ -698,10 +700,14 @@ select {
   margin-bottom: 20px;
 }
 .hero-peacock {
-  font-size: 64px;
+  width: 90px; height: 90px;
   filter: drop-shadow(0 4px 16px rgba(201,168,76,0.4));
   animation: float 3s ease-in-out infinite;
-  line-height: 1;
+  flex-shrink: 0;
+}
+.hero-peacock img {
+  width: 90px; height: 90px;
+  object-fit: contain;
 }
 @keyframes float {
   0%,100% { transform: translateY(0); }
@@ -976,9 +982,13 @@ select {
   display: flex; align-items: center; gap: 10px;
 }
 .nav-drawer-head .icon {
-  width: 36px; height: 36px; background: var(--gold);
-  border-radius: 9px; display: flex; align-items: center;
-  justify-content: center; font-size: 18px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-drawer-head .icon img {
+  width: 40px; height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(201,168,76,0.5));
 }
 .nav-drawer-head .name { font-size: 14px; font-weight: 700; color: #fff; }
 .nav-drawer-head .sub  { font-size: 10px; color: #9ca3af; margin-top: 1px;
@@ -1247,7 +1257,7 @@ body.lang-en .how-mm { display: none !important; }
 <div class="nav-overlay" id="nav-overlay" onclick="closeNav()"></div>
 <div class="nav-drawer" id="nav-drawer">
   <div class="nav-drawer-head">
-    <div class="icon">🦚</div>
+    <div class="icon"><img src="images/daung_lay_logo.png" alt="Daung Lay"></div>
     <div>
       <div class="name">Daung Lay</div>
       <div class="sub">ဒေါင်းလေး</div>
@@ -1271,7 +1281,7 @@ body.lang-en .how-mm { display: none !important; }
 
 <div class="top-bar">
   <div class="top-bar-logo">
-    <div class="icon">🦚</div>
+    <div class="icon"><img src="images/daung_lay_logo.png" alt="Daung Lay"></div>
     <div>
       <div class="name">Daung Lay</div>
       <div class="tagline" style="font-family:'Noto Sans Myanmar',sans-serif;">ဒေါင်းလေး</div>
@@ -1324,7 +1334,7 @@ body.lang-en .how-mm { display: none !important; }
       <div class="hero-title">Daung Lay<br><span>Send Easy</span> 🦚</div>
       <div class="hero-sub">ဒေါင်းလေး — ပစ္စည်းပေးပို့ရန် အလွယ်ကူဆုံး</div>
     </div>
-    <div class="hero-peacock">🦚</div>
+    <div class="hero-peacock"><img src="images/daung_lay_logo.png" alt="Daung Lay"></div>
   </div>
 
   <!-- Swipeable promo banners -->
