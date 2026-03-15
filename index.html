@@ -2286,7 +2286,7 @@ function initOverviewMap() {
 
   overviewMap = new mapboxgl.Map({
     container:        'map-overview',
-    style:            'mapbox://styles/mapbox/dark-v11',
+    style:            'mapbox://styles/mapbox/streets-v12',
     center:           [103.8198, 1.3521],
     zoom:             10.5,
     attributionControl: false,
@@ -2294,7 +2294,7 @@ function initOverviewMap() {
     dragRotate:       false,
     pitchWithRotate:  false,
     touchPitch:       false,
-    maxTileCacheSize: 20,          // limit memory on mobile
+    maxTileCacheSize: 20,
     localIdeographFontFamily: "'Noto Sans Myanmar', sans-serif",
   });
 
@@ -2302,7 +2302,6 @@ function initOverviewMap() {
   overviewMap.addControl(new mapboxgl.AttributionControl({ compact: true }));
 
   overviewMap.on('load', () => {
-    // Ensure canvas doesn't interfere with page scroll outside map bounds
     const canvas = overviewMap.getCanvas();
     if (canvas) canvas.style.touchAction = 'none';
 
@@ -2345,9 +2344,38 @@ function initOverviewMap() {
     });
 
     updateHomeCount();
+
+    // Ask for user location and zoom to nearest drop-off
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const userLng = pos.coords.longitude;
+        const userLat = pos.coords.latitude;
+
+        // Add user location marker
+        const userEl = document.createElement('div');
+        userEl.style.cssText = 'width:14px;height:14px;border-radius:50%;background:#2563eb;border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(37,99,235,0.25);';
+        new mapboxgl.Marker({ element: userEl, anchor: 'center' })
+          .setLngLat([userLng, userLat])
+          .addTo(overviewMap);
+
+        // Find nearest drop-off
+        let nearest = null, minDist = Infinity;
+        data.forEach(loc => {
+          const d = haversine(userLat, userLng, loc.coordinates.lat, loc.coordinates.lng);
+          if (d < minDist) { minDist = d; nearest = loc; }
+        });
+
+        // Zoom to fit user + nearest drop-off
+        if (nearest) {
+          const bounds = new mapboxgl.LngLatBounds()
+            .extend([userLng, userLat])
+            .extend([nearest.coordinates.lng, nearest.coordinates.lat]);
+          overviewMap.fitBounds(bounds, { padding: 80, maxZoom: 14, duration: 1200 });
+        }
+      }, () => { /* permission denied — keep default view */ });
+    }
   });
 
-  // Handle token/network errors gracefully — map stays visible, just shows dark background
   overviewMap.on('error', (e) => {
     console.warn('Mapbox error:', e.error?.message || e);
   });
