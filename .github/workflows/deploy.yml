@@ -25,6 +25,7 @@ jobs:
         run: |
           sed -i "s|__MAPBOX_TOKEN__|${{ secrets.MAPBOX_TOKEN }}|g" index.html
           sed -i "s|__WEBHOOK_URL__|${{ secrets.WEBHOOK_URL }}|g" index.html
+          sed -i "s|__VERSION__|v1.0.${{ github.run_number }}|g" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
