@@ -11,7 +11,10 @@
       { "day": "Monday",   "time": "7:00 PM", "note": "Van stops at Carpark B entrance" },
       { "day": "Thursday", "time": "8:00 PM", "note": "Van stops at Carpark B entrance" }
     ],
-    "images": [],
+    "images": [
+      "images/dropoff/carpark_1.jpeg",
+      "images/dropoff/carpark_2.jpeg"
+    ],
     "google_maps": "https://maps.google.com/?q=Jurong+East+MRT+Singapore",
     "landmark": "Jurong East Bus Interchange",
     "active": true
