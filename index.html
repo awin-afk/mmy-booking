@@ -2512,9 +2512,14 @@ function bookFromMap(locId) {
   const cc = document.getElementById('cc-dropoff');
   if (cc) cc.click();
   showSection('book');
-  // After section renders, populate and scroll to picker
+  // After section renders, force-select the location and scroll to it
   setTimeout(() => {
     populateDropoffSelect();
+    const sel = document.getElementById('f_dropoff_select');
+    if (sel && locId) {
+      sel.value = locId;
+      onDropoffSelectChange();
+    }
     const el = document.getElementById('dropoff-picker-wrap');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 350);
