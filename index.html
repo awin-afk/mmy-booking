@@ -864,6 +864,52 @@ select {
 .how-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); }
 .how-text span   { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
+/* ── RECIPIENT GROUP ────────────────────────────────────── */
+.recipient-group {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: #fff;
+  position: relative;
+}
+.recipient-group-header {
+  display: flex; align-items: center; gap: 10px;
+  background: #fffbf0;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 9px 13px;
+  margin: -14px -16px 14px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 0;
+}
+.recipient-group-header .sb-icon { font-size: 17px; flex-shrink: 0; }
+.recipient-group-header strong { font-size: 13px; font-weight: 700; color: #92400e; display: block; }
+
+/* ── ADD RECIPIENT BUTTON ───────────────────────────────── */
+.add-recipient-btn {
+  width: 100%;
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700;
+  border: 2px dashed var(--gold);
+  border-radius: 9px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+}
+.add-recipient-btn:hover:not(:disabled) { background: #fffbf0; }
+.add-recipient-btn:disabled {
+  opacity: 0.5;
+  border-color: #9ca3af;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
 /* ── COLLECTION METHOD CARDS (Ninja Van style) ──────────── */
 .collect-cards {
   display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
@@ -1577,38 +1623,9 @@ body.lang-en .how-mm { display: none !important; }
         <!-- Chevron icon -->
         <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#b45309;font-size:16px;">▾</div>
       </div>
-
     </div>
 
-    <!-- ② RECIPIENT ──────────────────────────────────────────────────────── -->
-    <div class="section-banner" style="margin-top:22px;">
-      <span class="sb-icon">👤</span>
-      <div class="sb-text"><strong data-i18n="secRecipient">Recipient Details</strong><span data-i18n="secRecipientMM" class="mm">လက်ခံမည့်သူ အချက်အလက်</span></div>
-    </div>
-
-    <div class="field">
-      <label><span data-i18n="lblRName">Recipient Full Name</span> <span class="lbl-mm" data-i18n="lblRNameMM">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
-      <input type="text" id="f_rname" placeholder="e.g. ဒေါ်အေးအေး" data-i18n-ph="phRName">
-    </div>
-    <div class="field">
-      <label><span data-i18n="lblMPhone">Myanmar Phone +95</span> <span class="lbl-mm" data-i18n="lblMPhoneMM">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
-      <div class="phone-row">
-        <div class="phone-prefix">🇲🇲 +95</div>
-        <input type="text" id="f_rphone" placeholder="9765432100" data-i18n-ph="phRPhone">
-      </div>
-    </div>
-    <div class="field">
-      <label><span data-i18n="lblAddr">Full Delivery Address</span> <span class="lbl-mm" data-i18n="lblAddrMM">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
-      <textarea id="f_addr" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" data-i18n-ph="phAddr"></textarea>
-    </div>
-
-    <!-- ③ PARCEL ──────────────────────────────────────────────────────────── -->
-    <div class="section-banner">
-      <span class="sb-icon">📦</span>
-      <div class="sb-text"><strong data-i18n="secParcel">Parcel Details</strong><span data-i18n="secParcelMM" class="mm">ပစ္စည်းအသေးစိတ်</span></div>
-    </div>
-
-    <!-- ③ COLLECTION METHOD — sub-section under Parcel Details ─────────────── -->
+    <!-- ② COLLECTION METHOD ─────────────────────────────────────────────── -->
     <div style="font-size:12px;font-weight:700;color:#92400e;margin:18px 0 8px;padding-left:2px;">
       🚚 ပစ္စည်းအပ်နည်း &nbsp;<span style="font-weight:400;color:#b45309;font-size:11px;">Collection Method</span>
     </div>
@@ -1637,7 +1654,7 @@ body.lang-en .how-mm { display: none !important; }
       🚐 <span id="pickup-note-text"></span>
     </div>
 
-    <!-- ③b DROP-OFF POINT PICKER — shown only when drop-off is selected ──────── -->
+    <!-- DROP-OFF POINT PICKER — shown only when drop-off is selected ──────── -->
     <div id="dropoff-picker-wrap" style="margin-top:14px;">
       <div class="field" style="margin-bottom:0;">
         <label style="display:flex;align-items:center;justify-content:space-between;">
@@ -1665,93 +1682,120 @@ body.lang-en .how-mm { display: none !important; }
       </div>
     </div>
 
-    <div class="field" style="margin-top:24px;">
-      <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
-      <div class="radio-group">
-        <label class="radio-opt" onclick="selectItemType('food')">
-          <input type="radio" name="itype" value="Food/Clothes/Medicine" checked>
-          <div class="ro-body">
-            <div class="ro-main">🛍️ Food / Clothes / Medicine / Cosmetics</div>
-            <div class="ro-sub">အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း · Shoes · Bags · Books</div>
-          </div>
-          <span class="pill pill-green">$15/kg</span>
-        </label>
-        <label class="radio-opt" onclick="selectItemType('devices')">
-          <input type="radio" name="itype" value="Phones/Tablets/Laptops">
-          <div class="ro-body">
-            <div class="ro-main">📱 Phones / Tablets / Laptops</div>
-            <div class="ro-sub">ဖုန်း / တက်ဘလက် / လက်တော့ပ်</div>
-          </div>
-          <span class="pill pill-blue">$50/item</span>
-        </label>
-        <label class="radio-opt" onclick="selectItemType('machinery')">
-          <input type="radio" name="itype" value="Electronics/Machinery">
-          <div class="ro-body">
-            <div class="ro-main">⚙️ Electronics / Machinery</div>
-            <div class="ro-sub">Rice cooker · Fan · Printer · စက်ယန္တရား / လျှပ်စစ်ပစ္စည်း</div>
-          </div>
-          <span class="pill pill-amber">$20/kg</span>
-        </label>
-      </div>
-    </div>
+    <!-- ③ RECIPIENTS CONTAINER ──────────────────────────────────────────── -->
+    <div id="recipients-container" style="margin-top:22px;">
+      <!-- Recipient 1 is rendered statically; additional ones are added by JS -->
+      <div class="recipient-group" id="recipient-group-1">
+        <div class="recipient-group-header">
+          <span class="sb-icon">👤</span>
+          <strong>Recipient 1</strong>
+        </div>
 
-    <!-- Weight field (food + machinery) -->
-    <div id="weight-section">
-      <div class="two-col">
-      <div class="field">
-        <label>Weight (kg) <span class="lbl-mm mm">/ အလေးချိန်</span><span class="req">*</span></label>
-        <input type="number" id="f_weight" placeholder="e.g. 2.5" min="0.1" max="100" step="0.1"
-          oninput="
-            let v=parseFloat(this.value);
-            if(this.value!==''&&v<0.1){this.value=0.1;}
-            if(v>100){this.value=100;}
-            updatePickupPrice(); updateWeightTotal();">
-        <div id="weight-err" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">Max 100kg per booking</div>
-      </div>
-      <div class="field">
-        <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
-        <input type="number" id="f_value" placeholder="e.g. 50" min="1" max="10000"
-          oninput="let v=parseFloat(this.value); if(this.value!==''&&v<0)this.value=0; if(v>10000)this.value=10000; validateDeclaredValue();">
-        <div id="value-err" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">Please enter a valid declared value</div>
-      </div>
-      </div><!-- /two-col -->
-      <div class="note green" id="weight-total-note" style="display:none;">
-        <span class="note-icon">💰</span>
-        <span id="weight-total-text"></span>
-      </div>
-    </div>
-
-    <!-- Number of devices (phones/tablets/laptops only) -->
-    <div id="devices-section" style="display:none;">
-      <div class="two-col">
         <div class="field">
-          <label>No. of Items <span class="lbl-mm mm">/ အရေအတွက်</span><span class="req">*</span></label>
-          <select id="f_devices" onchange="updateDeviceTotal()">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
+          <label><span data-i18n="lblRName">Recipient Full Name</span> <span class="lbl-mm" data-i18n="lblRNameMM">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
+          <input type="text" id="f_rname_1" placeholder="e.g. ဒေါ်အေးအေး" oninput="checkRecipientFilled(1)">
         </div>
         <div class="field">
-          <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
-          <input type="number" id="f_value_dev" placeholder="e.g. 1300" min="1" max="10000"
-          oninput="let v=parseFloat(this.value); if(this.value!==''&&v<0)this.value=0; if(v>10000)this.value=10000; validateDeclaredValue();">
+          <label><span data-i18n="lblMPhone">Myanmar Phone +95</span> <span class="lbl-mm" data-i18n="lblMPhoneMM">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
+          <div class="phone-row">
+            <div class="phone-prefix">🇲🇲 +95</div>
+            <input type="text" id="f_rphone_1" placeholder="9765432100" oninput="checkRecipientFilled(1)">
+          </div>
         </div>
-      </div>
-      <div class="note green" id="device-total-note">
-        <span class="note-icon">💰</span>
-        <span id="device-total-text">1 item × $50 = <strong>$50.00</strong></span>
-      </div>
-    </div>
+        <div class="field">
+          <label><span data-i18n="lblAddr">Full Delivery Address</span> <span class="lbl-mm" data-i18n="lblAddrMM">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
+          <textarea id="f_addr_1" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(1)"></textarea>
+        </div>
 
-    <div class="note blue"><span class="note-icon">ℹ️</span><span>Max 100kg per booking · Declared value is for customs reference only.</span></div>
+        <div class="field" style="margin-top:8px;">
+          <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
+          <div class="radio-group">
+            <label class="radio-opt" onclick="selectItemType_r(1,'food')">
+              <input type="radio" name="itype_1" value="Food/Clothes/Medicine" checked>
+              <div class="ro-body">
+                <div class="ro-main">🛍️ Food / Clothes / Medicine / Cosmetics</div>
+                <div class="ro-sub">အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း · Shoes · Bags · Books</div>
+              </div>
+              <span class="pill pill-green">$15/kg</span>
+            </label>
+            <label class="radio-opt" onclick="selectItemType_r(1,'devices')">
+              <input type="radio" name="itype_1" value="Phones/Tablets/Laptops">
+              <div class="ro-body">
+                <div class="ro-main">📱 Phones / Tablets / Laptops</div>
+                <div class="ro-sub">ဖုန်း / တက်ဘလက် / လက်တော့ပ်</div>
+              </div>
+              <span class="pill pill-blue">$50/item</span>
+            </label>
+            <label class="radio-opt" onclick="selectItemType_r(1,'machinery')">
+              <input type="radio" name="itype_1" value="Electronics/Machinery">
+              <div class="ro-body">
+                <div class="ro-main">⚙️ Electronics / Machinery</div>
+                <div class="ro-sub">Rice cooker · Fan · Printer · စက်ယန္တရား / လျှပ်စစ်ပစ္စည်း</div>
+              </div>
+              <span class="pill pill-amber">$20/kg</span>
+            </label>
+          </div>
+        </div>
 
-    <div class="field" style="margin-top:10px;">
-      <label><span data-i18n="lblContents">Contents Description</span> <span class="lbl-mm" data-i18n="lblContentsMM">/ ပစ္စည်းဖော်ပြချက်</span><span class="req">*</span></label>
-      <textarea id="f_contents" placeholder="ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး" data-i18n-ph="phContents"></textarea>
-    </div>
+        <!-- Weight field (food + machinery) -->
+        <div id="weight-section-1">
+          <div class="two-col">
+            <div class="field">
+              <label>Weight (kg) <span class="lbl-mm mm">/ အလေးချိန်</span><span class="req">*</span></label>
+              <input type="number" id="f_weight_1" placeholder="e.g. 2.5" min="0.1" max="100" step="0.1"
+                oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0.1){this.value=0.1;}if(v>100){this.value=100;}updatePickupPrice();updateWeightTotal_r(1);checkRecipientFilled(1);">
+              <div id="weight-err-1" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">Max 100kg per booking</div>
+            </div>
+            <div class="field">
+              <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
+              <input type="number" id="f_value_1" placeholder="e.g. 50" min="1" max="10000"
+                oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0)this.value=0;if(v>10000)this.value=10000;checkRecipientFilled(1);">
+            </div>
+          </div>
+          <div class="note green" id="weight-total-note-1" style="display:none;">
+            <span class="note-icon">💰</span>
+            <span id="weight-total-text-1"></span>
+          </div>
+        </div>
+
+        <!-- Number of devices (phones/tablets/laptops only) -->
+        <div id="devices-section-1" style="display:none;">
+          <div class="two-col">
+            <div class="field">
+              <label>No. of Items <span class="lbl-mm mm">/ အရေအတွက်</span><span class="req">*</span></label>
+              <select id="f_devices_1" onchange="updateDeviceTotal_r(1);checkRecipientFilled(1);">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
+              <input type="number" id="f_value_dev_1" placeholder="e.g. 1300" min="1" max="10000"
+                oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0)this.value=0;if(v>10000)this.value=10000;checkRecipientFilled(1);">
+            </div>
+          </div>
+          <div class="note green" id="device-total-note-1">
+            <span class="note-icon">💰</span>
+            <span id="device-total-text-1">1 item × $50 = <strong>$50.00</strong></span>
+          </div>
+        </div>
+
+        <div class="note blue"><span class="note-icon">ℹ️</span><span>Max 100kg per booking · Declared value is for customs reference only.</span></div>
+
+        <div class="field" style="margin-top:10px;">
+          <label><span data-i18n="lblContents">Contents Description</span> <span class="lbl-mm" data-i18n="lblContentsMM">/ ပစ္စည်းဖော်ပြချက်</span><span class="req">*</span></label>
+          <textarea id="f_contents_1" placeholder="ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး" oninput="checkRecipientFilled(1)"></textarea>
+        </div>
+      </div><!-- /recipient-group-1 -->
+    </div><!-- /recipients-container -->
+
+    <!-- ADD ANOTHER RECIPIENT BUTTON ──────────────────────────────────────── -->
+    <button class="add-recipient-btn" id="add-recipient-btn" onclick="addRecipient()" disabled>
+      ➕ Add another recipient (2/5)
+    </button>
 
     <!-- ④ SENDER ──────────────────────────────────────────────────────────── -->
     <div class="section-banner">
@@ -2730,25 +2774,37 @@ function onDropdownChange() {
 //  goToP2
 // ═══════════════════════════════════════════════════
 async function goToP2() {
-  // Detect item type mode
-  const itypeVal  = document.querySelector('input[name="itype"]:checked')?.value || '';
-  const isDevices = itypeVal === 'Phones/Tablets/Laptops';
-
-  // Validate required fields — swap f_weight for f_devices when in device mode
-  const baseFields = ['f_rname','f_rphone','f_addr','f_contents','f_sname','f_sphone','f_email','f_saddr'];
-  const valueField = isDevices ? 'f_value_dev' : 'f_value';
-  const qtyField   = isDevices ? 'f_devices'   : 'f_weight';
-  const fields = [...baseFields, valueField, qtyField];
-
   let ok = true;
-  fields.forEach(id => {
+
+  // ── Validate all recipient groups ──────────────────────────────────────────
+  for (let n = 1; n <= recipientCount; n++) {
+    const itypeVal_n  = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+    const isDevices_n = itypeVal_n === 'Phones/Tablets/Laptops';
+
+    const rFields = ['f_rname_' + n, 'f_rphone_' + n, 'f_addr_' + n, 'f_contents_' + n];
+    const valField = isDevices_n ? 'f_value_dev_' + n : 'f_value_' + n;
+    const qtyField = isDevices_n ? 'f_devices_' + n   : 'f_weight_' + n;
+    [...rFields, valField, qtyField].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !el.value.trim()) {
+        if (el) { el.classList.add('err'); setTimeout(() => el.classList.remove('err'), 2500); }
+        ok = false;
+      }
+    });
+    // itype must be selected (always true since one is checked by default, but guard anyway)
+    if (!itypeVal_n) ok = false;
+  }
+
+  // ── Validate sender fields ─────────────────────────────────────────────────
+  ['f_sname','f_sphone','f_email','f_saddr'].forEach(id => {
     const el = document.getElementById(id);
     if (!el || !el.value.trim()) {
       if (el) { el.classList.add('err'); setTimeout(() => el.classList.remove('err'), 2500); }
       ok = false;
     }
   });
-  // Validate drop-off point (required for drop-off method)
+
+  // ── Validate drop-off point (required for drop-off method) ─────────────────
   const methodVal = document.querySelector('input[name="method"]:checked')?.value || '';
   const isDropoffMethod = !methodVal.includes('Pickup');
   if (isDropoffMethod) {
@@ -2759,10 +2815,9 @@ async function goToP2() {
       ok = false;
     }
   }
+
   if (!ok) {
-    if (ok !== false || document.querySelector('.err')) {
-      document.querySelector('.err')?.scrollIntoView({ behavior:'smooth', block:'center' });
-    }
+    document.querySelector('.err')?.scrollIntoView({ behavior:'smooth', block:'center' });
     return;
   }
 
@@ -2770,48 +2825,76 @@ async function goToP2() {
   const now = new Date();
   bookingRef = `DLL${String(now.getFullYear()).slice(2)}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${Math.floor(1000+Math.random()*9000)}`;
 
-  // Build weight/qty display for summary
-  const itype  = document.querySelector('input[name="itype"]:checked');
   const method = document.querySelector('input[name="method"]:checked');
-  const weightDisplay = isDevices
-    ? document.getElementById('f_devices').value + ' device(s)'
-    : document.getElementById('f_weight').value + ' kg';
-  const declaredValue = isDevices
-    ? document.getElementById('f_value_dev').value
-    : document.getElementById('f_value').value;
 
-  // Populate summary
-  document.getElementById('s_rname').textContent    = document.getElementById('f_rname').value;
-  document.getElementById('s_rphone').textContent   = '+95 ' + document.getElementById('f_rphone').value;
-  document.getElementById('s_dest').textContent     = document.getElementById('f_addr').value;
-  document.getElementById('s_itype').textContent    = itype   ? itype.value   : '—';
-  document.getElementById('s_weight').textContent   = weightDisplay;
-  document.getElementById('s_contents').textContent = document.getElementById('f_contents').value;
-  document.getElementById('s_method').textContent   = method  ? method.value  : '—';
+  // ── Build summary for recipient 1 (main table rows) ────────────────────────
+  const itype1Val   = document.querySelector('input[name="itype_1"]:checked')?.value || '';
+  const isDevices1  = itype1Val === 'Phones/Tablets/Laptops';
+  const weightDisp1 = isDevices1
+    ? (document.getElementById('f_devices_1')?.value || '1') + ' device(s)'
+    : (document.getElementById('f_weight_1')?.value || '') + ' kg';
+
+  // Build multi-recipient summary text
+  let recipientSummary = '';
+  for (let n = 1; n <= recipientCount; n++) {
+    const rn   = document.getElementById('f_rname_' + n)?.value || '';
+    const ph   = document.getElementById('f_rphone_' + n)?.value || '';
+    const addr = document.getElementById('f_addr_' + n)?.value || '';
+    const iv   = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+    const isD  = iv === 'Phones/Tablets/Laptops';
+    const wt   = isD
+      ? (document.getElementById('f_devices_' + n)?.value || '1') + ' device(s)'
+      : (document.getElementById('f_weight_' + n)?.value || '') + ' kg';
+    recipientSummary += (n > 1 ? '\n' : '') + 'R' + n + ': ' + rn + ' · +95' + ph + ' · ' + wt + ' · ' + iv.split('/')[0];
+  }
+
+  // Populate summary table (show first recipient's details + multi info)
+  document.getElementById('s_rname').textContent    = recipientCount === 1
+    ? document.getElementById('f_rname_1').value
+    : recipientCount + ' recipients (see below)';
+  document.getElementById('s_rphone').textContent   = '+95 ' + (document.getElementById('f_rphone_1')?.value || '');
+  document.getElementById('s_dest').textContent     = document.getElementById('f_addr_1')?.value || '';
+  document.getElementById('s_itype').textContent    = itype1Val || '—';
+  document.getElementById('s_weight').textContent   = recipientCount === 1 ? weightDisp1 : '(' + recipientCount + ' parcels)';
+  document.getElementById('s_contents').textContent = document.getElementById('f_contents_1')?.value || '';
+  document.getElementById('s_method').textContent   = method ? method.value : '—';
   document.getElementById('s_sender').textContent   = document.getElementById('f_sname').value + ' · +65 ' + document.getElementById('f_sphone').value;
   document.getElementById('s_saddr').textContent    = document.getElementById('f_saddr').value;
   document.getElementById('s_email').textContent    = document.getElementById('f_email').value;
 
-  // ── Populate cost breakdown ────────────────────────────────────────────────
-  const itypeVal2   = itype ? itype.value : '';
-  const isDevices2  = itypeVal2 === 'Phones/Tablets/Laptops';
-  const isMachinery2= itypeVal2 === 'Electronics/Machinery';
-  const rawKg2      = isDevices2 ? (parseInt(document.getElementById('f_devices')?.value)||1)
-                                 : (parseFloat(document.getElementById('f_weight').value)||1);
-  const billKg2     = isDevices2 ? rawKg2 : Math.ceil(rawKg2);
+  // ── Populate cost breakdown (sum all recipients) ────────────────────────────
+  let totalShipping = 0;
+  let shippingLabelParts = [];
+  for (let n = 1; n <= recipientCount; n++) {
+    const iv2      = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+    const isDev2   = iv2 === 'Phones/Tablets/Laptops';
+    const isMach2  = iv2 === 'Electronics/Machinery';
+    const rawKg2   = isDev2 ? (parseInt(document.getElementById('f_devices_' + n)?.value)||1)
+                            : (parseFloat(document.getElementById('f_weight_' + n)?.value)||1);
+    const billKg2  = isDev2 ? rawKg2 : Math.ceil(rawKg2);
+    let cost2;
+    if (isDev2)      { cost2 = billKg2 * 50; shippingLabelParts.push('R'+n+': '+billKg2+' item(s)×$50'); }
+    else if(isMach2) { cost2 = billKg2 * 20; shippingLabelParts.push('R'+n+': '+billKg2+'kg×$20'); }
+    else             { cost2 = billKg2 * 15; shippingLabelParts.push('R'+n+': '+billKg2+'kg×$15'); }
+    totalShipping += cost2;
+  }
 
-  let rate2, shippingCost2, shippingLabel2;
-  if (isDevices2)   { rate2=50; shippingCost2=billKg2*50; shippingLabel2='📱 '+billKg2+' item(s) × $50'; }
-  else if(isMachinery2){ rate2=20; shippingCost2=billKg2*20; shippingLabel2='⚙️ '+billKg2+'kg × $20/kg'; }
-  else              { rate2=15; shippingCost2=billKg2*15; shippingLabel2='🛍️ '+billKg2+'kg × $15/kg'; }
+  // For pickup fee, base on total effective weight of all recipients
+  let totalEffKg = 0;
+  for (let n = 1; n <= recipientCount; n++) {
+    const iv2  = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+    const isDev2 = iv2 === 'Phones/Tablets/Laptops';
+    const rawKg2 = isDev2 ? (parseInt(document.getElementById('f_devices_' + n)?.value)||1)
+                          : (parseFloat(document.getElementById('f_weight_' + n)?.value)||1);
+    totalEffKg += isDev2 ? rawKg2 * 0.5 : Math.ceil(rawKg2);
+  }
 
-  const isPickup2   = method && method.value.includes('Pickup');
-  const kgPickup2   = isDevices2 ? billKg2*0.5 : billKg2;
-  const pickupFee2  = isPickup2 ? getPickupPrice(kgPickup2) : 0;
-  const total2      = (shippingCost2 + pickupFee2).toFixed(2);
+  const isPickup2  = method && method.value.includes('Pickup');
+  const pickupFee2 = isPickup2 ? getPickupPrice(totalEffKg) : 0;
+  const total2     = (totalShipping + pickupFee2).toFixed(2);
 
-  document.getElementById('cb_shipping_label').textContent = shippingLabel2;
-  document.getElementById('cb_shipping').textContent       = '$' + shippingCost2.toFixed(2);
+  document.getElementById('cb_shipping_label').textContent = shippingLabelParts.join('; ');
+  document.getElementById('cb_shipping').textContent       = '$' + totalShipping.toFixed(2);
   const pickupRow = document.getElementById('cb_pickup_row');
   if (isPickup2) {
     pickupRow.style.display = '';
@@ -2913,52 +2996,65 @@ async function goToP2() {
 async function goToP3() {
   if (!chosen) { alert('Please select a drop-off location from the list.'); return; }
 
-  const itype      = document.querySelector('input[name="itype"]:checked');
-  const itypeVal   = itype ? itype.value : '';
-  const isDevices  = itypeVal === 'Phones/Tablets/Laptops';
-  const isMachinery= itypeVal === 'Electronics/Machinery';
+  const method   = document.querySelector('input[name="method"]:checked');
+  const isPickup = method && method.value.includes('Pickup');
+  const payment  = { value: 'Cash or PayNow at drop-off' };
 
-  // Weight / qty
-  const rawWeight  = isDevices
-    ? parseInt(document.getElementById('f_devices')?.value) || 1
-    : parseFloat(document.getElementById('f_weight').value) || 1;
-  const weight     = isDevices ? rawWeight : Math.ceil(rawWeight); // ceil kg, exact for devices
+  // ── Collect all recipients ─────────────────────────────────────────────────
+  const recipients = [];
+  let totalShipping = 0;
+  let totalEffKg    = 0;
 
-  // Declared value
-  const declaredVal = isDevices
-    ? document.getElementById('f_value_dev')?.value || '0'
-    : document.getElementById('f_value')?.value || '0';
+  for (let n = 1; n <= recipientCount; n++) {
+    const iv     = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+    const isDev  = iv === 'Phones/Tablets/Laptops';
+    const isMach = iv === 'Electronics/Machinery';
+    const rawW   = isDev
+      ? parseInt(document.getElementById('f_devices_' + n)?.value) || 1
+      : parseFloat(document.getElementById('f_weight_' + n)?.value) || 1;
+    const weight = isDev ? rawW : Math.ceil(rawW);
+    const declV  = isDev
+      ? (document.getElementById('f_value_dev_' + n)?.value || '0')
+      : (document.getElementById('f_value_' + n)?.value || '0');
+    let cost, rateStr;
+    if (isDev)       { cost = weight * 50; rateStr = '$50/item'; }
+    else if (isMach) { cost = weight * 20; rateStr = '$20/kg'; }
+    else             { cost = weight * 15; rateStr = '$15/kg'; }
+    totalShipping += cost;
+    totalEffKg    += isDev ? weight * 0.5 : weight;
 
-  // Rate & total
-  let rate, shippingTotal;
-  if (isDevices) {
-    rate          = 50; // per item
-    shippingTotal = weight * 50;
-  } else if (isMachinery) {
-    rate          = 20; // per kg
-    shippingTotal = weight * 20;
-  } else {
-    rate          = 15; // food/clothes $15/kg
-    shippingTotal = weight * 15;
+    recipients.push({
+      name:               document.getElementById('f_rname_' + n)?.value || '',
+      phone:              '+95' + (document.getElementById('f_rphone_' + n)?.value || ''),
+      addr:               document.getElementById('f_addr_' + n)?.value || '',
+      itype:              iv,
+      weight:             isDev ? weight + ' device(s)' : weight + ' kg',
+      declared_value_sgd: declV,
+      contents:           document.getElementById('f_contents_' + n)?.value || '',
+      shipping_cost:      cost.toFixed(2),
+      rate:               rateStr,
+    });
   }
 
-  // Pickup fee — dynamic based on weight
-  const method    = document.querySelector('input[name="method"]:checked');
-  const isPickup  = method && method.value.includes('Pickup');
-  const kgForPickup = isDevices ? weight * 0.5 : weight;
-  const pickup    = isPickup ? getPickupPrice(kgForPickup) : 0;
-  const total     = (shippingTotal + pickup).toFixed(2);
-  const payment   = { value: 'Cash or PayNow at drop-off' };
+  const pickup = isPickup ? getPickupPrice(totalEffKg) : 0;
+  const total  = (totalShipping + pickup).toFixed(2);
+
+  // Backward-compat: first recipient fields at top level
+  const r1 = recipients[0] || {};
 
   const payload = {
     booking_ref:        bookingRef,
-    recipient_name:     document.getElementById('f_rname').value,
-    myanmar_phone:      '+95' + document.getElementById('f_rphone').value,
-    delivery_address:   document.getElementById('f_addr').value,
-    item_type:          itypeVal,
-    weight_kg:          isDevices ? weight + ' device(s)' : weight + ' kg',
-    declared_value_sgd: declaredVal,
-    contents:           document.getElementById('f_contents').value,
+    // Backward-compat single-recipient fields (from recipient 1)
+    recipient_name:     r1.name,
+    myanmar_phone:      r1.phone,
+    delivery_address:   r1.addr,
+    item_type:          r1.itype,
+    weight_kg:          r1.weight,
+    declared_value_sgd: r1.declared_value_sgd,
+    contents:           r1.contents,
+    // Multi-recipient array
+    recipients:         recipients,
+    recipient_count:    recipientCount,
     sender_name:        document.getElementById('f_sname').value,
     sender_phone_sg:    '+65' + document.getElementById('f_sphone').value,
     sender_email:       document.getElementById('f_email').value,
@@ -2972,7 +3068,6 @@ async function goToP3() {
     dropoff_lat:        chosen.lat,
     dropoff_lng:        chosen.lng,
     payment_method:     payment ? payment.value : '',
-    rate:               isDevices ? '$50/item' : '$' + rate + '/kg',
     pickup_fee:         pickup,
     total_sgd:          total,
     submitted_at:       new Date().toISOString(),
@@ -3076,46 +3171,214 @@ function toggleTnc() {
 })();
 
 // ═══════════════════════════════════════════════════
-//  PAGE NAVIGATION
+//  MULTI-RECIPIENT SUPPORT
 // ═══════════════════════════════════════════════════
-// ── Item Type Switcher ───────────────────────────────────────────────────────
-function selectItemType(type) {
-  const weightSec  = document.getElementById('weight-section');
-  const devicesSec = document.getElementById('devices-section');
+let recipientCount = 1;
+const MAX_RECIPIENTS = 5;
 
-  if (type === 'devices') {
-    weightSec.style.display  = 'none';
-    devicesSec.style.display = 'block';
-    // clear weight so validation doesn't trip
-    const wEl = document.getElementById('f_weight');
-    if (wEl) wEl.value = '';
-    const noteEl = document.getElementById('weight-total-note');
-    if (noteEl) noteEl.style.display = 'none';
-    updateDeviceTotal();
-  } else {
-    weightSec.style.display  = '';
-    devicesSec.style.display = 'none';
-    updateWeightTotal();
-  }
-  updatePickupPrice();
+function buildRecipientGroup(n) {
+  return `
+  <div class="recipient-group" id="recipient-group-${n}">
+    <div class="recipient-group-header">
+      <span class="sb-icon">👤</span>
+      <strong>Recipient ${n}</strong>
+    </div>
+
+    <div class="field">
+      <label>Recipient Full Name <span class="lbl-mm">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
+      <input type="text" id="f_rname_${n}" placeholder="e.g. ဒေါ်အေးအေး" oninput="checkRecipientFilled(${n})">
+    </div>
+    <div class="field">
+      <label>Myanmar Phone +95 <span class="lbl-mm">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
+      <div class="phone-row">
+        <div class="phone-prefix">🇲🇲 +95</div>
+        <input type="text" id="f_rphone_${n}" placeholder="9765432100" oninput="checkRecipientFilled(${n})">
+      </div>
+    </div>
+    <div class="field">
+      <label>Full Delivery Address <span class="lbl-mm">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
+      <textarea id="f_addr_${n}" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(${n})"></textarea>
+    </div>
+
+    <div class="field" style="margin-top:8px;">
+      <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
+      <div class="radio-group">
+        <label class="radio-opt" onclick="selectItemType_r(${n},'food')">
+          <input type="radio" name="itype_${n}" value="Food/Clothes/Medicine" checked>
+          <div class="ro-body">
+            <div class="ro-main">🛍️ Food / Clothes / Medicine / Cosmetics</div>
+            <div class="ro-sub">အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း · Shoes · Bags · Books</div>
+          </div>
+          <span class="pill pill-green">$15/kg</span>
+        </label>
+        <label class="radio-opt" onclick="selectItemType_r(${n},'devices')">
+          <input type="radio" name="itype_${n}" value="Phones/Tablets/Laptops">
+          <div class="ro-body">
+            <div class="ro-main">📱 Phones / Tablets / Laptops</div>
+            <div class="ro-sub">ဖုန်း / တက်ဘလက် / လက်တော့ပ်</div>
+          </div>
+          <span class="pill pill-blue">$50/item</span>
+        </label>
+        <label class="radio-opt" onclick="selectItemType_r(${n},'machinery')">
+          <input type="radio" name="itype_${n}" value="Electronics/Machinery">
+          <div class="ro-body">
+            <div class="ro-main">⚙️ Electronics / Machinery</div>
+            <div class="ro-sub">Rice cooker · Fan · Printer · စက်ယန္တရား / လျှပ်စစ်ပစ္စည်း</div>
+          </div>
+          <span class="pill pill-amber">$20/kg</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="weight-section-${n}">
+      <div class="two-col">
+        <div class="field">
+          <label>Weight (kg) <span class="lbl-mm mm">/ အလေးချိန်</span><span class="req">*</span></label>
+          <input type="number" id="f_weight_${n}" placeholder="e.g. 2.5" min="0.1" max="100" step="0.1"
+            oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0.1){this.value=0.1;}if(v>100){this.value=100;}updatePickupPrice();updateWeightTotal_r(${n});checkRecipientFilled(${n});">
+          <div id="weight-err-${n}" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">Max 100kg per booking</div>
+        </div>
+        <div class="field">
+          <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
+          <input type="number" id="f_value_${n}" placeholder="e.g. 50" min="1" max="10000"
+            oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0)this.value=0;if(v>10000)this.value=10000;checkRecipientFilled(${n});">
+        </div>
+      </div>
+      <div class="note green" id="weight-total-note-${n}" style="display:none;">
+        <span class="note-icon">💰</span>
+        <span id="weight-total-text-${n}"></span>
+      </div>
+    </div>
+
+    <div id="devices-section-${n}" style="display:none;">
+      <div class="two-col">
+        <div class="field">
+          <label>No. of Items <span class="lbl-mm mm">/ အရေအတွက်</span><span class="req">*</span></label>
+          <select id="f_devices_${n}" onchange="updateDeviceTotal_r(${n});checkRecipientFilled(${n});">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Declared Value (SGD) <span class="lbl-mm mm">/ ကြေညာတန်ဖိုး</span><span class="req">*</span></label>
+          <input type="number" id="f_value_dev_${n}" placeholder="e.g. 1300" min="1" max="10000"
+            oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0)this.value=0;if(v>10000)this.value=10000;checkRecipientFilled(${n});">
+        </div>
+      </div>
+      <div class="note green" id="device-total-note-${n}">
+        <span class="note-icon">💰</span>
+        <span id="device-total-text-${n}">1 item × $50 = <strong>$50.00</strong></span>
+      </div>
+    </div>
+
+    <div class="note blue"><span class="note-icon">ℹ️</span><span>Max 100kg per booking · Declared value is for customs reference only.</span></div>
+
+    <div class="field" style="margin-top:10px;">
+      <label>Contents Description <span class="lbl-mm">/ ပစ္စည်းဖော်ပြချက်</span><span class="req">*</span></label>
+      <textarea id="f_contents_${n}" placeholder="ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး" oninput="checkRecipientFilled(${n})"></textarea>
+    </div>
+  </div>`;
 }
 
-function updateDeviceTotal() {
-  const qty   = parseInt(document.getElementById('f_devices')?.value) || 1;
+function addRecipient() {
+  if (recipientCount >= MAX_RECIPIENTS) return;
+  recipientCount++;
+  const container = document.getElementById('recipients-container');
+  const div = document.createElement('div');
+  div.innerHTML = buildRecipientGroup(recipientCount);
+  container.appendChild(div.firstElementChild);
+
+  // Update button label and state
+  const btn = document.getElementById('add-recipient-btn');
+  const next = recipientCount + 1;
+  btn.textContent = '➕ Add another recipient (' + next + '/5)';
+  btn.disabled = true; // disabled until new recipient is filled
+  if (recipientCount >= MAX_RECIPIENTS) btn.style.display = 'none';
+
+  // Scroll to new recipient
+  const newGroup = document.getElementById('recipient-group-' + recipientCount);
+  if (newGroup) newGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function checkRecipientFilled(n) {
+  const itypeVal = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+  const isDevices = itypeVal === 'Phones/Tablets/Laptops';
+
+  const name     = (document.getElementById('f_rname_' + n)?.value || '').trim();
+  const phone    = (document.getElementById('f_rphone_' + n)?.value || '').trim();
+  const addr     = (document.getElementById('f_addr_' + n)?.value || '').trim();
+  const contents = (document.getElementById('f_contents_' + n)?.value || '').trim();
+  let weightOk   = false;
+  let valueOk    = false;
+
+  if (isDevices) {
+    weightOk = !!(document.getElementById('f_devices_' + n)?.value);
+    valueOk  = !!(document.getElementById('f_value_dev_' + n)?.value || '').trim();
+  } else {
+    weightOk = !!(document.getElementById('f_weight_' + n)?.value || '').trim();
+    valueOk  = !!(document.getElementById('f_value_' + n)?.value || '').trim();
+  }
+
+  const filled = name && phone && addr && contents && weightOk && valueOk;
+
+  // Only control the Add button if this is the *last* recipient
+  if (n === recipientCount) {
+    const btn = document.getElementById('add-recipient-btn');
+    if (btn && recipientCount < MAX_RECIPIENTS) {
+      btn.disabled = !filled;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  PAGE NAVIGATION
+// ═══════════════════════════════════════════════════
+// ── Per-recipient Item Type Switcher ────────────────────────────────────────
+function selectItemType_r(n, type) {
+  const weightSec  = document.getElementById('weight-section-' + n);
+  const devicesSec = document.getElementById('devices-section-' + n);
+
+  if (type === 'devices') {
+    if (weightSec)  weightSec.style.display  = 'none';
+    if (devicesSec) devicesSec.style.display = 'block';
+    const wEl = document.getElementById('f_weight_' + n);
+    if (wEl) wEl.value = '';
+    const noteEl = document.getElementById('weight-total-note-' + n);
+    if (noteEl) noteEl.style.display = 'none';
+    updateDeviceTotal_r(n);
+  } else {
+    if (weightSec)  weightSec.style.display  = '';
+    if (devicesSec) devicesSec.style.display = 'none';
+    updateWeightTotal_r(n);
+  }
+  updatePickupPrice();
+  checkRecipientFilled(n);
+}
+
+// Legacy alias (kept in case any other code calls selectItemType)
+function selectItemType(type) { selectItemType_r(1, type); }
+
+function updateDeviceTotal_r(n) {
+  const qty   = parseInt(document.getElementById('f_devices_' + n)?.value) || 1;
   const total = qty * 50;
-  const el    = document.getElementById('device-total-text');
+  const el    = document.getElementById('device-total-text-' + n);
   if (el) el.innerHTML = qty + ' item' + (qty > 1 ? 's' : '') + ' × $50 = <strong>$' + total.toFixed(2) + '</strong>';
 }
 
-function updateWeightTotal() {
-  const kg      = parseFloat(document.getElementById('f_weight')?.value) || 0;
-  const noteEl  = document.getElementById('weight-total-note');
-  const textEl  = document.getElementById('weight-total-text');
+function updateDeviceTotal() { updateDeviceTotal_r(1); }
+
+function updateWeightTotal_r(n) {
+  const kg     = parseFloat(document.getElementById('f_weight_' + n)?.value) || 0;
+  const noteEl = document.getElementById('weight-total-note-' + n);
+  const textEl = document.getElementById('weight-total-text-' + n);
   if (!noteEl || !textEl) return;
   if (!kg || kg <= 0) { noteEl.style.display = 'none'; return; }
 
-  const billableKg = Math.ceil(kg); // always round up to nearest whole kg
-  const itype = document.querySelector('input[name="itype"]:checked')?.value || '';
+  const billableKg = Math.ceil(kg);
+  const itype = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
   let rate, emoji;
   if (itype === 'Electronics/Machinery') {
     rate = 20; emoji = '⚙️';
@@ -3127,17 +3390,14 @@ function updateWeightTotal() {
   noteEl.style.display = 'block';
 }
 
+function updateWeightTotal() { updateWeightTotal_r(1); }
+
 // ── Dynamic Pickup Pricing ────────────────────────────────────────────────────
 // Base $7.99, +$3 for every 5kg tier above 1kg
 // Tiers: 1kg=$7.99, 5kg=$10.99, 10kg=$13.99, 20kg=$16.99, 30kg=$19.99
 function getPickupPrice(kg) {
   const base = 7.99;
-  // For devices, use qty as proxy weight estimate (avg 0.3kg each, round up)
-  const selectedType = document.querySelector('input[name="itype"]:checked')?.value || '';
-  if (selectedType === 'Phones/Tablets/Laptops') {
-    const qty = parseInt(document.getElementById('f_devices')?.value) || 1;
-    kg = qty * 0.5; // treat each device as ~0.5kg for pickup tier
-  }
+  // kg is passed in directly (caller is responsible for computing effective kg)
   if (!kg || kg <= 0) return base;
   if (kg <= 5)  return base;
   if (kg <= 10) return base + 3;
@@ -3155,17 +3415,27 @@ function getPickupTierNote(kg) {
 }
 
 function updatePickupPrice() {
-  const kg    = parseFloat(document.getElementById('f_weight')?.value) || 0;
-  const price = getPickupPrice(kg);
-  const priceEl = document.getElementById('pickup-price');
-  const noteEl  = document.getElementById('pickup-note');
-  const noteTxt = document.getElementById('pickup-note-text');
-  const weightErr = document.getElementById('weight-err');
+  // Use recipient 1 data for the live pickup price preview in the UI
+  const itype1 = document.querySelector('input[name="itype_1"]:checked')?.value || '';
+  let kg = 0;
+  if (itype1 === 'Phones/Tablets/Laptops') {
+    const qty = parseInt(document.getElementById('f_devices_1')?.value) || 1;
+    kg = qty * 0.5;
+  } else {
+    kg = parseFloat(document.getElementById('f_weight_1')?.value) || 0;
+  }
 
-  // Weight validation
-  if (kg > 30) {
+  const price = getPickupPrice(kg);
+  const priceEl   = document.getElementById('pickup-price');
+  const noteEl    = document.getElementById('pickup-note');
+  const noteTxt   = document.getElementById('pickup-note-text');
+  const weightErr = document.getElementById('weight-err-1');
+
+  // Weight validation (recipient 1)
+  if (kg > 30 && itype1 !== 'Phones/Tablets/Laptops') {
     if (weightErr) weightErr.style.display = 'block';
-    document.getElementById('f_weight').value = 30;
+    const wEl = document.getElementById('f_weight_1');
+    if (wEl) wEl.value = 30;
     return;
   } else {
     if (weightErr) weightErr.style.display = 'none';
@@ -3194,15 +3464,16 @@ function updatePickupPrice() {
 }
 
 function validateDeclaredValue() {
-  ['f_value','f_value_dev'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let v = parseFloat(el.value);
-    if (!isNaN(v) && v < 0) el.value = 0;
-    if (!isNaN(v) && v > 10000) el.value = 10000;
-  });
-  const errEl = document.getElementById('value-err');
-  if (errEl) errEl.style.display = 'none';
+  // Validate all visible declared value fields
+  for (let n = 1; n <= recipientCount; n++) {
+    ['f_value_' + n, 'f_value_dev_' + n].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let v = parseFloat(el.value);
+      if (!isNaN(v) && v < 0) el.value = 0;
+      if (!isNaN(v) && v > 10000) el.value = 10000;
+    });
+  }
 }
 
 // ── Collection card selector ─────────────────────────────────────────────────
@@ -3213,7 +3484,7 @@ function selectCollect(el, value) {
   if (radio) {
     radio.checked = true;
     if (value === 'Pickup') {
-      const kg    = parseFloat(document.getElementById('f_weight')?.value) || 0;
+      const kg    = parseFloat(document.getElementById('f_weight_1')?.value) || 0;
       const price = getPickupPrice(kg);
       radio.value = 'Pickup (+$' + price.toFixed(2) + ')';
     }
