@@ -864,27 +864,66 @@ select {
 .how-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); }
 .how-text span   { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
-/* ── RECIPIENT GROUP ────────────────────────────────────── */
-.recipient-group {
-  border: 1.5px solid var(--border);
+/* ── RECIPIENT CARD (unified collapsible card) ───────────── */
+.recipient-card {
+  border: 1.5px solid #e5e7eb;
   border-radius: 12px;
-  padding: 14px 16px;
+  overflow: hidden;
   margin-bottom: 14px;
+}
+.recipient-card-header {
+  background: #fffbeb;
+  border-left: 4px solid #C9A84C;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.recipient-card-header .rc-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1612;
+}
+.recipient-card-header .rc-chevron {
+  color: #C9A84C;
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+.recipient-card-body {
+  padding: 14px 16px;
   background: #fff;
-  position: relative;
 }
-.recipient-group-header {
-  display: flex; align-items: center; gap: 10px;
-  background: #fffbf0;
-  border-left: 3px solid var(--gold);
-  border-radius: 0 8px 8px 0;
-  padding: 9px 13px;
-  margin: -14px -16px 14px;
-  border-top-right-radius: 10px;
-  border-top-left-radius: 0;
+.rc-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
 }
-.recipient-group-header .sb-icon { font-size: 17px; flex-shrink: 0; }
-.recipient-group-header strong { font-size: 13px; font-weight: 700; color: #92400e; display: block; }
+.rc-summary-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1612;
+}
+.rc-summary-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+.rc-delete-btn {
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  background: white;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.rc-delete-btn:hover { background: #fee2e2; }
 
 /* ── ADD RECIPIENT BUTTON ───────────────────────────────── */
 .add-recipient-btn {
@@ -910,72 +949,6 @@ select {
   cursor: not-allowed;
 }
 
-/* ── COLLAPSED RECIPIENT SUMMARY CARD ─────────────────────── */
-.recipient-summary-card {
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 14px;
-  position: relative;
-}
-.recipient-summary-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  padding: 9px 13px;
-  background: #fffbf0;
-  border-left: 3px solid var(--gold);
-  border-radius: 0 8px 8px 0;
-  margin: -14px -16px 0;
-  border-top-right-radius: 10px;
-  border-top-left-radius: 0;
-  user-select: none;
-}
-.recipient-summary-header .rsh-left {
-  display: flex; align-items: center; gap: 10px;
-}
-.recipient-summary-header .rsh-left .sb-icon { font-size: 17px; flex-shrink: 0; }
-.recipient-summary-header .rsh-left strong { font-size: 13px; font-weight: 700; color: #92400e; }
-.recipient-summary-header .rsh-chevron {
-  font-size: 12px; color: #b45309;
-  transition: transform 0.2s;
-  flex-shrink: 0;
-}
-.recipient-summary-header.expanded .rsh-chevron {
-  transform: rotate(180deg);
-}
-.recipient-summary-body {
-  padding-top: 12px;
-}
-.recipient-summary-body.hidden {
-  display: none;
-}
-.rc-name {
-  font-size: 15px; font-weight: 700; color: var(--dark);
-  margin-bottom: 4px;
-}
-.rc-meta {
-  font-size: 12px; color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 8px;
-}
-.rc-delete-row {
-  display: flex; justify-content: flex-end;
-}
-.rc-delete {
-  font-size: 12px; font-weight: 600;
-  color: var(--red);
-  background: #fff1f2;
-  border: 1px solid #fca5a5;
-  border-radius: 7px;
-  padding: 5px 11px;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: 'DM Sans', sans-serif;
-}
-.rc-delete:hover { background: #fee2e2; }
 
 /* ── COLLECTION METHOD CARDS (Ninja Van style) ──────────── */
 .collect-cards {
@@ -1752,11 +1725,15 @@ body.lang-en .how-mm { display: none !important; }
     <!-- ③ RECIPIENTS CONTAINER ──────────────────────────────────────────── -->
     <div id="recipients-container" style="margin-top:22px;">
       <!-- Recipient 1 is rendered statically; additional ones are added by JS -->
-      <div class="recipient-group" id="recipient-group-1">
-        <div class="recipient-group-header">
-          <span class="sb-icon">👤</span>
-          <strong>Recipient 1</strong>
+      <div class="recipient-card" id="recipient-card-1">
+        <div class="recipient-card-header" onclick="toggleRecipientCollapse(1)">
+          <span>👤</span>
+          <span class="rc-title">Recipient 1</span>
+          <span class="rc-chevron" id="rc-chevron-1">▲</span>
         </div>
+        <div class="recipient-card-body" id="recipient-body-1">
+          <div id="recipient-summary-1" style="display:none;"></div>
+          <div id="recipient-fields-1">
 
         <div class="field" style="margin-top:8px;">
           <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
@@ -1856,7 +1833,9 @@ body.lang-en .how-mm { display: none !important; }
           <label><span data-i18n="lblAddr">Full Delivery Address</span> <span class="lbl-mm" data-i18n="lblAddrMM">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
           <textarea id="f_addr_1" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(1)"></textarea>
         </div>
-      </div><!-- /recipient-group-1 -->
+          </div><!-- /recipient-fields-1 -->
+        </div><!-- /recipient-card-body -->
+      </div><!-- /recipient-card-1 -->
     </div><!-- /recipients-container -->
 
     <!-- ADD ANOTHER RECIPIENT BUTTON ──────────────────────────────────────── -->
@@ -3258,11 +3237,15 @@ const MAX_RECIPIENTS = 5;
 
 function buildRecipientGroup(n) {
   return `
-  <div class="recipient-group" id="recipient-group-${n}">
-    <div class="recipient-group-header">
-      <span class="sb-icon">👤</span>
-      <strong>Recipient ${n}</strong>
+  <div class="recipient-card" id="recipient-card-${n}">
+    <div class="recipient-card-header" onclick="toggleRecipientCollapse(${n})">
+      <span>👤</span>
+      <span class="rc-title">Recipient ${n}</span>
+      <span class="rc-chevron" id="rc-chevron-${n}">▲</span>
     </div>
+    <div class="recipient-card-body" id="recipient-body-${n}">
+      <div id="recipient-summary-${n}" style="display:none;"></div>
+      <div id="recipient-fields-${n}">
 
     <div class="field" style="margin-top:8px;">
       <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
@@ -3360,6 +3343,9 @@ function buildRecipientGroup(n) {
       <label>Full Delivery Address <span class="lbl-mm">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
       <textarea id="f_addr_${n}" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(${n})"></textarea>
     </div>
+
+      </div><!-- /recipient-fields-${n} -->
+    </div><!-- /recipient-card-body -->
   </div>`;
 }
 
@@ -3383,94 +3369,81 @@ function addRecipient() {
   if (recipientCount >= MAX_RECIPIENTS) btn.style.display = 'none';
 
   // Scroll to new recipient
-  const newGroup = document.getElementById('recipient-group-' + recipientCount);
-  if (newGroup) newGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const newCard = document.getElementById('recipient-card-' + recipientCount);
+  if (newCard) newCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function collapseRecipient(n) {
-  const group = document.getElementById('recipient-group-' + n);
-  if (!group) return;
+  const card = document.getElementById('recipient-card-' + n);
+  if (!card) return;
 
   // Read current values
-  const name     = (document.getElementById('f_rname_' + n)?.value || '').trim() || '—';
-  const addr     = (document.getElementById('f_addr_' + n)?.value || '').trim() || '—';
-  const itype    = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
-  const isDev    = itype === 'Phones/Tablets/Laptops';
-  const weightRaw = isDev
+  const name       = (document.getElementById('f_rname_' + n)?.value || '').trim() || '—';
+  const addr       = (document.getElementById('f_addr_' + n)?.value || '').trim() || '—';
+  const itype      = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+  const isDev      = itype === 'Phones/Tablets/Laptops';
+  const weightRaw  = isDev
     ? ((document.getElementById('f_devices_' + n)?.value || '1') + ' device(s)')
     : ((document.getElementById('f_weight_' + n)?.value || '') + 'kg');
   const itypeShort = itype ? itype.split('/')[0] : '—';
 
   // Truncate address for display
-  const addrShort = addr.length > 55 ? addr.slice(0, 52) + '…' : addr;
+  const addrShort = addr.length > 60 ? addr.slice(0, 57) + '…' : addr;
 
-  // Build summary card HTML
-  const summaryHtml = `
-  <div class="recipient-summary-card" id="recipient-summary-${n}">
-    <div class="recipient-summary-header" id="recipient-summary-header-${n}" onclick="toggleRecipientCollapse(${n})">
-      <div class="rsh-left">
-        <span class="sb-icon">👤</span>
-        <strong>Recipient ${n}</strong>
+  // Populate summary div
+  const summaryDiv = document.getElementById('recipient-summary-' + n);
+  if (summaryDiv) {
+    summaryDiv.innerHTML = `
+      <div class="rc-summary-row">
+        <span class="rc-summary-name">${name} ✅</span>
+        <button class="rc-delete-btn" id="rc-delete-row-${n}" onclick="deleteRecipient(${n});event.stopPropagation()">🗑️ Delete section</button>
       </div>
-      <span class="rsh-chevron" id="rsh-chevron-${n}">▼</span>
-    </div>
-    <div class="recipient-summary-body" id="recipient-summary-body-${n}">
-      <div class="rc-name">${name} <span style="color:var(--green);">✅</span></div>
-      <div class="rc-meta">${weightRaw} · ${itypeShort}<br>${addrShort}</div>
-      <div class="rc-delete-row" id="rc-delete-row-${n}">
-        <button class="rc-delete" onclick="deleteRecipient(${n})">🗑️ Delete section</button>
-      </div>
-    </div>
-  </div>`;
+      <div class="rc-summary-meta">${weightRaw} · ${itypeShort}</div>
+      <div class="rc-summary-meta" style="margin-top:2px;">${addrShort}</div>`;
+    summaryDiv.style.display = '';
+  }
 
-  // Hide the full form group and insert summary card before it
-  group.style.display = 'none';
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = summaryHtml;
-  group.parentNode.insertBefore(wrapper.firstElementChild, group);
+  // Hide fields
+  const fieldsDiv = document.getElementById('recipient-fields-' + n);
+  if (fieldsDiv) fieldsDiv.style.display = 'none';
+
+  // Update chevron
+  const chevron = document.getElementById('rc-chevron-' + n);
+  if (chevron) chevron.textContent = '▼';
 
   // Update delete button visibility
   updateDeleteButtonVisibility();
 }
 
 function expandRecipient(n) {
-  const summary = document.getElementById('recipient-summary-' + n);
-  const group   = document.getElementById('recipient-group-' + n);
-  if (!summary || !group) return;
+  const summaryDiv = document.getElementById('recipient-summary-' + n);
+  const fieldsDiv  = document.getElementById('recipient-fields-' + n);
 
-  // Show the form, remove the summary card
-  group.style.display = '';
-  summary.remove();
+  if (summaryDiv) summaryDiv.style.display = 'none';
+  if (fieldsDiv)  fieldsDiv.style.display = '';
+
+  // Update chevron
+  const chevron = document.getElementById('rc-chevron-' + n);
+  if (chevron) chevron.textContent = '▲';
 }
 
 function toggleRecipientCollapse(n) {
-  const body    = document.getElementById('recipient-summary-body-' + n);
-  const header  = document.getElementById('recipient-summary-header-' + n);
-  const chevron = document.getElementById('rsh-chevron-' + n);
+  const fieldsDiv = document.getElementById('recipient-fields-' + n);
+  if (!fieldsDiv) return;
 
-  if (!body) return;
-
-  if (body.classList.contains('hidden')) {
-    // Show the summary body
-    body.classList.remove('hidden');
-    if (chevron) chevron.textContent = '▼';
-    if (header) header.classList.remove('expanded');
+  if (fieldsDiv.style.display === 'none') {
+    expandRecipient(n);
   } else {
-    // Hide the summary body
-    body.classList.add('hidden');
-    if (chevron) chevron.textContent = '▲';
-    if (header) header.classList.add('expanded');
+    collapseRecipient(n);
   }
 }
 
 function deleteRecipient(n) {
   if (recipientCount <= 1) return; // Cannot delete last recipient
 
-  // Remove DOM elements
-  const summary = document.getElementById('recipient-summary-' + n);
-  const group   = document.getElementById('recipient-group-' + n);
-  if (summary) summary.remove();
-  if (group)   group.remove();
+  // Remove DOM element (the unified card)
+  const card = document.getElementById('recipient-card-' + n);
+  if (card) card.remove();
 
   // Rebuild: collect remaining recipient numbers
   const container = document.getElementById('recipients-container');
@@ -3480,16 +3453,15 @@ function deleteRecipient(n) {
   }
 
   // Renumber remaining recipients
-  // We need to re-render them with consecutive numbers
   // Strategy: read data from existing elements, remove them, re-insert with new numbers
   const saved = [];
   for (const oldN of remaining) {
-    const grpEl  = document.getElementById('recipient-group-' + oldN);
-    const sumEl  = document.getElementById('recipient-summary-' + oldN);
-    const isCollapsed = !grpEl || grpEl.style.display === 'none';
+    const cardEl    = document.getElementById('recipient-card-' + oldN);
+    const fieldsDiv = document.getElementById('recipient-fields-' + oldN);
+    const isCollapsed = fieldsDiv && fieldsDiv.style.display === 'none';
 
-    if (isCollapsed && grpEl) {
-      // Collapsed: form is hidden but fields still exist in DOM — read them
+    if (cardEl) {
+      // Read form field values (fields always exist in DOM even when collapsed)
       const itype    = document.querySelector('input[name="itype_' + oldN + '"]:checked')?.value || 'Food/Clothes/Medicine';
       const isDev    = itype === 'Phones/Tablets/Laptops';
       const weight   = document.getElementById('f_weight_' + oldN)?.value || '';
@@ -3500,22 +3472,8 @@ function deleteRecipient(n) {
       const rname    = document.getElementById('f_rname_' + oldN)?.value || '';
       const rphone   = document.getElementById('f_rphone_' + oldN)?.value || '';
       const addr     = document.getElementById('f_addr_' + oldN)?.value || '';
-      saved.push({ oldN, isCollapsed: true, itype, isDev, weight, value_f, devices, valueDev, contents, rname, rphone, addr });
-      if (sumEl) sumEl.remove();
-    } else if (grpEl) {
-      // Read form field values
-      const itype    = document.querySelector('input[name="itype_' + oldN + '"]:checked')?.value || 'Food/Clothes/Medicine';
-      const isDev    = itype === 'Phones/Tablets/Laptops';
-      const weight   = document.getElementById('f_weight_' + oldN)?.value || '';
-      const value_f  = document.getElementById('f_value_' + oldN)?.value || '';
-      const devices  = document.getElementById('f_devices_' + oldN)?.value || '1';
-      const valueDev = document.getElementById('f_value_dev_' + oldN)?.value || '';
-      const contents = document.getElementById('f_contents_' + oldN)?.value || '';
-      const rname    = document.getElementById('f_rname_' + oldN)?.value || '';
-      const rphone   = document.getElementById('f_rphone_' + oldN)?.value || '';
-      const addr     = document.getElementById('f_addr_' + oldN)?.value || '';
-      saved.push({ oldN, isCollapsed: false, itype, isDev, weight, value_f, devices, valueDev, contents, rname, rphone, addr });
-      grpEl.remove();
+      saved.push({ oldN, isCollapsed, itype, isDev, weight, value_f, devices, valueDev, contents, rname, rphone, addr });
+      cardEl.remove();
     }
   }
 
@@ -3590,9 +3548,9 @@ function deleteRecipient(n) {
 function updateDeleteButtonVisibility() {
   // Show delete buttons only if there are 2+ recipients
   for (let i = 1; i <= recipientCount; i++) {
-    const row = document.getElementById('rc-delete-row-' + i);
-    if (row) {
-      row.style.display = recipientCount > 1 ? 'flex' : 'none';
+    const btn = document.getElementById('rc-delete-row-' + i);
+    if (btn) {
+      btn.style.display = recipientCount > 1 ? '' : 'none';
     }
   }
 }
