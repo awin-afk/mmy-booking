@@ -910,6 +910,73 @@ select {
   cursor: not-allowed;
 }
 
+/* ── COLLAPSED RECIPIENT SUMMARY CARD ─────────────────────── */
+.recipient-summary-card {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.recipient-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 9px 13px;
+  background: #fffbf0;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  margin: -14px -16px 0;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 0;
+  user-select: none;
+}
+.recipient-summary-header .rsh-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.recipient-summary-header .rsh-left .sb-icon { font-size: 17px; flex-shrink: 0; }
+.recipient-summary-header .rsh-left strong { font-size: 13px; font-weight: 700; color: #92400e; }
+.recipient-summary-header .rsh-chevron {
+  font-size: 12px; color: #b45309;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.recipient-summary-header.expanded .rsh-chevron {
+  transform: rotate(180deg);
+}
+.recipient-summary-body {
+  padding-top: 12px;
+}
+.recipient-summary-body.hidden {
+  display: none;
+}
+.rc-name {
+  font-size: 15px; font-weight: 700; color: var(--dark);
+  margin-bottom: 4px;
+}
+.rc-meta {
+  font-size: 12px; color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+.rc-delete-row {
+  display: flex; justify-content: flex-end;
+}
+.rc-delete {
+  font-size: 12px; font-weight: 600;
+  color: var(--red);
+  background: #fff1f2;
+  border: 1px solid #fca5a5;
+  border-radius: 7px;
+  padding: 5px 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.rc-delete:hover { background: #fee2e2; }
+
 /* ── COLLECTION METHOD CARDS (Ninja Van style) ──────────── */
 .collect-cards {
   display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
@@ -1691,22 +1758,6 @@ body.lang-en .how-mm { display: none !important; }
           <strong>Recipient 1</strong>
         </div>
 
-        <div class="field">
-          <label><span data-i18n="lblRName">Recipient Full Name</span> <span class="lbl-mm" data-i18n="lblRNameMM">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
-          <input type="text" id="f_rname_1" placeholder="e.g. ဒေါ်အေးအေး" oninput="checkRecipientFilled(1)">
-        </div>
-        <div class="field">
-          <label><span data-i18n="lblMPhone">Myanmar Phone +95</span> <span class="lbl-mm" data-i18n="lblMPhoneMM">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
-          <div class="phone-row">
-            <div class="phone-prefix">🇲🇲 +95</div>
-            <input type="text" id="f_rphone_1" placeholder="9765432100" oninput="checkRecipientFilled(1)">
-          </div>
-        </div>
-        <div class="field">
-          <label><span data-i18n="lblAddr">Full Delivery Address</span> <span class="lbl-mm" data-i18n="lblAddrMM">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
-          <textarea id="f_addr_1" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(1)"></textarea>
-        </div>
-
         <div class="field" style="margin-top:8px;">
           <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
           <div class="radio-group">
@@ -1789,6 +1840,22 @@ body.lang-en .how-mm { display: none !important; }
           <label><span data-i18n="lblContents">Contents Description</span> <span class="lbl-mm" data-i18n="lblContentsMM">/ ပစ္စည်းဖော်ပြချက်</span><span class="req">*</span></label>
           <textarea id="f_contents_1" placeholder="ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး" oninput="checkRecipientFilled(1)"></textarea>
         </div>
+
+        <div class="field">
+          <label><span data-i18n="lblRName">Recipient Full Name</span> <span class="lbl-mm" data-i18n="lblRNameMM">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
+          <input type="text" id="f_rname_1" placeholder="e.g. ဒေါ်အေးအေး" oninput="checkRecipientFilled(1)">
+        </div>
+        <div class="field">
+          <label><span data-i18n="lblMPhone">Myanmar Phone +95</span> <span class="lbl-mm" data-i18n="lblMPhoneMM">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
+          <div class="phone-row">
+            <div class="phone-prefix">🇲🇲 +95</div>
+            <input type="text" id="f_rphone_1" placeholder="9765432100" oninput="checkRecipientFilled(1)">
+          </div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="lblAddr">Full Delivery Address</span> <span class="lbl-mm" data-i18n="lblAddrMM">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
+          <textarea id="f_addr_1" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(1)"></textarea>
+        </div>
       </div><!-- /recipient-group-1 -->
     </div><!-- /recipients-container -->
 
@@ -1847,13 +1914,10 @@ body.lang-en .how-mm { display: none !important; }
       <span><span data-i18n="noteCheck">ဆက်လက်မတင်မီ အချက်အလက်များကို သေချာစစ်ဆေးပါ</span></span>
     </div>
     <div class="sum-block">
-      <table class="sum-table">
-        <tr><td>📦 Recipient</td><td id="s_rname">—</td></tr>
-        <tr><td>📞 Myanmar Phone</td><td id="s_rphone">—</td></tr>
-        <tr><td>📍 Delivery To</td><td id="s_dest">—</td></tr>
-        <tr><td>🏷️ Item Type</td><td id="s_itype">—</td></tr>
-        <tr><td>⚖️ Weight / Qty</td><td id="s_weight">—</td></tr>
-        <tr><td>📝 Contents</td><td id="s_contents">—</td></tr>
+      <table class="sum-table" id="sum-table-main">
+        <tbody id="sum-recipients-body">
+          <!-- Recipient rows injected dynamically by goToP2() -->
+        </tbody>
         <tr><td>🚚 Collection</td><td id="s_method">—</td></tr>
         <tr><td>👤 Sender</td><td id="s_sender">—</td></tr>
         <tr><td>📍 Your SG Address</td><td id="s_saddr">—</td></tr>
@@ -2848,15 +2912,31 @@ async function goToP2() {
     recipientSummary += (n > 1 ? '\n' : '') + 'R' + n + ': ' + rn + ' · +95' + ph + ' · ' + wt + ' · ' + iv.split('/')[0];
   }
 
-  // Populate summary table (show first recipient's details + multi info)
-  document.getElementById('s_rname').textContent    = recipientCount === 1
-    ? document.getElementById('f_rname_1').value
-    : recipientCount + ' recipients (see below)';
-  document.getElementById('s_rphone').textContent   = '+95 ' + (document.getElementById('f_rphone_1')?.value || '');
-  document.getElementById('s_dest').textContent     = document.getElementById('f_addr_1')?.value || '';
-  document.getElementById('s_itype').textContent    = itype1Val || '—';
-  document.getElementById('s_weight').textContent   = recipientCount === 1 ? weightDisp1 : '(' + recipientCount + ' parcels)';
-  document.getElementById('s_contents').textContent = document.getElementById('f_contents_1')?.value || '';
+  // Populate summary table — build rows for all recipients
+  const sumBody = document.getElementById('sum-recipients-body');
+  if (sumBody) {
+    let rowsHtml = '';
+    for (let n = 1; n <= recipientCount; n++) {
+      const rn     = document.getElementById('f_rname_' + n)?.value || '—';
+      const ph     = document.getElementById('f_rphone_' + n)?.value || '';
+      const addrN  = document.getElementById('f_addr_' + n)?.value || '—';
+      const ivN    = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '—';
+      const isDN   = ivN === 'Phones/Tablets/Laptops';
+      const wtN    = isDN
+        ? (document.getElementById('f_devices_' + n)?.value || '1') + ' device(s)'
+        : (document.getElementById('f_weight_' + n)?.value || '') + ' kg';
+      const ctN    = document.getElementById('f_contents_' + n)?.value || '—';
+      const hdr = recipientCount > 1 ? `<tr><td colspan="2" style="padding-top:8px;font-weight:700;color:#92400e;font-size:12px;">── Recipient ${n} ──</td></tr>` : '';
+      rowsHtml += hdr +
+        `<tr><td>📦 Name</td><td>${rn}</td></tr>` +
+        `<tr><td>📞 Myanmar Phone</td><td>+95 ${ph}</td></tr>` +
+        `<tr><td>📍 Delivery To</td><td>${addrN}</td></tr>` +
+        `<tr><td>🏷️ Item Type</td><td>${ivN}</td></tr>` +
+        `<tr><td>⚖️ Weight / Qty</td><td>${wtN}</td></tr>` +
+        `<tr><td>📝 Contents</td><td>${ctN}</td></tr>`;
+    }
+    sumBody.innerHTML = rowsHtml;
+  }
   document.getElementById('s_method').textContent   = method ? method.value : '—';
   document.getElementById('s_sender').textContent   = document.getElementById('f_sname').value + ' · +65 ' + document.getElementById('f_sphone').value;
   document.getElementById('s_saddr').textContent    = document.getElementById('f_saddr').value;
@@ -3184,22 +3264,6 @@ function buildRecipientGroup(n) {
       <strong>Recipient ${n}</strong>
     </div>
 
-    <div class="field">
-      <label>Recipient Full Name <span class="lbl-mm">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
-      <input type="text" id="f_rname_${n}" placeholder="e.g. ဒေါ်အေးအေး" oninput="checkRecipientFilled(${n})">
-    </div>
-    <div class="field">
-      <label>Myanmar Phone +95 <span class="lbl-mm">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
-      <div class="phone-row">
-        <div class="phone-prefix">🇲🇲 +95</div>
-        <input type="text" id="f_rphone_${n}" placeholder="9765432100" oninput="checkRecipientFilled(${n})">
-      </div>
-    </div>
-    <div class="field">
-      <label>Full Delivery Address <span class="lbl-mm">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
-      <textarea id="f_addr_${n}" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(${n})"></textarea>
-    </div>
-
     <div class="field" style="margin-top:8px;">
       <label>Type of Items <span class="lbl-mm mm">/ ပစ္စည်းအမျိုးအစား</span><span class="req">*</span></label>
       <div class="radio-group">
@@ -3280,11 +3344,31 @@ function buildRecipientGroup(n) {
       <label>Contents Description <span class="lbl-mm">/ ပစ္စည်းဖော်ပြချက်</span><span class="req">*</span></label>
       <textarea id="f_contents_${n}" placeholder="ဥပမာ — အင်္ကျီ ၂ ထည်၊ ဗီတာမင် စီ၊ မျက်နှာသုတ်ဆေး" oninput="checkRecipientFilled(${n})"></textarea>
     </div>
+
+    <div class="field">
+      <label>Recipient Full Name <span class="lbl-mm">/ လက်ခံသူအမည်</span><span class="req">*</span></label>
+      <input type="text" id="f_rname_${n}" placeholder="e.g. ဒေါ်အေးအေး" oninput="checkRecipientFilled(${n})">
+    </div>
+    <div class="field">
+      <label>Myanmar Phone +95 <span class="lbl-mm">/ မြန်မာဖုန်းနံပါတ်</span><span class="req">*</span></label>
+      <div class="phone-row">
+        <div class="phone-prefix">🇲🇲 +95</div>
+        <input type="text" id="f_rphone_${n}" placeholder="9765432100" oninput="checkRecipientFilled(${n})">
+      </div>
+    </div>
+    <div class="field">
+      <label>Full Delivery Address <span class="lbl-mm">/ အသေးစိတ်လိပ်စာ</span><span class="req">*</span></label>
+      <textarea id="f_addr_${n}" placeholder="ဥပမာ — အမှတ် ၁၂၊ ရွှေပပဒုမ္မာလမ်း၊ ရပ်ကွက် ၆၊ လှိုင်မြို့နယ်" oninput="checkRecipientFilled(${n})"></textarea>
+    </div>
   </div>`;
 }
 
 function addRecipient() {
   if (recipientCount >= MAX_RECIPIENTS) return;
+
+  // Collapse the current last recipient before adding a new one
+  collapseRecipient(recipientCount);
+
   recipientCount++;
   const container = document.getElementById('recipients-container');
   const div = document.createElement('div');
@@ -3301,6 +3385,216 @@ function addRecipient() {
   // Scroll to new recipient
   const newGroup = document.getElementById('recipient-group-' + recipientCount);
   if (newGroup) newGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function collapseRecipient(n) {
+  const group = document.getElementById('recipient-group-' + n);
+  if (!group) return;
+
+  // Read current values
+  const name     = (document.getElementById('f_rname_' + n)?.value || '').trim() || '—';
+  const addr     = (document.getElementById('f_addr_' + n)?.value || '').trim() || '—';
+  const itype    = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
+  const isDev    = itype === 'Phones/Tablets/Laptops';
+  const weightRaw = isDev
+    ? ((document.getElementById('f_devices_' + n)?.value || '1') + ' device(s)')
+    : ((document.getElementById('f_weight_' + n)?.value || '') + 'kg');
+  const itypeShort = itype ? itype.split('/')[0] : '—';
+
+  // Truncate address for display
+  const addrShort = addr.length > 55 ? addr.slice(0, 52) + '…' : addr;
+
+  // Build summary card HTML
+  const summaryHtml = `
+  <div class="recipient-summary-card" id="recipient-summary-${n}">
+    <div class="recipient-summary-header" id="recipient-summary-header-${n}" onclick="toggleRecipientCollapse(${n})">
+      <div class="rsh-left">
+        <span class="sb-icon">👤</span>
+        <strong>Recipient ${n}</strong>
+      </div>
+      <span class="rsh-chevron" id="rsh-chevron-${n}">▼</span>
+    </div>
+    <div class="recipient-summary-body" id="recipient-summary-body-${n}">
+      <div class="rc-name">${name} <span style="color:var(--green);">✅</span></div>
+      <div class="rc-meta">${weightRaw} · ${itypeShort}<br>${addrShort}</div>
+      <div class="rc-delete-row" id="rc-delete-row-${n}">
+        <button class="rc-delete" onclick="deleteRecipient(${n})">🗑️ Delete section</button>
+      </div>
+    </div>
+  </div>`;
+
+  // Hide the full form group and insert summary card before it
+  group.style.display = 'none';
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = summaryHtml;
+  group.parentNode.insertBefore(wrapper.firstElementChild, group);
+
+  // Update delete button visibility
+  updateDeleteButtonVisibility();
+}
+
+function expandRecipient(n) {
+  const summary = document.getElementById('recipient-summary-' + n);
+  const group   = document.getElementById('recipient-group-' + n);
+  if (!summary || !group) return;
+
+  // Show the form, remove the summary card
+  group.style.display = '';
+  summary.remove();
+}
+
+function toggleRecipientCollapse(n) {
+  const body    = document.getElementById('recipient-summary-body-' + n);
+  const header  = document.getElementById('recipient-summary-header-' + n);
+  const chevron = document.getElementById('rsh-chevron-' + n);
+
+  if (!body) return;
+
+  if (body.classList.contains('hidden')) {
+    // Show the summary body
+    body.classList.remove('hidden');
+    if (chevron) chevron.textContent = '▼';
+    if (header) header.classList.remove('expanded');
+  } else {
+    // Hide the summary body
+    body.classList.add('hidden');
+    if (chevron) chevron.textContent = '▲';
+    if (header) header.classList.add('expanded');
+  }
+}
+
+function deleteRecipient(n) {
+  if (recipientCount <= 1) return; // Cannot delete last recipient
+
+  // Remove DOM elements
+  const summary = document.getElementById('recipient-summary-' + n);
+  const group   = document.getElementById('recipient-group-' + n);
+  if (summary) summary.remove();
+  if (group)   group.remove();
+
+  // Rebuild: collect remaining recipient numbers
+  const container = document.getElementById('recipients-container');
+  const remaining = [];
+  for (let i = 1; i <= recipientCount; i++) {
+    if (i !== n) remaining.push(i);
+  }
+
+  // Renumber remaining recipients
+  // We need to re-render them with consecutive numbers
+  // Strategy: read data from existing elements, remove them, re-insert with new numbers
+  const saved = [];
+  for (const oldN of remaining) {
+    const grpEl  = document.getElementById('recipient-group-' + oldN);
+    const sumEl  = document.getElementById('recipient-summary-' + oldN);
+    const isCollapsed = !grpEl || grpEl.style.display === 'none';
+
+    if (isCollapsed && grpEl) {
+      // Collapsed: form is hidden but fields still exist in DOM — read them
+      const itype    = document.querySelector('input[name="itype_' + oldN + '"]:checked')?.value || 'Food/Clothes/Medicine';
+      const isDev    = itype === 'Phones/Tablets/Laptops';
+      const weight   = document.getElementById('f_weight_' + oldN)?.value || '';
+      const value_f  = document.getElementById('f_value_' + oldN)?.value || '';
+      const devices  = document.getElementById('f_devices_' + oldN)?.value || '1';
+      const valueDev = document.getElementById('f_value_dev_' + oldN)?.value || '';
+      const contents = document.getElementById('f_contents_' + oldN)?.value || '';
+      const rname    = document.getElementById('f_rname_' + oldN)?.value || '';
+      const rphone   = document.getElementById('f_rphone_' + oldN)?.value || '';
+      const addr     = document.getElementById('f_addr_' + oldN)?.value || '';
+      saved.push({ oldN, isCollapsed: true, itype, isDev, weight, value_f, devices, valueDev, contents, rname, rphone, addr });
+      if (sumEl) sumEl.remove();
+    } else if (grpEl) {
+      // Read form field values
+      const itype    = document.querySelector('input[name="itype_' + oldN + '"]:checked')?.value || 'Food/Clothes/Medicine';
+      const isDev    = itype === 'Phones/Tablets/Laptops';
+      const weight   = document.getElementById('f_weight_' + oldN)?.value || '';
+      const value_f  = document.getElementById('f_value_' + oldN)?.value || '';
+      const devices  = document.getElementById('f_devices_' + oldN)?.value || '1';
+      const valueDev = document.getElementById('f_value_dev_' + oldN)?.value || '';
+      const contents = document.getElementById('f_contents_' + oldN)?.value || '';
+      const rname    = document.getElementById('f_rname_' + oldN)?.value || '';
+      const rphone   = document.getElementById('f_rphone_' + oldN)?.value || '';
+      const addr     = document.getElementById('f_addr_' + oldN)?.value || '';
+      saved.push({ oldN, isCollapsed: false, itype, isDev, weight, value_f, devices, valueDev, contents, rname, rphone, addr });
+      grpEl.remove();
+    }
+  }
+
+  // Clear container and re-render
+  container.innerHTML = '';
+  recipientCount = 0;
+
+  for (let i = 0; i < saved.length; i++) {
+    const newN = i + 1;
+    recipientCount = newN;
+    const s = saved[i];
+
+    const div = document.createElement('div');
+    div.innerHTML = buildRecipientGroup(newN);
+    const grpEl = div.firstElementChild;
+    container.appendChild(grpEl);
+
+    // Always restore form values
+    const itypeRadio = document.querySelector('input[name="itype_' + newN + '"][value="' + s.itype + '"]');
+    if (itypeRadio) itypeRadio.checked = true;
+
+    const wEl = document.getElementById('f_weight_' + newN);
+    if (wEl && s.weight) wEl.value = s.weight;
+    const vEl = document.getElementById('f_value_' + newN);
+    if (vEl && s.value_f) vEl.value = s.value_f;
+    const dEl = document.getElementById('f_devices_' + newN);
+    if (dEl && s.devices) dEl.value = s.devices;
+    const vdEl = document.getElementById('f_value_dev_' + newN);
+    if (vdEl && s.valueDev) vdEl.value = s.valueDev;
+    const cEl = document.getElementById('f_contents_' + newN);
+    if (cEl && s.contents) cEl.value = s.contents;
+    const rnEl = document.getElementById('f_rname_' + newN);
+    if (rnEl && s.rname) rnEl.value = s.rname;
+    const rpEl = document.getElementById('f_rphone_' + newN);
+    if (rpEl && s.rphone) rpEl.value = s.rphone;
+    const aEl = document.getElementById('f_addr_' + newN);
+    if (aEl && s.addr) aEl.value = s.addr;
+
+    // Apply item type display
+    if (s.isDev) {
+      selectItemType_r(newN, 'devices');
+    } else if (s.itype === 'Electronics/Machinery') {
+      selectItemType_r(newN, 'machinery');
+    } else {
+      selectItemType_r(newN, 'food');
+    }
+
+    updateWeightTotal_r(newN);
+    updateDeviceTotal_r(newN);
+
+    // Collapse all except the last recipient
+    if (i < saved.length - 1) {
+      collapseRecipient(newN);
+    }
+  }
+
+  // Update add button
+  const btn = document.getElementById('add-recipient-btn');
+  if (btn) {
+    const next = recipientCount + 1;
+    btn.textContent = '➕ Add another recipient (' + next + '/5)';
+    btn.style.display = '';
+    // Re-check if last recipient is filled
+    checkRecipientFilled(recipientCount);
+  }
+
+  // Update delete button visibility
+  updateDeleteButtonVisibility();
+  updatePickupPrice();
+}
+
+function updateDeleteButtonVisibility() {
+  // Show delete buttons only if there are 2+ recipients
+  for (let i = 1; i <= recipientCount; i++) {
+    const row = document.getElementById('rc-delete-row-' + i);
+    if (row) {
+      row.style.display = recipientCount > 1 ? 'flex' : 'none';
+    }
+  }
 }
 
 function checkRecipientFilled(n) {
