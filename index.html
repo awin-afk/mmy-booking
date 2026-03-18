@@ -1958,80 +1958,84 @@ body.lang-en .how-mm { display: none !important; }
     <!-- Cost breakdown -->
     <div class="cost-breakdown" id="cost-breakdown">
       <div class="cost-title">💰 Cost Breakdown <span class="mm" style="font-size:11px;">/ ကုန်ကျစရိတ် အသေးစိတ်</span></div>
-      <div class="cost-row"><span id="cb_shipping_label">Shipping</span><span id="cb_shipping">—</span></div>
+      <div id="cb_recipient_rows"></div>
       <div class="cost-row" id="cb_pickup_row" style="display:none;"><span>🚐 Pick-up fee</span><span id="cb_pickup">—</span></div>
       <div class="cost-row cost-total"><span>Total</span><span id="cb_total">—</span></div>
     </div>
 
-    <!-- ② DROP-OFF POINT — passed from page 1, read-only ────────────────────── -->
-    <div id="dropoff-point-section">
-      <div class="section-banner">
-        <span class="sb-icon">📍</span>
-        <div class="sb-text"><strong>Drop-off Point</strong><span class="mm">ပစ္စည်းအပ်မည့်နေရာ</span></div>
-      </div>
-      <!-- Read-only card showing selected location from page 1 -->
-      <div id="p2-dropoff-card" style="background:#fff;border:1.5px solid #C9A84C;border-radius:14px;padding:14px 16px;margin-top:10px;display:flex;align-items:flex-start;gap:12px;">
-        <span id="p2-drop-emoji" style="font-size:26px;flex-shrink:0;margin-top:2px;">📍</span>
-        <div style="flex:1;min-width:0;">
-          <div id="p2-drop-name" style="font-size:15px;font-weight:800;color:#1a1612;margin-bottom:3px;">—</div>
-          <div id="p2-drop-zone" style="font-size:11px;color:#92400e;font-weight:600;margin-bottom:4px;"></div>
-          <div id="p2-drop-sched" style="font-size:12px;color:#374151;line-height:1.6;"></div>
+    <!-- ② DROP-OFF POINT ────────────────────────────────────────────────────── -->
+    <div id="dropoff-point-section" style="margin-bottom:14px;">
+      <div class="sum-block">
+        <div class="sum-block-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="sb-icon" style="width:28px;height:28px;font-size:14px;">📍</div>
+            <span>Drop-off Point <span class="mm" style="font-weight:400;font-size:11px;">ပစ္စည်းအပ်မည့်နေရာ</span></span>
+          </div>
         </div>
-
+        <div class="sum-block-body" style="padding-top:12px;padding-bottom:12px;">
+          <div id="p2-dropoff-card" style="display:flex;align-items:flex-start;gap:12px;">
+            <span id="p2-drop-emoji" style="font-size:26px;flex-shrink:0;margin-top:2px;">📍</span>
+            <div style="flex:1;min-width:0;">
+              <div id="p2-drop-name" style="font-size:15px;font-weight:800;color:#1a1612;margin-bottom:3px;">—</div>
+              <div id="p2-drop-zone" style="font-size:11px;color:#92400e;font-weight:600;margin-bottom:4px;"></div>
+              <div id="p2-drop-sched" style="font-size:12px;color:#374151;line-height:1.6;"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Pickup info (shown if pickup selected) ──────────────────────────────── -->
-    <div id="pickup-info-section" style="display:none;">
-      <div class="section-banner">
-        <span class="sb-icon">🚐</span>
-        <div class="sb-text"><strong>Pick-up Details</strong><span class="mm">ကောက်ယူမည့် အချက်အလက်</span></div>
-      </div>
-      <div class="note green">
-        <span class="note-icon">📅</span>
-        <span>Our driver will contact you within <strong>1–2 working days</strong> to arrange pick-up from your address.<br>
-        <span class="mm" style="font-size:11px;">ကျွန်ုပ်တို့ ယာဉ်မောင်းသည် ၁–၂ ရက်အတွင်း သင့်ထံ ဆက်သွယ်မည်</span></span>
-      </div>
-      <div class="sel-loc-card" style="display:block;margin-top:10px;">
-        <div class="sel-loc-top">
-          <span class="sel-loc-emoji">🏠</span>
-          <div>
-            <div class="sel-loc-name">Pick-up from your address</div>
-            <div class="sel-loc-meta" id="pickup-addr-display">—</div>
+    <div id="pickup-info-section" style="display:none;margin-bottom:14px;">
+      <div class="sum-block">
+        <div class="sum-block-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="sb-icon" style="width:28px;height:28px;font-size:14px;">🚐</div>
+            <span>Pick-up Details <span class="mm" style="font-weight:400;font-size:11px;">ကောက်ယူမည့် အချက်အလက်</span></span>
+          </div>
+        </div>
+        <div class="sum-block-body" style="padding-top:12px;padding-bottom:12px;">
+          <div style="font-size:12px;color:#374151;margin-bottom:8px;">Our driver will contact you within <strong>1–2 working days</strong>.<br><span class="mm" style="font-size:11px;">ကျွန်ုပ်တို့ ယာဉ်မောင်းသည် ၁–၂ ရက်အတွင်း သင့်ထံ ဆက်သွယ်မည်</span></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">🏠</span>
+            <div style="font-size:12px;font-weight:600;color:#1a1612;" id="pickup-addr-display">—</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ③ PAYMENT INFO ──────────────────────────── -->
-    <div class="section-banner">
-      <span class="sb-icon">💳</span>
-      <div class="sb-text"><strong data-i18n="secPayment">Payment</strong><span data-i18n="secPaymentMM" class="mm">ငွေပေးချေနည်း</span></div>
-    </div>
-    <!-- Hidden input so goToP3 / webhook still gets a payment value -->
     <input type="hidden" name="payment" id="payment-hidden" value="Cash or PayNow at drop-off">
-
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px;">
-
-      <!-- Cash -->
-      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:#fffbf0;border:1px solid #fde68a;">
-        <span style="font-size:24px;flex-shrink:0;">💵</span>
-        <div>
-          <div style="font-size:13px;font-weight:800;color:#92400e;">Cash</div>
-          <div style="font-size:12px;color:#b45309;margin-top:2px;">Pay when you drop off the parcel</div>
-          <div style="font-size:11px;color:#b45309;margin-top:1px;" class="mm">ပစ္စည်းအပ်သောအခါ ငွေသားဖြင့် ပေးချေနိုင်သည်</div>
+    <div class="sum-block" style="margin-bottom:14px;">
+      <div class="sum-block-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="sb-icon" style="width:28px;height:28px;font-size:14px;">💳</div>
+          <span data-i18n="secPayment">Payment <span class="mm" style="font-weight:400;font-size:11px;" data-i18n="secPaymentMM">ငွေပေးချေနည်း</span></span>
         </div>
       </div>
-
-      <!-- PayNow -->
-      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:#f0fdf4;border:1px solid #bbf7d0;">
-        <span style="font-size:24px;flex-shrink:0;">📱</span>
-        <div>
-          <div style="font-size:13px;font-weight:800;color:#15803d;">PayNow QR</div>
-          <div style="font-size:12px;color:#166534;margin-top:2px;">Scan QR at drop-off point or van</div>
-          <div style="font-size:11px;color:#166534;margin-top:1px;" class="mm">ပစ္စည်းအပ်သောနေရာ၌ QR ဖြင့် ပေးချေနိုင်သည်</div>
+      <div class="sum-block-body" style="padding-top:10px;padding-bottom:10px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <!-- Cash -->
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#fffbf0;border:1px solid #fde68a;">
+            <span style="font-size:22px;flex-shrink:0;">💵</span>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:#92400e;">Cash</div>
+              <div style="font-size:12px;color:#b45309;margin-top:2px;">Pay when you drop off the parcel</div>
+              <div style="font-size:11px;color:#b45309;margin-top:1px;" class="mm">ပစ္စည်းအပ်သောအခါ ငွေသားဖြင့် ပေးချေနိုင်သည်</div>
+            </div>
+          </div>
+          <!-- PayNow -->
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0;">
+            <span style="font-size:22px;flex-shrink:0;">📱</span>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:#15803d;">PayNow QR</div>
+              <div style="font-size:12px;color:#166534;margin-top:2px;">Scan QR at drop-off point or van</div>
+              <div style="font-size:11px;color:#166534;margin-top:1px;" class="mm">ပစ္စည်းအပ်သောနေရာ၌ QR ဖြင့် ပေးချေနိုင်သည်</div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
     </div>
 
@@ -2975,7 +2979,8 @@ async function goToP2() {
 
   // ── Populate cost breakdown (sum all recipients) ────────────────────────────
   let totalShipping = 0;
-  let shippingLabelParts = [];
+  const recipientRowsEl = document.getElementById('cb_recipient_rows');
+  if (recipientRowsEl) recipientRowsEl.innerHTML = '';
   for (let n = 1; n <= recipientCount; n++) {
     const iv2      = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
     const isDev2   = iv2 === 'Phones/Tablets/Laptops';
@@ -2983,11 +2988,17 @@ async function goToP2() {
     const rawKg2   = isDev2 ? (parseInt(document.getElementById('f_devices_' + n)?.value)||1)
                             : (parseFloat(document.getElementById('f_weight_' + n)?.value)||1);
     const billKg2  = isDev2 ? rawKg2 : Math.ceil(rawKg2);
-    let cost2;
-    if (isDev2)      { cost2 = billKg2 * 50; shippingLabelParts.push('R'+n+': '+billKg2+' item(s)×$50'); }
-    else if(isMach2) { cost2 = billKg2 * 20; shippingLabelParts.push('R'+n+': '+billKg2+'kg×$20'); }
-    else             { cost2 = billKg2 * 15; shippingLabelParts.push('R'+n+': '+billKg2+'kg×$15'); }
+    let cost2, label2;
+    if (isDev2)      { cost2 = billKg2 * 50; label2 = billKg2 + ' item(s) × $50 (Phones/Tablets/Laptops)'; }
+    else if(isMach2) { cost2 = billKg2 * 20; label2 = billKg2 + 'kg × $20 (Electronics/Machinery)'; }
+    else             { cost2 = billKg2 * 15; label2 = billKg2 + 'kg × $15 (Food/Clothes/Medicine)'; }
     totalShipping += cost2;
+    if (recipientRowsEl) {
+      const row = document.createElement('div');
+      row.className = 'cost-row';
+      row.innerHTML = '<span>Recipient ' + n + ' — ' + label2 + '</span><span>$' + cost2.toFixed(2) + '</span>';
+      recipientRowsEl.appendChild(row);
+    }
   }
 
   // For pickup fee, base on total effective weight of all recipients
@@ -3004,8 +3015,6 @@ async function goToP2() {
   const pickupFee2 = isPickup2 ? getPickupPrice(totalEffKg) : 0;
   const total2     = (totalShipping + pickupFee2).toFixed(2);
 
-  document.getElementById('cb_shipping_label').textContent = shippingLabelParts.join('; ');
-  document.getElementById('cb_shipping').textContent       = '$' + totalShipping.toFixed(2);
   const pickupRow = document.getElementById('cb_pickup_row');
   if (isPickup2) {
     pickupRow.style.display = '';
