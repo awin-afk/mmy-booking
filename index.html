@@ -866,7 +866,7 @@ select {
 
 /* ── RECIPIENT CARD (unified collapsible card) ───────────── */
 .recipient-card {
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid #C9A84C;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 14px;
@@ -895,6 +895,19 @@ select {
 .recipient-card-body {
   padding: 14px 16px;
   background: #fff;
+}
+.recipient-card-fields {
+  transition: all 0.25s ease;
+}
+.recipient-fields-wrap {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.recipient-fields-wrap.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }
 .rc-summary-row {
   display: flex;
@@ -1840,7 +1853,7 @@ body.lang-en .how-mm { display: none !important; }
 
     <!-- ADD ANOTHER RECIPIENT BUTTON ──────────────────────────────────────── -->
     <button class="add-recipient-btn" id="add-recipient-btn" onclick="addRecipient()" disabled>
-      ➕ Add another recipient (2/5)
+      ➕ Add another recipient
     </button>
 
     <!-- ④ SENDER ──────────────────────────────────────────────────────────── -->
@@ -3363,8 +3376,7 @@ function addRecipient() {
 
   // Update button label and state
   const btn = document.getElementById('add-recipient-btn');
-  const next = recipientCount + 1;
-  btn.textContent = '➕ Add another recipient (' + next + '/5)';
+  btn.textContent = '➕ Add another recipient';
   btn.disabled = true; // disabled until new recipient is filled
   if (recipientCount >= MAX_RECIPIENTS) btn.style.display = 'none';
 
@@ -3378,8 +3390,10 @@ function collapseRecipient(n) {
   if (!card) return;
 
   // Read current values
-  const name       = (document.getElementById('f_rname_' + n)?.value || '').trim() || '—';
-  const addr       = (document.getElementById('f_addr_' + n)?.value || '').trim() || '—';
+  const nameVal    = (document.getElementById('f_rname_' + n)?.value || '').trim();
+  const addr       = (document.getElementById('f_addr_' + n)?.value || '').trim();
+  const phone      = (document.getElementById('f_rphone_' + n)?.value || '').trim();
+  const contents   = (document.getElementById('f_contents_' + n)?.value || '').trim();
   const itype      = document.querySelector('input[name="itype_' + n + '"]:checked')?.value || '';
   const isDev      = itype === 'Phones/Tablets/Laptops';
   const weightRaw  = isDev
@@ -3387,25 +3401,54 @@ function collapseRecipient(n) {
     : ((document.getElementById('f_weight_' + n)?.value || '') + 'kg');
   const itypeShort = itype ? itype.split('/')[0] : '—';
 
+  // Check if all required fields are filled
+  let weightOk = false;
+  let valueOk  = false;
+  if (isDev) {
+    weightOk = !!(document.getElementById('f_devices_' + n)?.value);
+    valueOk  = !!(document.getElementById('f_value_dev_' + n)?.value || '').trim();
+  } else {
+    weightOk = !!(document.getElementById('f_weight_' + n)?.value || '').trim();
+    valueOk  = !!(document.getElementById('f_value_' + n)?.value || '').trim();
+  }
+  const isComplete = nameVal && phone && addr && contents && weightOk && valueOk;
+
   // Truncate address for display
   const addrShort = addr.length > 60 ? addr.slice(0, 57) + '…' : addr;
+  const displayName = nameVal || ('Recipient ' + n);
 
   // Populate summary div
   const summaryDiv = document.getElementById('recipient-summary-' + n);
   if (summaryDiv) {
-    summaryDiv.innerHTML = `
-      <div class="rc-summary-row">
-        <span class="rc-summary-name">${name} ✅</span>
-        <button class="rc-delete-btn" id="rc-delete-row-${n}" onclick="deleteRecipient(${n});event.stopPropagation()">🗑️ Delete section</button>
-      </div>
-      <div class="rc-summary-meta">${weightRaw} · ${itypeShort}</div>
-      <div class="rc-summary-meta" style="margin-top:2px;">${addrShort}</div>`;
+    if (isComplete) {
+      summaryDiv.innerHTML = `
+        <div class="rc-summary-row">
+          <span class="rc-summary-name">${displayName} ✅</span>
+          <button class="rc-delete-btn" id="rc-delete-row-${n}" onclick="deleteRecipient(${n});event.stopPropagation()">🗑️ Delete section</button>
+        </div>
+        <div class="rc-summary-meta">${weightRaw} · ${itypeShort}</div>
+        <div class="rc-summary-meta" style="margin-top:2px;">${addrShort}</div>`;
+    } else {
+      summaryDiv.innerHTML = `
+        <div class="rc-summary-row">
+          <span class="rc-summary-name">Recipient ${n} ❌</span>
+          <button class="rc-delete-btn" id="rc-delete-row-${n}" onclick="deleteRecipient(${n});event.stopPropagation()">🗑️ Delete section</button>
+        </div>
+        <div class="rc-summary-meta" style="color:#dc2626;margin-top:2px;">Please fill in all required fields.</div>`;
+    }
     summaryDiv.style.display = '';
   }
 
-  // Hide fields
+  // Hide fields using max-height trick for smooth animation
   const fieldsDiv = document.getElementById('recipient-fields-' + n);
-  if (fieldsDiv) fieldsDiv.style.display = 'none';
+  if (fieldsDiv) {
+    fieldsDiv.style.maxHeight = '0';
+    fieldsDiv.style.overflow = 'hidden';
+    fieldsDiv.style.transition = 'max-height 0.3s ease';
+  }
+
+  // Set border color based on completeness
+  card.style.borderColor = isComplete ? '#C9A84C' : '#dc2626';
 
   // Update chevron
   const chevron = document.getElementById('rc-chevron-' + n);
@@ -3418,9 +3461,15 @@ function collapseRecipient(n) {
 function expandRecipient(n) {
   const summaryDiv = document.getElementById('recipient-summary-' + n);
   const fieldsDiv  = document.getElementById('recipient-fields-' + n);
+  const card       = document.getElementById('recipient-card-' + n);
 
   if (summaryDiv) summaryDiv.style.display = 'none';
-  if (fieldsDiv)  fieldsDiv.style.display = '';
+  if (fieldsDiv) {
+    fieldsDiv.style.maxHeight = '2000px';
+    fieldsDiv.style.overflow = 'hidden';
+    fieldsDiv.style.transition = 'max-height 0.4s ease';
+  }
+  if (card) card.style.borderColor = '#C9A84C';
 
   // Update chevron
   const chevron = document.getElementById('rc-chevron-' + n);
@@ -3431,7 +3480,9 @@ function toggleRecipientCollapse(n) {
   const fieldsDiv = document.getElementById('recipient-fields-' + n);
   if (!fieldsDiv) return;
 
-  if (fieldsDiv.style.display === 'none') {
+  // Check collapsed state by max-height (or display for backwards compat)
+  const isCollapsed = fieldsDiv.style.maxHeight === '0' || fieldsDiv.style.maxHeight === '0px' || fieldsDiv.style.display === 'none';
+  if (isCollapsed) {
     expandRecipient(n);
   } else {
     collapseRecipient(n);
@@ -3458,7 +3509,7 @@ function deleteRecipient(n) {
   for (const oldN of remaining) {
     const cardEl    = document.getElementById('recipient-card-' + oldN);
     const fieldsDiv = document.getElementById('recipient-fields-' + oldN);
-    const isCollapsed = fieldsDiv && fieldsDiv.style.display === 'none';
+    const isCollapsed = fieldsDiv && (fieldsDiv.style.maxHeight === '0' || fieldsDiv.style.maxHeight === '0px' || fieldsDiv.style.display === 'none');
 
     if (cardEl) {
       // Read form field values (fields always exist in DOM even when collapsed)
@@ -3533,8 +3584,7 @@ function deleteRecipient(n) {
   // Update add button
   const btn = document.getElementById('add-recipient-btn');
   if (btn) {
-    const next = recipientCount + 1;
-    btn.textContent = '➕ Add another recipient (' + next + '/5)';
+    btn.textContent = '➕ Add another recipient';
     btn.style.display = '';
     // Re-check if last recipient is filled
     checkRecipientFilled(recipientCount);
