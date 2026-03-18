@@ -3816,7 +3816,12 @@ function selectCollect(el, value) {
   const isDropoff = value && value.toLowerCase().includes('drop');
   const wrap = document.getElementById('dropoff-picker-wrap');
   if (wrap) wrap.style.display = isDropoff ? 'block' : 'none';
-  if (isDropoff) populateDropoffSelect();
+  if (isDropoff) {
+    const sel = document.getElementById('f_dropoff_select');
+    const savedVal = sel ? sel.value : '';
+    populateDropoffSelect();
+    if (savedVal && sel) { sel.value = savedVal; onDropoffSelectChange(); }
+  }
 }
 
 function goTo(from, to, step) {
