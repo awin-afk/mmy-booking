@@ -551,23 +551,32 @@ select {
    SUMMARY TABLE
 ───────────────────────────────────────── */
 .sum-block {
-  background: #fffbf0;
-  border: 1px solid #fde68a;
-  border-left: 3px solid var(--gold);
-  border-radius: 0 9px 9px 0;
-  padding: 13px 15px;
-  margin: 16px 0 14px;
+  background: #fff;
+  border: 1.5px solid #C9A84C;
+  border-radius: 12px;
+  padding: 0;
+  margin: 0 0 14px;
+  overflow: hidden;
 }
-.sum-block h4 {
-  font-size: 12px; font-weight: 700; color: #92400e;
-  margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;
+.sum-block-header {
+  background: #fffbf0;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0e6c8;
+  font-size: 12px;
+  font-weight: 700;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sum-block-body {
+  padding: 4px 14px;
 }
 .sum-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.sum-table tr { border-bottom: 1px solid rgba(253,230,138,0.5); }
+.sum-table tr { border-bottom: 1px solid #f3f4f6; }
 .sum-table tr:last-child { border-bottom: none; }
-.sum-table td { padding: 5px 3px; vertical-align: top; }
-.sum-table td:first-child { color: #b45309; width: 38%; font-size: 11px; }
-.sum-table td:last-child  { font-weight: 600; color: var(--dark); }
+.sum-table td { padding: 7px 3px; vertical-align: top; }
+.sum-table td:first-child { color: #b45309; width: 40%; font-size: 11px; }
+.sum-table td:last-child  { font-weight: 600; color: #1a1612; }
 
 /* Booking ref */
 .ref-chip {
@@ -1917,24 +1926,34 @@ body.lang-en .how-mm { display: none !important; }
   <div class="card-body">
 
     <!-- ① BOOKING SUMMARY ─────────────────────────── -->
-    <div class="section-banner" style="margin-top:0;">
-      <span class="sb-icon">📋</span>
-      <div class="sb-text"><strong data-i18n="secSummary">Booking Summary</strong><span data-i18n="secSummaryMM" class="mm">အမှာစာ အကျဉ်းချုပ်</span></div>
-    </div>
     <div class="check-notice">
       <span>👀</span>
       <span><span data-i18n="noteCheck">ဆက်လက်မတင်မီ အချက်အလက်များကို သေချာစစ်ဆေးပါ</span></span>
     </div>
-    <div class="sum-block">
-      <table class="sum-table" id="sum-table-main">
-        <tbody id="sum-recipients-body">
-          <!-- Recipient rows injected dynamically by goToP2() -->
-        </tbody>
-        <tr><td>🚚 Collection</td><td id="s_method">—</td></tr>
-        <tr><td>👤 Sender</td><td id="s_sender">—</td></tr>
-        <tr><td>📍 Your SG Address</td><td id="s_saddr">—</td></tr>
-        <tr><td>📧 Email</td><td id="s_email">—</td></tr>
-      </table>
+
+    <!-- ORDER DETAILS -->
+    <div class="sum-block" style="margin-bottom:14px;">
+      <div class="sum-block-header">📦 Order Details / အမှာစာ အကျဉ်းချုပ်</div>
+      <div class="sum-block-body">
+        <table class="sum-table" id="sum-table-main">
+          <tbody id="sum-recipients-body">
+            <!-- Recipient rows injected dynamically by goToP2() -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SENDER INFO -->
+    <div class="sum-block" style="margin-bottom:14px;">
+      <div class="sum-block-header">👤 Sender Info / ပို့သူ အချက်အလက်</div>
+      <div class="sum-block-body">
+        <table class="sum-table">
+          <tr><td>🚚 Collection</td><td id="s_method">—</td></tr>
+          <tr><td>👤 Sender</td><td id="s_sender">—</td></tr>
+          <tr><td>📍 SG Address</td><td id="s_saddr">—</td></tr>
+          <tr><td>📧 Email</td><td id="s_email">—</td></tr>
+        </table>
+      </div>
     </div>
     <!-- Cost breakdown -->
     <div class="cost-breakdown" id="cost-breakdown">
@@ -1951,7 +1970,7 @@ body.lang-en .how-mm { display: none !important; }
         <div class="sb-text"><strong>Drop-off Point</strong><span class="mm">ပစ္စည်းအပ်မည့်နေရာ</span></div>
       </div>
       <!-- Read-only card showing selected location from page 1 -->
-      <div id="p2-dropoff-card" style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;padding:14px 16px;margin-top:10px;display:flex;align-items:flex-start;gap:12px;">
+      <div id="p2-dropoff-card" style="background:#fff;border:1.5px solid #C9A84C;border-radius:14px;padding:14px 16px;margin-top:10px;display:flex;align-items:flex-start;gap:12px;">
         <span id="p2-drop-emoji" style="font-size:26px;flex-shrink:0;margin-top:2px;">📍</span>
         <div style="flex:1;min-width:0;">
           <div id="p2-drop-name" style="font-size:15px;font-weight:800;color:#1a1612;margin-bottom:3px;">—</div>
