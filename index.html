@@ -608,6 +608,7 @@ select {
 ───────────────────────────────────────── */
 .tnc-scroll {
   background: #f9f8f6;
+  border: 1.5px solid #e5e0d8;
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 12px; color: var(--muted);
@@ -616,11 +617,12 @@ select {
 .tnc-check {
   display: flex; align-items: flex-start; gap: 11px;
   padding: 12px 14px;
-  background: #f9f8f6;
+  background: #fff;
+  border: 1.5px solid #e5e0d8;
   border-radius: 12px; cursor: pointer;
   transition: all 0.15s;
 }
-.tnc-check.on { background: #fffbf0; outline: 2px solid var(--gold); }
+.tnc-check.on { border-color: var(--gold); background: #fffbf0; }
 .tnc-check input { width: 17px; height: 17px; accent-color: var(--gold); flex-shrink: 0; margin-top: 1px; border: none; padding: 0; width: auto; }
 .tnc-label { font-size: 13px; font-weight: 600; color: var(--text); }
 .tnc-label small { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: var(--muted); display: block; margin-top: 2px; font-weight: 400; }
@@ -1002,20 +1004,24 @@ select {
 }
 
 
-/* ── COLLECTION METHOD CARDS (Ninja Van style) ──────────── */
+/* ── COLLECTION METHOD CARDS (segmented control style) ──── */
 .collect-cards {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
   margin-bottom: 16px;
+  background: #ede8e0;
+  border-radius: 18px;
+  padding: 5px;
 }
 .collect-card {
-  background: #f3f4f6; border: 2px solid transparent;
+  background: transparent; border: 2px solid transparent;
   border-radius: 14px; padding: 14px 12px;
-  cursor: pointer; transition: all 0.15s;
+  cursor: pointer; transition: all 0.2s;
   position: relative; overflow: hidden;
 }
 .collect-card.selected {
+  background: #fff;
   border-color: var(--gold);
-  background: #fffbf0;
+  box-shadow: 0 2px 10px rgba(180,131,50,0.18);
 }
 .collect-card input[type="radio"] { display: none; }
 .collect-icon { font-size: 28px; margin-bottom: 8px; display: block; }
@@ -2018,8 +2024,8 @@ body.lang-en .how-mm { display: none !important; }
 
     <!-- ③ PAYMENT INFO ──────────────────────────── -->
     <input type="hidden" name="payment" id="payment-hidden" value="Cash or PayNow at drop-off">
-    <div class="sum-block">
-      <div class="sum-block-header">
+    <div class="sum-block" style="border:none;background:transparent;box-shadow:none;">
+      <div class="sum-block-header" style="background:transparent;border-bottom:none;">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="sb-icon" style="width:28px;height:28px;font-size:14px;">💳</div>
           <span data-i18n="secPayment">Payment <span class="mm" style="font-weight:400;font-size:11px;" data-i18n="secPaymentMM">ငွေပေးချေနည်း</span></span>
