@@ -805,7 +805,7 @@ select {
   border-radius: 10px;
   padding: 12px 14px;
   margin-top: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 20px;
 }
 .cost-title {
   font-size: 13px;
@@ -1946,7 +1946,7 @@ body.lang-en .how-mm { display: none !important; }
     </div>
 
     <!-- ORDER DETAILS -->
-    <div class="sum-block" style="margin-bottom:14px;">
+    <div class="sum-block">
       <div class="sum-block-header">📦 Order Details / အမှာစာ အကျဉ်းချုပ်</div>
       <div class="sum-block-body">
         <table class="sum-table" id="sum-table-main">
@@ -1958,7 +1958,7 @@ body.lang-en .how-mm { display: none !important; }
     </div>
 
     <!-- SENDER INFO -->
-    <div class="sum-block" style="margin-bottom:14px;">
+    <div class="sum-block">
       <div class="sum-block-header">👤 Sender Info / ပို့သူ အချက်အလက်</div>
       <div class="sum-block-body">
         <table class="sum-table">
@@ -1978,7 +1978,7 @@ body.lang-en .how-mm { display: none !important; }
     </div>
 
     <!-- ② DROP-OFF POINT ────────────────────────────────────────────────────── -->
-    <div id="dropoff-point-section" style="margin-bottom:14px;">
+    <div id="dropoff-point-section">
       <div class="sum-block">
         <div class="sum-block-header">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -2000,7 +2000,7 @@ body.lang-en .how-mm { display: none !important; }
     </div>
 
     <!-- Pickup info (shown if pickup selected) ──────────────────────────────── -->
-    <div id="pickup-info-section" style="display:none;margin-bottom:14px;">
+    <div id="pickup-info-section" style="display:none;">
       <div class="sum-block">
         <div class="sum-block-header">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -2020,7 +2020,7 @@ body.lang-en .how-mm { display: none !important; }
 
     <!-- ③ PAYMENT INFO ──────────────────────────── -->
     <input type="hidden" name="payment" id="payment-hidden" value="Cash or PayNow at drop-off">
-    <div class="sum-block" style="margin-bottom:14px;">
+    <div class="sum-block">
       <div class="sum-block-header">
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="sb-icon" style="width:28px;height:28px;font-size:14px;">💳</div>
@@ -2054,11 +2054,8 @@ body.lang-en .how-mm { display: none !important; }
     </div>
 
     <!-- ④ TERMS & CONDITIONS ─────────────────────── -->
-    <div class="section-banner" style="margin-top:18px;">
-      <span class="sb-icon">📜</span>
-      <div class="sb-text"><strong>Terms & Conditions</strong><span class="mm">စည်းမျဉ်းစည်းကမ်းများ</span></div>
-    </div>
-    <div class="tnc-scroll">
+    <div class="tnc-scroll" style="margin-top:18px;">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">📜 Terms & Conditions <span class="mm" style="font-weight:400;font-size:11px;color:#6b7280;">· စည်းမျဉ်းစည်းကမ်းများ</span></div>
       <ul style="margin:0;padding-left:16px;font-size:12px;line-height:1.8;color:#5c3d00;">
         <li>Parcels are <strong>non-refundable</strong> once shipped to Myanmar</li>
         <li>Prohibited items: weapons, drugs, cash, live animals, perishables</li>
