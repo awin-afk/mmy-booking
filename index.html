@@ -230,16 +230,33 @@ body {
 ───────────────────────────────────────── */
 .section-banner {
   display: flex; align-items: center; gap: 10px;
-  background: #fffbf0;
-  border-left: 3px solid var(--gold);
-  border-radius: 0 8px 8px 0;
-  padding: 9px 13px;
-  margin: 20px 0 14px;
+  background: #fff;
+  padding: 12px 14px 12px;
+  margin: 0 0 0;
+  border-bottom: 1px solid #f0e6c8;
 }
 .section-banner:first-child { margin-top: 0; }
-.section-banner .sb-icon { font-size: 17px; flex-shrink: 0; }
-.section-banner .sb-text strong { font-size: 13px; font-weight: 700; color: #92400e; display: block; }
-.section-banner .sb-text span   { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #b45309; }
+.section-banner .sb-icon {
+  width: 34px; height: 34px;
+  background: #C9A84C;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.section-banner .sb-text strong { font-size: 14px; font-weight: 700; color: #1a1612; display: block; }
+.section-banner .sb-text span   { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: #6b7280; }
+
+/* Card wrapper for form sections */
+.form-section-card {
+  border: 1.5px solid #C9A84C;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.form-section-card .card-fields {
+  padding: 14px 16px;
+  background: #fff;
+}
 
 /* ─────────────────────────────────────────
    FORM FIELDS
@@ -872,8 +889,8 @@ select {
   margin-bottom: 14px;
 }
 .recipient-card-header {
-  background: #fffbeb;
-  border-left: 4px solid #C9A84C;
+  background: #fff;
+  border-bottom: 1px solid #f0e6c8;
   padding: 10px 14px;
   display: flex;
   align-items: center;
@@ -1740,7 +1757,7 @@ body.lang-en .how-mm { display: none !important; }
       <!-- Recipient 1 is rendered statically; additional ones are added by JS -->
       <div class="recipient-card" id="recipient-card-1">
         <div class="recipient-card-header" onclick="toggleRecipientCollapse(1)">
-          <span>👤</span>
+          <div class="sb-icon" style="width:32px;height:32px;font-size:15px;">👤</div>
           <span class="rc-title">Recipient 1</span>
           <span class="rc-chevron" id="rc-chevron-1">▲</span>
         </div>
@@ -1857,29 +1874,32 @@ body.lang-en .how-mm { display: none !important; }
     </button>
 
     <!-- ④ SENDER ──────────────────────────────────────────────────────────── -->
-    <div class="section-banner">
-      <span class="sb-icon">👤</span>
-      <div class="sb-text"><strong data-i18n="secSender">Sender Details</strong><span data-i18n="secSenderMM" class="mm">ပို့သူ အချက်အလက်</span></div>
-    </div>
-
-    <div class="field">
-      <label><span data-i18n="lblSName">Your Full Name</span> <span class="lbl-mm" data-i18n="lblSNameMM">/ ပေးပို့သူအမည်</span><span class="req">*</span></label>
-      <input type="text" id="f_sname" placeholder="ဥပမာ — ကိုအောင်အောင်" data-i18n-ph="phSName">
-    </div>
-    <div class="field">
-      <label>Singapore Phone +65<span class="req">*</span></label>
-      <div class="phone-row">
-        <div class="phone-prefix">🇸🇬 +65</div>
-        <input type="text" id="f_sphone" placeholder="91234567">
+    <div class="form-section-card">
+      <div class="section-banner">
+        <div class="sb-icon">👤</div>
+        <div class="sb-text"><strong data-i18n="secSender">Sender Details</strong><span data-i18n="secSenderMM" class="mm">ပို့သူ အချက်အလက်</span></div>
       </div>
-    </div>
-    <div class="field">
-      <label><span data-i18n="lblEmail">Email Address</span> <span class="lbl-mm" data-i18n="lblEmailMM">/ အီးမေးလ်</span><span class="req">*</span></label>
-      <input type="email" id="f_email" placeholder="yourname@email.com" data-i18n-ph="phEmail">
-    </div>
-    <div class="field">
-      <label><span data-i18n="lblSAddr">Your Singapore Address</span> <span class="lbl-mm" data-i18n="lblSAddrMM">/ စင်ကာပူနေရပ်လိပ်စာ</span><span class="req">*</span></label>
-      <textarea id="f_saddr" rows="2" placeholder="e.g. Blk 134 Jurong East St 13, #05-12, S609734" data-i18n-ph="phSAddr" style="resize:none;"></textarea>
+      <div class="card-fields">
+        <div class="field">
+          <label><span data-i18n="lblSName">Your Full Name</span> <span class="lbl-mm" data-i18n="lblSNameMM">/ ပေးပို့သူအမည်</span><span class="req">*</span></label>
+          <input type="text" id="f_sname" placeholder="ဥပမာ — ကိုအောင်အောင်" data-i18n-ph="phSName">
+        </div>
+        <div class="field">
+          <label>Singapore Phone +65<span class="req">*</span></label>
+          <div class="phone-row">
+            <div class="phone-prefix">🇸🇬 +65</div>
+            <input type="text" id="f_sphone" placeholder="91234567">
+          </div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="lblEmail">Email Address</span> <span class="lbl-mm" data-i18n="lblEmailMM">/ အီးမေးလ်</span><span class="req">*</span></label>
+          <input type="email" id="f_email" placeholder="yourname@email.com" data-i18n-ph="phEmail">
+        </div>
+        <div class="field">
+          <label><span data-i18n="lblSAddr">Your Singapore Address</span> <span class="lbl-mm" data-i18n="lblSAddrMM">/ စင်ကာပူနေရပ်လိပ်စာ</span><span class="req">*</span></label>
+          <textarea id="f_saddr" rows="2" placeholder="e.g. Blk 134 Jurong East St 13, #05-12, S609734" data-i18n-ph="phSAddr" style="resize:none;"></textarea>
+        </div>
+      </div>
     </div>
 
     <button class="btn-primary" onclick="goToP2()">
@@ -3252,7 +3272,7 @@ function buildRecipientGroup(n) {
   return `
   <div class="recipient-card" id="recipient-card-${n}">
     <div class="recipient-card-header" onclick="toggleRecipientCollapse(${n})">
-      <span>👤</span>
+      <div class="sb-icon" style="width:32px;height:32px;font-size:15px;">👤</div>
       <span class="rc-title">Recipient ${n}</span>
       <span class="rc-chevron" id="rc-chevron-${n}">▲</span>
     </div>
