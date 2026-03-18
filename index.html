@@ -1004,24 +1004,20 @@ select {
 }
 
 
-/* ── COLLECTION METHOD CARDS (segmented control style) ──── */
+/* ── COLLECTION METHOD CARDS (Ninja Van style) ──────────── */
 .collect-cards {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 5px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
   margin-bottom: 16px;
-  background: #ede8e0;
-  border-radius: 18px;
-  padding: 5px;
 }
 .collect-card {
-  background: transparent; border: 2px solid transparent;
+  background: #f3f4f6; border: 2px solid transparent;
   border-radius: 14px; padding: 14px 12px;
-  cursor: pointer; transition: all 0.2s;
+  cursor: pointer; transition: all 0.15s;
   position: relative; overflow: hidden;
 }
 .collect-card.selected {
-  background: #fff;
   border-color: var(--gold);
-  box-shadow: 0 2px 10px rgba(180,131,50,0.18);
+  background: #fffbf0;
 }
 .collect-card input[type="radio"] { display: none; }
 .collect-icon { font-size: 28px; margin-bottom: 8px; display: block; }
