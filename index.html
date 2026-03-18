@@ -608,8 +608,7 @@ select {
 ───────────────────────────────────────── */
 .tnc-scroll {
   background: #f9f8f6;
-  border: 1.5px solid var(--border);
-  border-radius: 9px;
+  border-radius: 12px;
   padding: 12px 14px;
   font-size: 12px; color: var(--muted);
   line-height: 1.9; margin-bottom: 10px;
@@ -617,11 +616,11 @@ select {
 .tnc-check {
   display: flex; align-items: flex-start; gap: 11px;
   padding: 12px 14px;
-  border: 1.5px solid var(--border);
-  border-radius: 9px; cursor: pointer;
+  background: #f9f8f6;
+  border-radius: 12px; cursor: pointer;
   transition: all 0.15s;
 }
-.tnc-check.on { border-color: var(--gold); background: #fffbf0; }
+.tnc-check.on { background: #fffbf0; outline: 2px solid var(--gold); }
 .tnc-check input { width: 17px; height: 17px; accent-color: var(--gold); flex-shrink: 0; margin-top: 1px; border: none; padding: 0; width: auto; }
 .tnc-label { font-size: 13px; font-weight: 600; color: var(--text); }
 .tnc-label small { font-family: 'Noto Sans Myanmar', sans-serif; font-size: 11px; color: var(--muted); display: block; margin-top: 2px; font-weight: 400; }
@@ -1009,7 +1008,7 @@ select {
   margin-bottom: 16px;
 }
 .collect-card {
-  background: #fff; border: 2px solid var(--border);
+  background: #f3f4f6; border: 2px solid transparent;
   border-radius: 14px; padding: 14px 12px;
   cursor: pointer; transition: all 0.15s;
   position: relative; overflow: hidden;
@@ -1017,7 +1016,6 @@ select {
 .collect-card.selected {
   border-color: var(--gold);
   background: #fffbf0;
-  box-shadow: 0 0 0 1px var(--gold);
 }
 .collect-card input[type="radio"] { display: none; }
 .collect-icon { font-size: 28px; margin-bottom: 8px; display: block; }
