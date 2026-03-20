@@ -746,7 +746,7 @@ select {
 .hero::before {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(to right, rgba(20,16,12,0.92) 55%, rgba(20,16,12,0.45) 100%);
+  background: linear-gradient(to right, rgba(10,8,5,0.72) 35%, rgba(10,8,5,0.35) 70%, rgba(10,8,5,0.10) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -1493,19 +1493,31 @@ body.lang-en .how-mm { display: none !important; }
 
   <!-- Feature pills -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
+    <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
       <span class="how-mm mm">📍 အပ်နေရာ ၁၇ ခု</span><span class="how-en">📍 17 drop-off points</span>
     </div>
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
+    <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
       <span class="how-mm mm">⏱ ~၂ ပတ် ရောက်သည်</span><span class="how-en">⏱ Delivered in ~2 weeks</span>
     </div>
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
+    <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
       <span class="how-mm mm">💵 အပ်သောနေရာ ငွေပေးနိုင်</span><span class="how-en">💵 Pay on the spot</span>
     </div>
   </div>
 
-  <!-- How it works -->
-  <div class="how-section">
+  <!-- CTA buttons — before How it works -->
+  <div style="display:flex;gap:10px;position:relative;z-index:10;">
+    <button onclick="showSection('locations')" ontouchend="showSection('locations')" style="flex:1;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.35);border-radius:14px;padding:14px 12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <span class="how-mm mm">📍 အပ်နေရာ ရှာမည်</span><span class="how-en">📍 Find Drop-off Points</span>
+    </button>
+    <button class="hero-cta" style="flex:1;" onclick="showSection('book')" ontouchend="showSection('book')" data-i18n="ctaBook">🦚 မှာယူရန် — ဒေါင်းလေး</button>
+  </div>
+  <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
+
+</div>
+
+<!-- How it works — outside hero so background image shows fully -->
+<div style="padding:16px;">
+  <div class="how-section" style="margin-bottom:0;">
     <div class="how-title" id="how-title" data-i18n="howTitle">✨ ဒေါင်းလေး ပစ္စည်းပို့နည်း</div>
     <div class="how-steps">
       <div class="how-step">
@@ -1546,23 +1558,13 @@ body.lang-en .how-mm { display: none !important; }
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Video placeholder -->
-  <div style="margin:20px 0;background:#1a1612;border-radius:14px;padding:32px 20px;text-align:center;border:2px dashed #C9A84C;">
-    <div style="font-size:36px;margin-bottom:12px;">▶️</div>
-    <div style="font-size:14px;font-weight:700;color:#C9A84C;margin-bottom:6px;" data-i18n="videoTitle">How to Book — Watch Demo</div>
-    <div style="font-size:12px;color:#9ca3af;" data-i18n="videoSub">Short video coming soon · ဗီဒီယို မကြာမီ တင်မည်</div>
-  </div>
-
-  <!-- CTA buttons -->
-  <div style="display:flex;gap:10px;position:relative;z-index:10;">
-    <button class="hero-cta" style="flex:1;" onclick="showSection('book')" ontouchend="showSection('book')" data-i18n="ctaBook">🦚 မှာယူရန် — ဒေါင်းလေး</button>
-    <button onclick="showSection('locations')" ontouchend="showSection('locations')" style="flex:1;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.3);border-radius:14px;padding:14px 12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;">
-      <span class="how-mm mm">📍 နေရာများ</span><span class="how-en">📍 View Locations</span>
-    </button>
-  </div>
-  <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
-
+<!-- Video placeholder -->
+<div style="margin:0 16px 16px;background:#1a1612;border-radius:14px;padding:32px 20px;text-align:center;border:2px dashed #C9A84C;">
+  <div style="font-size:36px;margin-bottom:12px;">▶️</div>
+  <div style="font-size:14px;font-weight:700;color:#C9A84C;margin-bottom:6px;" data-i18n="videoTitle">How to Book — Watch Demo</div>
+  <div style="font-size:12px;color:#9ca3af;" data-i18n="videoSub">Short video coming soon · ဗီဒီယို မကြာမီ တင်မည်</div>
 </div>
 
 </div><!-- /sec-home -->
