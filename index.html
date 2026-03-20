@@ -1479,7 +1479,7 @@ body.lang-en .how-mm { display: none !important; }
 
   <!-- Top badge row -->
   <div class="hero-top">
-    <div class="hero-badge">🇸🇬 SG → 🇲🇲 MM · Free delivery in Yangon</div>
+    <div class="hero-badge" data-i18n="heroBadge">🇸🇬 SG → 🇲🇲 MM · Free delivery in Yangon</div>
   </div>
 
   <!-- Title + peacock -->
@@ -1491,8 +1491,8 @@ body.lang-en .how-mm { display: none !important; }
     <div class="hero-peacock"><img src="images/daung_lay_logo-Photoroom.png" alt="Daung Lay"></div>
   </div>
 
-  <!-- Swipeable promo banners -->
-  <div class="banner-slider" id="bannerSlider">
+  <!-- Promo banners removed -->
+  <div class="banner-slider" id="bannerSlider" style="display:none;">
     <div class="banner-track" id="bannerTrack">
 
       <!-- Banner 1: First kg $12 -->
@@ -1640,9 +1640,7 @@ body.lang-en .how-mm { display: none !important; }
 
   <!-- CTA button scrolls to form -->
   <div style="padding:16px 16px 20px;position:relative;z-index:10;">
-    <button class="hero-cta" onclick="showSection('book')" ontouchend="showSection('book')">
-      🦚 Book Now — Daung Lay Send Easy
-    </button>
+    <button class="hero-cta" onclick="showSection('book')" ontouchend="showSection('book')" data-i18n="ctaBook">🦚 မှာယူရန် — ဒေါင်းလေး</button>
     <div style="text-align:center;margin-top:6px;font-size:10px;color:#9ca3af;font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
   </div>
 
@@ -4082,8 +4080,10 @@ const STRINGS = {
     confPaynowTitle: '📱 PayNow ဖြင့်ပေးချေပါ',
     confNextTitle:   'နောက်တစ်ဆင့်',
     // Hero
+    heroBadge: '🇸🇬 SG → 🇲🇲 MM · ရန်ကုန်တွင် အခမဲ့ ပို့ဆောင်ပေးသည်',
     heroTitle: '<span style="color:var(--gold)">မြန်မာပြည်သို့</span> ပစ္စည်းပို့ရန်',
     heroSub:   'ကျွန်ုပ်တို့ drop-off point ၁၇ ခုတွင် အခမဲ့ အပ်နိုင်သည်။ သို့မဟုတ် $14.90 မှ စတင်၍ ကျွန်ုပ်တို့ သင့်ထံ လာမည်။',
+    ctaBook:   '🦚 မှာယူရန် — ဒေါင်းလေး',
     // How section title
     howTitle:  '✨ ဒေါင်းလေး ပစ္စည်းပို့နည်း',
     // Video
@@ -4152,8 +4152,10 @@ const STRINGS = {
     confPaynowTitle: '📱 Pay via PayNow',
     confNextTitle:   'Next Step',
     // Hero
+    heroBadge: '🇸🇬 Singapore → 🇲🇲 Myanmar · Free delivery in Yangon',
     heroTitle: 'Send parcels to<br><span style="color:var(--gold)">Myanmar</span><br>simple and easy.',
     heroSub:   'Drop off <strong>FREE</strong> at 17 locations at your convenience. Or we come to you for as low as <strong>$14.90</strong>.',
+    ctaBook:   '🦚 Book Now — Daung Lay',
     // How section title
     howTitle:  '✨ How it works — Daung Lay Send Easy',
     // Video
