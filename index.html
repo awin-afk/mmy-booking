@@ -725,17 +725,27 @@ select {
 
 /* ── HERO SECTION ───────────────────────────────────────── */
 .hero {
-  background: linear-gradient(135deg, #1a1612 0%, #2d2318 50%, #1a1612 100%);
+  background-color: #1a1612;
+  background-image: url('images/background/desktop_mm_background.png');
+  background-size: cover;
+  background-position: center;
   padding: 32px 20px 28px;
   position: relative;
   overflow: hidden;
 }
+@media (max-width: 640px) {
+  .hero {
+    background-image: url('images/background/mobile_mm_background.png');
+  }
+}
 .hero::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.15) 0%, transparent 65%);
+  background: linear-gradient(135deg, rgba(26,22,18,0.85) 0%, rgba(45,35,24,0.75) 50%, rgba(26,22,18,0.85) 100%);
   pointer-events: none;
+  z-index: 0;
 }
+.hero > * { position: relative; z-index: 1; }
 .hero-top {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 20px;
@@ -770,7 +780,6 @@ select {
 .hero-title span { color: var(--gold); }
 .hero-sub {
   font-size: 13px; color: #9ca3af; margin-bottom: 20px;
-  font-family: 'Noto Sans Myanmar', sans-serif;
 }
 
 /* ── BANNER SLIDER ─────────────────────────────────────────── */
@@ -1409,6 +1418,9 @@ body.lang-en .how-mm { display: none !important; }
     <div class="nav-link" id="nl-book" onclick="showSection('book')">
       <span class="nav-link-icon">📦</span> Book a Parcel
     </div>
+    <div class="nav-link" id="nl-locations" onclick="showSection('locations')">
+      <span class="nav-link-icon">📍</span> <span class="how-en">Locations</span><span class="how-mm mm">နေရာများ</span>
+    </div>
     <div class="nav-link" id="nl-contact" onclick="showSection('contact')">
       <span class="nav-link-icon">💬</span> Contact Us
     </div>
@@ -1419,13 +1431,22 @@ body.lang-en .how-mm { display: none !important; }
 </div>
 
 <div class="top-bar">
-  <div class="top-bar-logo">
+  <!-- Hamburger on FAR LEFT -->
+  <button class="hamburger" id="hamburger"
+    onclick="toggleNav()"
+    ontouchstart="this._t=Date.now()"
+    ontouchend="if(Date.now()-this._t<300){toggleNav();event.preventDefault();}">
+    <span></span><span></span><span></span>
+  </button>
+  <!-- Logo/brand in center -->
+  <div class="top-bar-logo" style="flex:1;justify-content:center;">
     <div class="icon"><img src="images/daung_lay_logo-Photoroom.png" alt="Daung Lay"></div>
     <div>
       <div class="name">Daung Lay</div>
       <div class="tagline" style="font-family:'Noto Sans Myanmar',sans-serif;">ဒေါင်းလေး</div>
     </div>
   </div>
+  <!-- Right side: country selector + lang toggle -->
   <div style="display:flex;align-items:center;gap:8px;">
     <!-- Country selector -->
     <div class="country-selector" id="countrySel">
@@ -1446,12 +1467,6 @@ body.lang-en .how-mm { display: none !important; }
       <button class="lang-btn active" id="btn-mm" onclick="setLang('mm')" ontouchend="setLang('mm');event.preventDefault()">မြန်မာ</button>
       <button class="lang-btn" id="btn-en" onclick="setLang('en')" ontouchend="setLang('en');event.preventDefault()">EN</button>
     </div>
-    <button class="hamburger" id="hamburger" 
-      onclick="toggleNav()"
-      ontouchstart="this._t=Date.now()"
-      ontouchend="if(Date.now()-this._t<300){toggleNav();event.preventDefault();}">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </div>
 
@@ -1470,8 +1485,8 @@ body.lang-en .how-mm { display: none !important; }
   <!-- Title + peacock -->
   <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;">
     <div>
-      <div class="hero-title">Daung Lay<br><span>Send Easy</span> 🦚</div>
-      <div class="hero-sub">ဒေါင်းလေး — ပစ္စည်းပေးပို့ရန် အလွယ်ကူဆုံး</div>
+      <div class="hero-title" data-i18n="heroTitle">မြန်မာပြည်သို့ ပစ္စည်းပို့ရန်</div>
+      <div class="hero-sub" data-i18n="heroSub">ကျွန်ုပ်တို့ drop-off point ၁၇ ခုတွင် အခမဲ့ အပ်နိုင်သည်။ သို့မဟုတ် $14.90 မှ စတင်၍ ကျွန်ုပ်တို့ သင့်ထံ လာမည်။</div>
     </div>
     <div class="hero-peacock"><img src="images/daung_lay_logo-Photoroom.png" alt="Daung Lay"></div>
   </div>
@@ -1575,7 +1590,7 @@ body.lang-en .how-mm { display: none !important; }
 
   <!-- How it works -->
   <div class="how-section">
-    <div class="how-title" id="how-title">✨ ဒေါင်းလေး ပစ္စည်းပို့နည်း — Daung Lay Send Easy</div>
+    <div class="how-title" id="how-title" data-i18n="howTitle">✨ ဒေါင်းလေး ပစ္စည်းပို့နည်း</div>
     <div class="how-steps">
       <div class="how-step">
         <div class="how-num">1</div>
@@ -1616,48 +1631,33 @@ body.lang-en .how-mm { display: none !important; }
     </div>
   </div>
 
-  <!-- Pricing table -->
-  <div class="pricing-section">
-    <div class="pricing-head">
-      <span class="pr-mm mm">💰 ကီလိုဂရမ်တစ်ခုချင်းစီ စျေးနှုန်း — SG → Myanmar</span>
-      <span class="pr-en">💰 Pricing per kg — SG → Myanmar</span>
-    </div>
-    <div class="pricing-row">
-      <div class="pricing-cat">
-        <span class="pr-mm mm">🛍️ အစားအသောက် / အဝတ်အစား / ဆေးဝါး / လှပစ္စည်း</span>
-        <span class="pr-en">🛍️ Food / Clothes / Medicine / Cosmetics</span>
-        <small class="pr-mm mm">ဖိနပ် · အိတ် · စာအုပ် အပါအဝင်</small>
-        <small class="pr-en">Shoes · Bags · Books included</small>
-      </div>
-      <div class="pricing-amt">$15<small>/kg</small></div>
-    </div>
-    <div class="pricing-row">
-      <div class="pricing-cat">
-        <span class="pr-mm mm">📱 ဖုန်း / တက်ဘလက် / လျှပ်စစ်ပစ္စည်း / စက်ယန္တရား</span>
-        <span class="pr-en">📱 Phones / Tablets / Electronics / Machinery</span>
-        <small class="pr-mm mm">$30/kg သို့မဟုတ် တန်ဖိုး၏ 10% — မည်သည့်ဈေးနှုန်းပိုများသည်ကို ကောက်ခံမည်</small>
-        <small class="pr-en">$30/kg or 10% declared value — higher applies</small>
-      </div>
-      <div class="pricing-amt">$30<small class="pr-mm mm">/kg သို့ 10%</small><small class="pr-en">/kg or 10% value</small></div>
-    </div>
-    <div class="pricing-row" style="background:#f9f9f7;">
-      <div class="pricing-cat">
-        <span class="pr-mm mm">🚐 သင့်နေရပ်မှ ကောက်ယူခြင်း</span>
-        <span class="pr-en">🚐 Pick-up from your address</span>
-        <small class="pr-mm mm">သင့်တံခါးပေါက်သို့ ကျွန်ုပ်တို့ လာရောက်ကောက်ယူမည်</small>
-        <small class="pr-en">We come to your door</small>
-      </div>
-      <div class="pricing-amt">
-        $6.99
-      </div>
-    </div>
+  <!-- Video placeholder -->
+  <div style="margin:20px 0;background:#1a1612;border-radius:14px;padding:32px 20px;text-align:center;border:2px dashed #C9A84C;">
+    <div style="font-size:36px;margin-bottom:12px;">▶️</div>
+    <div style="font-size:14px;font-weight:700;color:#C9A84C;margin-bottom:6px;" data-i18n="videoTitle">How to Book — Watch Demo</div>
+    <div style="font-size:12px;color:#9ca3af;" data-i18n="videoSub">Short video coming soon · ဗီဒီယို မကြာမီ တင်မည်</div>
   </div>
 
-  <!-- ═══ DROP-OFF LOCATIONS MAP ═══ -->
-  <div style="padding: 0 16px; margin-bottom: 6px;">
-    <div style="font-size:14px;font-weight:700;color:#1a1612;margin-bottom:8px;">
-      📍 <span class="how-mm mm">ပစ္စည်းအပ်နိုင်သော နေရာများ</span><span class="how-en" style="display:none;">Drop-off Locations</span>
+  <!-- CTA button scrolls to form -->
+  <div style="padding:16px 16px 20px;position:relative;z-index:10;">
+    <button class="hero-cta" onclick="showSection('book')" ontouchend="showSection('book')">
+      🦚 Book Now — Daung Lay Send Easy
+    </button>
+    <div style="text-align:center;margin-top:6px;font-size:10px;color:#9ca3af;font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
+  </div>
+
+</div>
+
+</div><!-- /sec-home -->
+
+<!-- ═══ SECTION: LOCATIONS ═══ -->
+<div class="section" id="sec-locations">
+  <div style="padding:16px 16px 6px;">
+    <div style="font-size:18px;font-weight:800;color:#1a1612;margin-bottom:4px;">
+      📍 <span class="how-mm mm">ပစ္စည်းအပ်နိုင်သော နေရာများ</span><span class="how-en">Drop-off Locations</span>
     </div>
+    <div style="font-size:12px;color:#9ca3af;margin-bottom:12px;" class="how-mm mm">Singapore တစ်ဝှမ်း အပ်နေရာ ၁၇ ခု</div>
+    <div style="font-size:12px;color:#9ca3af;margin-bottom:12px;" class="how-en">17 drop-off points across Singapore</div>
     <!-- Zone filter chips -->
     <div id="home-filter-chips" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:relative;z-index:10;">
       <button class="filter-chip active" data-filter="All"     onclick="homeFilterDrops(this,'All')">🗺️ All</button>
@@ -1673,18 +1673,7 @@ body.lang-en .how-mm { display: none !important; }
     <!-- Location count -->
     <div id="home-drop-count" style="font-size:11px;color:#9ca3af;margin-top:6px;text-align:right;">17 locations</div>
   </div>
-
-  <!-- CTA button scrolls to form -->
-  <div style="padding:16px 16px 20px;position:relative;z-index:10;">
-    <button class="hero-cta" onclick="showSection('book')" ontouchend="showSection('book')">
-      🦚 Book Now — Daung Lay Send Easy
-    </button>
-    <div style="text-align:center;margin-top:6px;font-size:10px;color:#9ca3af;font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
-  </div>
-
-</div>
-
-</div><!-- /sec-home -->
+</div><!-- /sec-locations -->
 
 <!-- ═══ SECTION: BOOK ═══ -->
 <div class="section" id="sec-book">
@@ -1832,6 +1821,9 @@ body.lang-en .how-mm { display: none !important; }
               <input type="number" id="f_value_1" placeholder="e.g. 50" min="1" max="10000"
                 oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0)this.value=0;if(v>10000)this.value=10000;checkRecipientFilled(1);">
             </div>
+          </div>
+          <div class="parcel-size-hint" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-top:6px;font-size:11px;color:#92400e;">
+            📦 <strong>Max parcel size:</strong> Up to 2kg → 30×30×20cm · Up to 5kg → 40×40×30cm · Max 20kg → 60×40×40cm
           </div>
           <div class="note green" id="weight-total-note-1" style="display:none;">
             <span class="note-icon">💰</span>
@@ -2014,6 +2006,11 @@ body.lang-en .how-mm { display: none !important; }
             <span style="font-size:20px;">🏠</span>
             <div style="font-size:12px;font-weight:600;color:#1a1612;" id="pickup-addr-display">—</div>
           </div>
+          <div id="pickup-date-section" style="margin-top:14px;">
+            <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🗓️ Preferred Pick-up Date</div>
+            <div id="pickup-date-chips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+            <div style="font-size:11px;color:#6b7280;margin-top:8px;">🕙 Pick-up between 10:00 AM – 10:00 PM · Driver will contact you on the selected date</div>
+          </div>
         </div>
       </div>
     </div>
@@ -2126,6 +2123,22 @@ body.lang-en .how-mm { display: none !important; }
       Drop off your parcel within <strong>24 hours</strong> at the location above.<br>
       Show reference: <strong id="conf-ref2">—</strong><br>
       <span class="mm" style="font-size:11px;">၂၄နာရီအတွင်း အထက်ပါနေရာတွင် ပစ္စည်းအပ်ပါ</span>
+    </div>
+
+    <!-- Parcel labeling caution -->
+    <div style="background:#fff1f2;border:1.5px solid #fecdd3;border-radius:12px;padding:14px 16px;margin:16px 0;">
+      <div style="font-size:13px;font-weight:700;color:#9f1239;margin-bottom:8px;">⚠️ Important — Before you drop off</div>
+      <ul style="font-size:12px;color:#9f1239;padding-left:16px;line-height:1.8;">
+        <li>Write your <strong>booking reference</strong> clearly on the parcel with a permanent marker</li>
+        <li>Ensure parcel is <strong>securely sealed</strong> with tape</li>
+        <li>Label must be <strong>visible and legible</strong> when you arrive</li>
+      </ul>
+    </div>
+
+    <!-- Print/Download buttons -->
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="window.print()" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid #C9A84C;background:#fff;color:#92400e;font-size:13px;font-weight:700;cursor:pointer;">🖨️ Print</button>
+      <button onclick="downloadConfirmation()" style="flex:1;padding:12px;border-radius:12px;background:#C9A84C;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">💾 Save</button>
     </div>
 
     <div class="contact-line">
@@ -2253,6 +2266,7 @@ const LOCATIONS = [
 // ═══════════════════════════════════════════════════
 let map = null;
 let overviewMap = null;
+let selectedPickupDate = '';
 let confMap = null;
 let senderMarker = null;
 let locMarkers = [];
@@ -2565,11 +2579,11 @@ function updateHomeCount(n) {
 }
 
 function scrollToMap() {
-  showSection('home');
+  showSection('locations');
   setTimeout(() => {
     const mapEl = document.getElementById('map-overview');
     if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 200);
+  }, 400);
 }
 
 // Destination dropdown — disabled options are coming soon, keep Myanmar selected
@@ -3028,6 +3042,7 @@ async function goToP2() {
     if (padEl) padEl.textContent = document.getElementById('f_saddr').value;
     chosen = { name:'Pick-up from address', type:'Pickup', sched:'Driver contacts within 1–2 working days',
                lat: senderCoords?.lat||1.3521, lng: senderCoords?.lng||103.8198, maps:'#', emoji:'🚐' };
+    buildPickupDatePicker();
   } else {
     if (dpSec) dpSec.style.display = 'block';
     if (puSec) puSec.style.display = 'none';
@@ -3057,9 +3072,9 @@ async function goToP2() {
   const geoTxt  = document.getElementById('geo-txt');
   const geoSpin = document.getElementById('geo-spin');
 
-  geoBar.className = 'geo-bar searching';
-  geoSpin.style.display = 'block';
-  geoTxt.textContent = 'Locating your Singapore address…';
+  if (geoBar) geoBar.className = 'geo-bar searching';
+  if (geoSpin) geoSpin.style.display = 'block';
+  if (geoTxt) geoTxt.textContent = 'Locating your Singapore address…';
 
   const addr = document.getElementById('f_saddr').value;
 
@@ -3071,14 +3086,14 @@ async function goToP2() {
     sLat = result.lat;
     sLng = result.lng;
     senderCoords = { lat:sLat, lng:sLng };
-    geoBar.className = 'geo-bar found';
-    geoSpin.style.display = 'none';
-    geoTxt.textContent = `✅ Found: ${addr.split(',')[0].trim()}`;
+    if (geoBar) geoBar.className = 'geo-bar found';
+    if (geoSpin) geoSpin.style.display = 'none';
+    if (geoTxt) geoTxt.textContent = `✅ Found: ${addr.split(',')[0].trim()}`;
   } else {
     senderCoords = { lat:sLat, lng:sLng };
-    geoBar.className = 'geo-bar fallback';
-    geoSpin.style.display = 'none';
-    geoTxt.textContent = '⚠️ Address not pinpointed — showing all Singapore locations';
+    if (geoBar) geoBar.className = 'geo-bar fallback';
+    if (geoSpin) geoSpin.style.display = 'none';
+    if (geoTxt) geoTxt.textContent = '⚠️ Address not pinpointed — showing all Singapore locations';
   }
 
   // Sort locations by distance from sender (or SG centre if geocode failed)
@@ -3181,9 +3196,10 @@ async function goToP3() {
     dropoff_lat:        chosen.lat,
     dropoff_lng:        chosen.lng,
     payment_method:     payment ? payment.value : '',
-    pickup_fee:         pickup,
-    total_sgd:          total,
-    submitted_at:       new Date().toISOString(),
+    pickup_fee:              pickup,
+    total_sgd:               total,
+    preferred_pickup_date:   selectedPickupDate || null,
+    submitted_at:            new Date().toISOString(),
   };
 
   const btn = document.getElementById('sub-btn');
@@ -3348,6 +3364,9 @@ function buildRecipientGroup(n) {
           <input type="number" id="f_value_${n}" placeholder="e.g. 50" min="1" max="10000"
             oninput="let v=parseFloat(this.value);if(this.value!==''&&v<0)this.value=0;if(v>10000)this.value=10000;checkRecipientFilled(${n});">
         </div>
+      </div>
+      <div class="parcel-size-hint" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-top:6px;font-size:11px;color:#92400e;">
+        📦 <strong>Max parcel size:</strong> Up to 2kg → 30×30×20cm · Up to 5kg → 40×40×30cm · Max 20kg → 60×40×40cm
       </div>
       <div class="note green" id="weight-total-note-${n}" style="display:none;">
         <span class="note-icon">💰</span>
@@ -3894,8 +3913,29 @@ function showSection(name) {
   closeNav();
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Init map if switching to home
-  if (name === 'home') setTimeout(initOverviewMap, 300);
+  // Init map if switching to home (no longer needed here, map is in locations)
+  if (name === 'home') { /* map moved to locations section */ }
+  // Init overview map and geolocation when switching to locations
+  if (name === 'locations') {
+    setTimeout(() => {
+      initOverviewMap();
+      try {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              if (overviewMap) {
+                overviewMap.flyTo({
+                  center: [pos.coords.longitude, pos.coords.latitude],
+                  zoom: 13
+                });
+              }
+            },
+            () => {}
+          );
+        }
+      } catch(e) {}
+    }, 300);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -4041,6 +4081,14 @@ const STRINGS = {
     confCashTitle:   '💵 ပစ္စည်းအပ်သောအခါ ငွေပေးချေရမည်',
     confPaynowTitle: '📱 PayNow ဖြင့်ပေးချေပါ',
     confNextTitle:   'နောက်တစ်ဆင့်',
+    // Hero
+    heroTitle: '<span style="color:var(--gold)">မြန်မာပြည်သို့</span> ပစ္စည်းပို့ရန်',
+    heroSub:   'ကျွန်ုပ်တို့ drop-off point ၁၇ ခုတွင် အခမဲ့ အပ်နိုင်သည်။ သို့မဟုတ် $14.90 မှ စတင်၍ ကျွန်ုပ်တို့ သင့်ထံ လာမည်။',
+    // How section title
+    howTitle:  '✨ ဒေါင်းလေး ပစ္စည်းပို့နည်း',
+    // Video
+    videoTitle: 'မှာယူနည်း — ဗီဒီယို ကြည့်ရန်',
+    videoSub:   'ဗီဒီယို မကြာမီ တင်မည်',
   },
 
   en: {
@@ -4103,6 +4151,14 @@ const STRINGS = {
     confCashTitle:   '💵 Pay Cash at Drop-off',
     confPaynowTitle: '📱 Pay via PayNow',
     confNextTitle:   'Next Step',
+    // Hero
+    heroTitle: 'Send parcels to<br><span style="color:var(--gold)">Myanmar</span><br>simple and easy.',
+    heroSub:   'Drop off <strong>FREE</strong> at 17 locations at your convenience. Or we come to you for as low as <strong>$14.90</strong>.',
+    // How section title
+    howTitle:  '✨ How it works — Daung Lay Send Easy',
+    // Video
+    videoTitle: 'How to Book — Watch Demo',
+    videoSub:   'Short video coming soon',
   }
 };
 
@@ -4118,9 +4174,17 @@ function setLang(lang) {
   document.body.classList.toggle('lang-mm', lang === 'mm');
 
   // Update all data-i18n text nodes
+  // heroSub uses innerHTML (contains <strong> tags); heroTitle uses innerHTML for line breaks
+  const INNER_HTML_KEYS = ['heroSub', 'heroTitle'];
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (S[key] !== undefined) el.textContent = S[key];
+    if (S[key] !== undefined) {
+      if (INNER_HTML_KEYS.includes(key)) {
+        el.innerHTML = S[key];
+      } else {
+        el.textContent = S[key];
+      }
+    }
   });
 
   // Update placeholders
@@ -4150,13 +4214,94 @@ function setLang(lang) {
   });
 }
 
+// ═══════════════════════════════════════════════════
+//  PICKUP DATE PICKER
+// ═══════════════════════════════════════════════════
+function buildPickupDatePicker() {
+  const container = document.getElementById('pickup-date-chips');
+  if (!container) return;
+  container.innerHTML = '';
+  selectedPickupDate = '';
+
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Start from today + 2 days
+  const today = new Date();
+  for (let i = 2; i <= 8; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const yyyy = d.getFullYear();
+    const mm   = String(d.getMonth() + 1).padStart(2, '0');
+    const dd   = String(d.getDate()).padStart(2, '0');
+    const dateStr = yyyy + '-' + mm + '-' + dd;
+    const label = DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+
+    const btn = document.createElement('button');
+    btn.className = 'date-chip';
+    btn.textContent = label;
+    btn.setAttribute('onclick', 'selectPickupDate(this,"' + dateStr + '")');
+    btn.style.cssText = 'padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #e5e7eb;background:#f9fafb;cursor:pointer;';
+    container.appendChild(btn);
+  }
+}
+
+function selectPickupDate(el, dateStr) {
+  selectedPickupDate = dateStr;
+  // Reset all chips
+  const chips = document.querySelectorAll('#pickup-date-chips .date-chip');
+  chips.forEach(c => {
+    c.style.borderColor = '#e5e7eb';
+    c.style.background  = '#f9fafb';
+    c.style.color       = '';
+  });
+  // Highlight selected
+  el.style.borderColor = 'var(--gold)';
+  el.style.background  = '#fffbf0';
+  el.style.color       = '#92400e';
+}
+
+// ═══════════════════════════════════════════════════
+//  DOWNLOAD CONFIRMATION
+// ═══════════════════════════════════════════════════
+function downloadConfirmation() {
+  const ref    = document.getElementById('conf-ref')?.textContent || '—';
+  const email  = document.getElementById('conf-email')?.textContent || '—';
+  const loc    = document.getElementById('conf-loc-name')?.textContent || '—';
+  const detail = document.getElementById('conf-loc-detail')?.textContent || '—';
+  const cashEl = document.getElementById('conf-amount');
+  const pnEl   = document.getElementById('conf-paynow-amt');
+  const amount = (cashEl && cashEl.textContent && cashEl.textContent !== 'SGD —')
+    ? cashEl.textContent
+    : (pnEl ? pnEl.textContent : '—');
+  const text = [
+    'DAUNG LAY LOGISTICS — BOOKING CONFIRMATION',
+    '='.repeat(44),
+    'Booking Ref: ' + ref,
+    'Email: ' + email,
+    'Drop-off: ' + loc,
+    detail,
+    'Amount: SGD ' + amount,
+    '',
+    'IMPORTANT: Write booking reference "' + ref + '" on your parcel with a permanent marker.',
+    '',
+    '🦚 daunglay.com'
+  ].join('\n');
+
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'DaungLay-' + ref + '.txt';
+  a.click();
+}
+
 // ── Initialise with Burmese on page load ──────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   setLang('mm');
   autoDetectCountry();
   await loadLocations(); // fetch locations.json → populate LOCATIONS_JSON
   populateDropoffSelect(); // pre-fill dropdown from JSON
-  setTimeout(initOverviewMap, 300);
+  // Map init deferred to when Locations section is opened
 });
 
 </script>
