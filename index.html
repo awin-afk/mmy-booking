@@ -728,20 +728,25 @@ select {
   background-color: #1a1612;
   background-image: url('images/background/desktop_mm_background.png');
   background-size: cover;
-  background-position: center;
-  padding: 32px 20px 28px;
+  background-position: center right;
+  padding: 48px 24px 40px;
   position: relative;
   overflow: hidden;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 @media (max-width: 640px) {
   .hero {
     background-image: url('images/background/mobile_mm_background.png');
+    min-height: 520px;
   }
 }
 .hero::before {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(26,22,18,0.85) 0%, rgba(45,35,24,0.75) 50%, rgba(26,22,18,0.85) 100%);
+  background: linear-gradient(to right, rgba(20,16,12,0.92) 55%, rgba(20,16,12,0.45) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -773,13 +778,13 @@ select {
   text-transform: uppercase;
 }
 .hero-title {
-  font-size: 26px; font-weight: 800;
-  color: #fff; line-height: 1.15;
-  margin-bottom: 6px; letter-spacing: -0.02em;
+  font-size: 34px; font-weight: 900;
+  color: #fff; line-height: 1.1;
+  margin-bottom: 10px; letter-spacing: -0.03em;
 }
 .hero-title span { color: var(--gold); }
 .hero-sub {
-  font-size: 13px; color: #9ca3af; margin-bottom: 20px;
+  font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 20px; line-height: 1.6;
 }
 
 /* ── BANNER SLIDER ─────────────────────────────────────────── */
@@ -1114,15 +1119,15 @@ select {
 .nav-overlay.open { opacity: 1; pointer-events: all; }
 
 .nav-drawer {
-  position: fixed; top: 0; right: -280px; bottom: 0;
+  position: fixed; top: 0; left: -280px; bottom: 0;
   width: 270px; z-index: 201;
   background: var(--dark);
-  border-left: 1px solid rgba(201,168,76,0.2);
-  transition: right 0.28s cubic-bezier(0.4,0,0.2,1);
+  border-right: 1px solid rgba(201,168,76,0.2);
+  transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
   display: flex; flex-direction: column;
   padding: 0 0 32px;
 }
-.nav-drawer.open { right: 0; }
+.nav-drawer.open { left: 0; }
 
 .nav-drawer-head {
   padding: 20px 20px 16px;
@@ -1477,116 +1482,27 @@ body.lang-en .how-mm { display: none !important; }
 ═══════════════════════════════════════ -->
 <div class="hero">
 
-  <!-- Top badge row -->
-  <div class="hero-top">
+  <!-- Badge -->
+  <div style="margin-bottom:16px;">
     <div class="hero-badge" data-i18n="heroBadge">🇸🇬 SG → 🇲🇲 MM · Free delivery in Yangon</div>
   </div>
 
-  <!-- Title + peacock -->
-  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px;">
-    <div>
-      <div class="hero-title" data-i18n="heroTitle">မြန်မာပြည်သို့ ပစ္စည်းပို့ရန်</div>
-      <div class="hero-sub" data-i18n="heroSub">ကျွန်ုပ်တို့ drop-off point ၁၇ ခုတွင် အခမဲ့ အပ်နိုင်သည်။ သို့မဟုတ် $14.90 မှ စတင်၍ ကျွန်ုပ်တို့ သင့်ထံ လာမည်။</div>
+  <!-- Title + subtitle -->
+  <div class="hero-title" data-i18n="heroTitle">မြန်မာပြည်သို့ ပစ္စည်းပို့ရန်</div>
+  <div class="hero-sub" data-i18n="heroSub">ကျွန်ုပ်တို့ drop-off point ၁၇ ခုတွင် အခမဲ့ အပ်နိုင်သည်။ သို့မဟုတ် $14.90 မှ စတင်၍ ကျွန်ုပ်တို့ သင့်ထံ လာမည်။</div>
+
+  <!-- Feature pills -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
+      <span class="how-mm mm">📍 အပ်နေရာ ၁၇ ခု</span><span class="how-en">📍 17 drop-off points</span>
     </div>
-    <div class="hero-peacock"><img src="images/daung_lay_logo-Photoroom.png" alt="Daung Lay"></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
+      <span class="how-mm mm">⏱ ~၂ ပတ် ရောက်သည်</span><span class="how-en">⏱ Delivered in ~2 weeks</span>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#fff;">
+      <span class="how-mm mm">💵 အပ်သောနေရာ ငွေပေးနိုင်</span><span class="how-en">💵 Pay on the spot</span>
+    </div>
   </div>
-
-  <!-- Promo banners removed -->
-  <div class="banner-slider" id="bannerSlider" style="display:none;">
-    <div class="banner-track" id="bannerTrack">
-
-      <!-- Banner 1: First kg $12 -->
-      <div class="promo-banner banner-slide">
-        <div class="promo-left">
-          <div class="promo-tag">🎉 Launch Promo</div>
-          <div class="promo-price-row">
-            <span class="promo-new">$12</span>
-            <span class="promo-unit">/first kg</span>
-          </div>
-          <div style="font-size:11px;color:#5c3d00;font-weight:700;margin-top:4px;">
-            <span class="pr-mm mm">ပထမ ၁ ကီလို $12 · ကျန်ပမာဏ $15/kg</span>
-            <span class="pr-en">First 1kg at $12 · Rest at $15/kg</span>
-          </div>
-        </div>
-        <div class="promo-right">
-          <div class="promo-save">SAVE $3</div>
-          <div class="promo-note">
-            <span class="pr-mm mm">အချိန်ကန့်သတ်ချက်ရှိသည်</span>
-            <span class="pr-en">Limited time only</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Banner 2: 10kg 5% discount + cute peacock -->
-      <div class="promo-banner banner-slide" style="background:linear-gradient(135deg,#b8860b,#e8c84a);">
-        <div class="promo-left" style="flex:1;">
-          <div class="promo-tag" style="background:#fff;color:#5c3d00;">📦 Bulk Promo · 10kg+</div>
-          <div class="promo-price-row" style="margin-top:6px;">
-            <span class="promo-new" style="font-size:26px;">5%</span>
-            <span class="promo-unit" style="font-size:13px;">off 10kg+</span>
-          </div>
-          <div style="font-size:11px;color:#5c3d00;font-weight:700;margin-top:4px;">
-            <span class="pr-mm mm">ကီလိုပိုပို့လေး ပိုသက်သာလေး — $8 အထိ သက်သာနိုင်</span>
-            <span class="pr-en">More kg, more save — up to $8 off</span>
-          </div>
-        </div>
-        <!-- Cute 2D peacock holding parcel -->
-        <div style="flex-shrink:0;width:80px;display:flex;align-items:center;justify-content:center;">
-          <svg viewBox="0 0 80 90" width="80" height="90" xmlns="http://www.w3.org/2000/svg">
-            <!-- Tail fan -->
-            <ellipse cx="22" cy="58" rx="13" ry="5" fill="#a07010" opacity="0.55" transform="rotate(-50 22 58)"/>
-            <ellipse cx="18" cy="62" rx="14" ry="5" fill="#c9a84c" opacity="0.5" transform="rotate(-65 18 62)"/>
-            <ellipse cx="16" cy="68" rx="13" ry="4" fill="#b8940a" opacity="0.45" transform="rotate(-80 16 68)"/>
-            <!-- Tail eye dots -->
-            <circle cx="12" cy="50" r="2.5" fill="#1a5c3a" opacity="0.7"/>
-            <circle cx="8"  cy="58" r="2.5" fill="#1a5c3a" opacity="0.7"/>
-            <circle cx="7"  cy="67" r="2.5" fill="#1a5c3a" opacity="0.65"/>
-            <!-- Body -->
-            <ellipse cx="38" cy="62" rx="18" ry="20" fill="#e8c84a"/>
-            <ellipse cx="34" cy="59" rx="11" ry="14" fill="#f5df7a" opacity="0.45"/>
-            <!-- Neck -->
-            <rect x="33" y="38" width="10" height="18" rx="5" fill="#e8c84a"/>
-            <!-- Head -->
-            <circle cx="38" cy="33" r="11" fill="#e8c84a"/>
-            <circle cx="38" cy="31" r="7"  fill="#f5df7a" opacity="0.4"/>
-            <!-- Crest -->
-            <line x1="34" y1="23" x2="32" y2="14" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="38" y1="22" x2="38" y2="12" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="42" y1="23" x2="44" y2="14" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="32" cy="13" r="2.2" fill="#1a5c3a"/>
-            <circle cx="38" cy="11" r="2.2" fill="#1a5c3a"/>
-            <circle cx="44" cy="13" r="2.2" fill="#1a5c3a"/>
-            <!-- Happy eye -->
-            <path d="M41,30 Q43,27 45,30" stroke="#1a1612" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-            <!-- Smile beak open holding string -->
-            <path d="M43,35 Q47,37 43,39" fill="#c8860b"/>
-            <path d="M47,37 Q54,34 58,40" stroke="#7c4a00" stroke-width="1" fill="none" stroke-dasharray="2,1.5"/>
-            <!-- Parcel -->
-            <rect x="56" y="34" width="20" height="18" rx="3" fill="#8B6914"/>
-            <rect x="56" y="34" width="20" height="6"  rx="3" fill="#a07820"/>
-            <line x1="56" y1="43" x2="76" y2="43" stroke="#dc2626" stroke-width="1.8"/>
-            <line x1="66" y1="34" x2="66" y2="52" stroke="#dc2626" stroke-width="1.8"/>
-            <path d="M62,40 Q60,36 64,37 Q66,40 66,40" fill="#dc2626"/>
-            <path d="M70,40 Q72,36 70,37 Q66,40 66,40" fill="#dc2626"/>
-            <!-- Legs -->
-            <line x1="32" y1="80" x2="28" y2="90" stroke="#c8860b" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="28" y1="90" x2="23" y2="93" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
-            <line x1="28" y1="90" x2="32" y2="94" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
-            <line x1="44" y1="80" x2="48" y2="90" stroke="#c8860b" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="48" y1="90" x2="43" y2="93" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
-            <line x1="48" y1="90" x2="52" y2="94" stroke="#c8860b" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-      </div>
-
-    </div><!-- /track -->
-
-    <!-- Dots -->
-    <div class="banner-dots">
-      <span class="bdot active" onclick="goSlide(0)"></span>
-      <span class="bdot" onclick="goSlide(1)"></span>
-    </div>
-  </div><!-- /slider -->
 
   <!-- How it works -->
   <div class="how-section">
@@ -1638,11 +1554,14 @@ body.lang-en .how-mm { display: none !important; }
     <div style="font-size:12px;color:#9ca3af;" data-i18n="videoSub">Short video coming soon · ဗီဒီယို မကြာမီ တင်မည်</div>
   </div>
 
-  <!-- CTA button scrolls to form -->
-  <div style="padding:16px 16px 20px;position:relative;z-index:10;">
-    <button class="hero-cta" onclick="showSection('book')" ontouchend="showSection('book')" data-i18n="ctaBook">🦚 မှာယူရန် — ဒေါင်းလေး</button>
-    <div style="text-align:center;margin-top:6px;font-size:10px;color:#9ca3af;font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
+  <!-- CTA buttons -->
+  <div style="display:flex;gap:10px;position:relative;z-index:10;">
+    <button class="hero-cta" style="flex:1;" onclick="showSection('book')" ontouchend="showSection('book')" data-i18n="ctaBook">🦚 မှာယူရန် — ဒေါင်းလေး</button>
+    <button onclick="showSection('locations')" ontouchend="showSection('locations')" style="flex:1;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.3);border-radius:14px;padding:14px 12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <span class="how-mm mm">📍 နေရာများ</span><span class="how-en">📍 View Locations</span>
+    </button>
   </div>
+  <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
 
 </div>
 
