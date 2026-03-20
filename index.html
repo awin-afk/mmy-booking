@@ -763,8 +763,9 @@ select {
   50%      { transform: translateY(-6px); }
 }
 .hero-badge {
-  background: rgba(201,168,76,0.15);
-  border: 1px solid rgba(201,168,76,0.3);
+  display: inline-block;
+  background: rgba(201,168,76,0.20);
+  border: 1px solid rgba(201,168,76,0.4);
   border-radius: 20px; padding: 5px 12px;
   font-size: 11px; color: var(--gold);
   font-weight: 600; letter-spacing: 0.05em;
@@ -772,12 +773,12 @@ select {
 }
 .hero-title {
   font-size: 34px; font-weight: 900;
-  color: #fff; line-height: 1.1;
-  margin-bottom: 10px; letter-spacing: -0.03em;
+  color: #fff; line-height: 1.35;
+  margin-bottom: 12px; letter-spacing: -0.01em;
 }
 .hero-title span { color: var(--gold); }
 .hero-sub {
-  font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 20px; line-height: 1.6;
+  font-size: 13px; color: #fff; margin-bottom: 20px; line-height: 1.75;
 }
 
 /* ── BANNER SLIDER ─────────────────────────────────────────── */
@@ -1499,10 +1500,12 @@ body.lang-en .how-mm { display: none !important; }
 
   <!-- CTA buttons — before How it works -->
   <div style="display:flex;gap:10px;position:relative;z-index:10;">
-    <button onclick="showSection('locations')" ontouchend="showSection('locations')" style="flex:1;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.35);border-radius:14px;padding:14px 12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+    <button onclick="showSection('locations')" ontouchend="showSection('locations')" style="flex:1;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.35);border-radius:12px;padding:11px 10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;">
       <span class="how-mm mm">📍 အပ်နေရာ ရှာမည်</span><span class="how-en">📍 Find Drop-off Points</span>
     </button>
-    <button class="hero-cta" style="flex:1;" onclick="showSection('book')" ontouchend="showSection('book')" data-i18n="ctaBook">🦚 မှာယူရန် — ဒေါင်းလေး</button>
+    <button onclick="showSection('book')" ontouchend="showSection('book')" style="flex:1;background:linear-gradient(135deg,#C9A84C,#e8c96a);border:none;border-radius:12px;padding:11px 10px;font-size:13px;font-weight:700;color:#1a1612;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+      <span class="how-mm mm">မှာယူရန်</span><span class="how-en">Book Now</span>
+    </button>
   </div>
   <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;letter-spacing:0.05em;">__VERSION__</div>
 
